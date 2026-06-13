@@ -1,0 +1,7 @@
+keybert==0.9.0
+pyate==0.5.5
+spacy>=3.7,<4
+sentence-transformers>=3,<4
+scikit-learn>=1.5,<2
+pandas>=2.2,<3
+numpy>=1.26,<3
