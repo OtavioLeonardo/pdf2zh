@@ -354,6 +354,7 @@ fn create_aux_window(
         .resizable(true)
         .center();
 
+    #[cfg(target_os = "macos")]
     let builder = if use_native_titlebar {
         builder
     } else {
@@ -361,6 +362,9 @@ fn create_aux_window(
             .hidden_title(true)
             .title_bar_style(tauri::TitleBarStyle::Overlay)
     };
+
+    #[cfg(not(target_os = "macos"))]
+    let builder = builder;
 
     let main_window = app.get_webview_window("main");
     let builder = if let Some(main) = main_window {
