@@ -7,16 +7,19 @@ import {
   AppShell,
   Button,
   Group,
+  HoverCard,
+  SegmentedControl,
+  Switch,
   ThemeIcon,
   Progress,
   Text,
-  TextInput,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
   IconCheck,
   IconFileOff,
   IconFileText,
+  IconHistory,
   IconHelpCircle,
   IconPlayerPlayFilled,
   IconSettings2,
@@ -26,8 +29,9 @@ import {
   type TranslationRequest,
   GLOSSARY_STRATEGY_OPTIONS,
   deriveOutputDir,
+  isTerminalStage,
 } from "../app-types";
-import { openProgressWindow, openSettingsWindow, openTutorialWindow, useAppBootstrap } from "../tauri-state";
+import { openHistoryWindow, openProgressWindow, openSettingsWindow, openTutorialWindow, useAppBootstrap } from "../tauri-state";
 
 function getStoredValue(key: string, fallback: string) {
   return localStorage.getItem(key) ?? fallback;
@@ -37,16 +41,22 @@ export function MainWindow() {
   const { loading, settings, task } = useAppBootstrap();
   const [inputPdf, setInputPdf] = useState(getStoredValue("pdf2zh.inputPdf", ""));
   const [glossaryPath, setGlossaryPath] = useState(getStoredValue("pdf2zh.glossaryPath", ""));
-  const [outputDir, setOutputDir] = useState(getStoredValue("pdf2zh.outputDir", ""));
+  const [enableTranslation, setEnableTranslation] = useState(getStoredValue("pdf2zh.enableTranslation", "true") !== "false");
+  const [parallelTranslation, setParallelTranslation] = useState(getStoredValue("pdf2zh.parallelTranslation", "false") === "true");
+  const [translationConcurrency, setTranslationConcurrency] = useState(getStoredValue("pdf2zh.translationConcurrency", "3"));
   const [isDragActive, setIsDragActive] = useState(false);
   const lastTaskUpdateRef = useRef(0);
   const hasPdf = inputPdf.trim().length > 0;
+  const outputDir = inputPdf ? deriveOutputDir(inputPdf) : "";
 
   useEffect(() => {
     localStorage.setItem("pdf2zh.inputPdf", inputPdf);
     localStorage.setItem("pdf2zh.glossaryPath", glossaryPath);
-    localStorage.setItem("pdf2zh.outputDir", outputDir);
-  }, [glossaryPath, inputPdf, outputDir]);
+    localStorage.setItem("pdf2zh.enableTranslation", String(enableTranslation));
+    localStorage.setItem("pdf2zh.parallelTranslation", String(parallelTranslation));
+    localStorage.setItem("pdf2zh.translationConcurrency", translationConcurrency);
+    localStorage.removeItem("pdf2zh.outputDir");
+  }, [enableTranslation, glossaryPath, inputPdf, parallelTranslation, translationConcurrency]);
 
   useEffect(() => {
     let isMounted = true;
@@ -73,7 +83,7 @@ export function MainWindow() {
 
           if (!pdfPath) {
             notifications.show({
-              color: "yellow",
+              color: "gray",
               title: "不是 PDF 文件",
               message: "拖入的文件里没有可用的 PDF。",
             });
@@ -82,12 +92,8 @@ export function MainWindow() {
 
           setInputPdf(pdfPath);
 
-          if (!outputDir || outputDir.endsWith("-translated")) {
-            setOutputDir(deriveOutputDir(pdfPath));
-          }
-
           notifications.show({
-            color: "teal",
+            color: "appleBlue",
             title: "已接收 PDF",
             message: "论文已经放进翻译流程，接下来可以直接开始。",
           });
@@ -107,10 +113,10 @@ export function MainWindow() {
       isMounted = false;
       unlistenRef?.();
     };
-  }, [outputDir]);
+  }, []);
 
   useEffect(() => {
-    if (!task.updatedAt) {
+    if (!task.updatedAt || !isTerminalStage(task.stage)) {
       return;
     }
 
@@ -122,16 +128,20 @@ export function MainWindow() {
 
     if (task.type === "result") {
       notifications.show({
-        color: "teal",
-        title: "翻译完成",
-        message: task.translatedPdf ? "Markdown 和 PDF 都已经导出。" : "Markdown 已导出，PDF 未生成。",
+        color: "appleBlue",
+        title: enableTranslation ? "翻译完成" : "提取完成",
+        message: enableTranslation
+          ? task.translatedPdf
+            ? "Markdown 和 PDF 都已经导出。"
+            : "Markdown 已导出，PDF 未生成。"
+          : "MinerU 文本提取已完成，raw.md 已导出。",
         icon: <IconCheck size={16} />,
       });
     }
 
     if (task.type === "error") {
       notifications.show({
-        color: "red",
+        color: "dark",
         title: "翻译失败",
         message: task.message,
       });
@@ -154,10 +164,6 @@ export function MainWindow() {
 
     if (typeof selected === "string") {
       setInputPdf(selected);
-
-      if (!outputDir || outputDir.endsWith("-translated")) {
-        setOutputDir(deriveOutputDir(selected));
-      }
     }
   }
 
@@ -173,29 +179,11 @@ export function MainWindow() {
     }
   }
 
-  async function pickOutputDir() {
-    const selected = await open({
-      directory: true,
-      multiple: false,
-      defaultPath: outputDir || undefined,
-    });
-
-    if (typeof selected === "string") {
-      setOutputDir(selected);
-    }
-  }
-
   function clearPdfSelection() {
     if (!hasPdf) {
       return;
     }
-
-    const derivedCurrentOutputDir = deriveOutputDir(inputPdf);
     setInputPdf("");
-
-    if (outputDir === derivedCurrentOutputDir) {
-      setOutputDir("");
-    }
 
     notifications.show({
       color: "gray",
@@ -205,11 +193,13 @@ export function MainWindow() {
   }
 
   async function handleSubmit() {
-    if (!inputPdf || !settings.apiKey || !outputDir || !settings.model || !settings.mineruApiUrl) {
+    if (!inputPdf || !outputDir || !settings.mineruApiUrl || (enableTranslation && (!settings.apiKey || !settings.model))) {
       notifications.show({
-        color: "yellow",
+        color: "gray",
         title: "信息还不完整",
-        message: "请先选择 PDF，并在设置窗口里填写 MinerU API、模型 API Key。",
+        message: enableTranslation
+          ? "请先选择 PDF，并在设置窗口里填写 MinerU API、模型 API Key。"
+          : "请先选择 PDF，并在设置窗口里填写 MinerU API。",
       });
       return;
     }
@@ -227,17 +217,22 @@ export function MainWindow() {
           mineruApiKey: settings.mineruApiKey || null,
           outputDir,
           glossaryPath: glossaryPath || null,
+          enableTranslation,
+          parallelTranslation: enableTranslation ? parallelTranslation : false,
+          translationConcurrency: enableTranslation && parallelTranslation ? Number(translationConcurrency) : 1,
         } satisfies TranslationRequest,
       });
 
       notifications.show({
-        color: "blue",
-        title: "开始翻译",
-        message: "后台流程已经启动，详细阶段可以在独立任务窗口里查看。",
+        color: "appleBlue",
+        title: enableTranslation ? "开始翻译" : "开始提取",
+        message: enableTranslation
+          ? "后台流程已经启动，详细阶段可以在独立任务窗口里查看。"
+          : "后台 MinerU 提取已经启动，完成后会直接导出 raw.md。",
       });
     } catch (error) {
       notifications.show({
-        color: "red",
+        color: "dark",
         title: "启动失败",
         message: error instanceof Error ? error.message : String(error),
       });
@@ -248,66 +243,48 @@ export function MainWindow() {
     <AppShell className="workspace-shell" padding={0}>
       <AppShell.Main className="workspace-main">
         <div className="workspace-root">
-          <aside className="workspace-sidebar">
-            <div className="workspace-sidebar-section">
-              <Text className="workspace-section-label">任务</Text>
-              <Button
-                fullWidth
-                variant="filled"
-                justify="space-between"
-                rightSection={<IconFileText size={16} />}
-                onClick={pickPdf}
-              >
-                选择 PDF
-              </Button>
-              <Button fullWidth variant="default" justify="space-between" onClick={pickGlossary}>
-                术语表
-              </Button>
-              <Button fullWidth variant="default" justify="space-between" onClick={pickOutputDir}>
-                输出目录
-              </Button>
-            </div>
-
-            <div className="workspace-sidebar-section">
-              <Text className="workspace-section-label">窗口</Text>
-              <Button fullWidth variant="subtle" justify="space-between" onClick={() => void openSettingsWindow()}>
-                设置
-              </Button>
-              <Button fullWidth variant="subtle" justify="space-between" onClick={() => void openProgressWindow()}>
-                任务详情
-              </Button>
-              <Button fullWidth variant="subtle" justify="space-between" onClick={() => void openTutorialWindow()}>
-                使用教程
-              </Button>
-            </div>
-          </aside>
-
           <section className="workspace-stage">
             <div className={`workspace-dropzone ${isDragActive ? "workspace-dropzone-active" : ""}`}>
               <div className="workspace-dropzone-inner">
                 <Group justify="space-between" align="flex-start">
                   <div>
                     <Text className="workspace-title">PDF</Text>
-                    <Text className="workspace-hint">拖入文件，或用左侧按钮选择。</Text>
+                    <Text className="workspace-hint">拖入文件，或用上方按钮选择。</Text>
                   </div>
-                  <Group gap="xs">
-                    <ActionIcon variant="subtle" size="lg" onClick={() => void openTutorialWindow()} aria-label="打开教程">
-                      <IconHelpCircle size={18} />
+                </Group>
+
+                <div className="workspace-toolbar">
+                  <Button
+                    variant="filled"
+                    leftSection={<IconFileText size={16} />}
+                    onClick={pickPdf}
+                  >
+                    选择 PDF
+                  </Button>
+                  <Button variant="default" onClick={pickGlossary}>
+                    术语表
+                  </Button>
+                  <Group gap="xs" className="workspace-toolbar-actions">
+                    <ActionIcon variant="subtle" size="lg" onClick={() => void openSettingsWindow()} aria-label="打开设置窗口">
+                      <IconSettings2 size={18} />
                     </ActionIcon>
                     <ActionIcon variant="subtle" size="lg" onClick={() => void openProgressWindow()} aria-label="打开任务详情窗口">
                       <IconTimeline size={18} />
                     </ActionIcon>
-                    <ActionIcon variant="subtle" size="lg" onClick={() => void openSettingsWindow()} aria-label="打开设置窗口">
-                      <IconSettings2 size={18} />
+                    <ActionIcon variant="subtle" size="lg" onClick={() => void openHistoryWindow()} aria-label="打开翻译历史窗口">
+                      <IconHistory size={18} />
+                    </ActionIcon>
+                    <ActionIcon variant="subtle" size="lg" onClick={() => void openTutorialWindow()} aria-label="打开教程">
+                      <IconHelpCircle size={18} />
                     </ActionIcon>
                   </Group>
-                </Group>
+                </div>
 
                 {hasPdf ? (
                   <Group justify="flex-end">
                     <Button
                       variant="subtle"
-                      color="gray"
+                      color="appleBlue"
                       leftSection={<IconFileOff size={16} />}
                       onClick={clearPdfSelection}
                     >
@@ -322,7 +299,7 @@ export function MainWindow() {
                       size={68}
                       radius={20}
                       variant={isDragActive ? "filled" : "light"}
-                      color={isDragActive ? "teal" : hasPdf ? "cyan" : "gray"}
+                      color={isDragActive || hasPdf ? "appleBlue" : "gray"}
                       className="workspace-file-icon"
                     >
                       <IconFileText size={30} />
@@ -337,7 +314,7 @@ export function MainWindow() {
                           ? "系统会立即接收文件并自动补全输出目录。"
                           : hasPdf
                             ? "已经选中一个可翻译文件，可以直接开始。"
-                            : "也可以使用左侧的“选择 PDF”按钮导入文件。"}
+                            : "也可以使用上方的“选择 PDF”按钮导入文件。"}
                       </Text>
                     </div>
                   </div>
@@ -353,28 +330,70 @@ export function MainWindow() {
                   </div>
                 </div>
 
-                <div className="workspace-fields">
-                  <TextInput
-                    label="术语表"
-                    placeholder="可选"
-                    readOnly
-                    value={glossaryPath}
-                    classNames={{ input: "workspace-input" }}
-                  />
-                  <TextInput
-                    label="输出目录"
-                    placeholder="未设置"
-                    readOnly
-                    value={outputDir}
-                    classNames={{ input: "workspace-input" }}
-                  />
-                </div>
-
                 <div className="workspace-runtime-strip">
                   <span>{settings.provider.toUpperCase()}</span>
                   <span>{settings.model}</span>
                   <span>{settings.mineruApiUrl ? "MinerU 已配置" : "MinerU 未配置"}</span>
                   <span>{glossaryStrategyLabel}</span>
+                </div>
+
+                <div className="workspace-translation-options">
+                  <div className="workspace-translation-options-head">
+                    <Group gap="sm" wrap="nowrap">
+                      <Switch
+                        checked={enableTranslation}
+                        onChange={(event) => setEnableTranslation(event.currentTarget.checked)}
+                        label="翻译正文"
+                        size="md"
+                      />
+                      <Switch
+                        checked={parallelTranslation}
+                        onChange={(event) => setParallelTranslation(event.currentTarget.checked)}
+                        label="并行翻译"
+                        size="md"
+                        disabled={!enableTranslation}
+                      />
+                      <HoverCard width={300} shadow="md" withArrow position="right">
+                        <HoverCard.Target>
+                          <ActionIcon
+                            variant="light"
+                            radius="xl"
+                            size="md"
+                            aria-label="查看并行翻译风险说明"
+                            className="workspace-help-dot"
+                          >
+                            <IconHelpCircle size={15} />
+                          </ActionIcon>
+                        </HoverCard.Target>
+                        <HoverCard.Dropdown>
+                          <Text size="sm" className="workspace-help-copy">
+                            只会并行正文翻译阶段，MinerU 提取和 PDF 渲染仍是串行。开启后通常更快，但术语统一和上下文衔接可能略差，建议先用 2 或 3 并发试跑。
+                          </Text>
+                        </HoverCard.Dropdown>
+                      </HoverCard>
+                    </Group>
+                    <Text size="sm" c="dimmed">
+                      {enableTranslation ? "关闭后只运行 MinerU 提取，直接输出 raw.md。" : "当前只提取文本，不会调用模型翻译。"}
+                    </Text>
+                  </div>
+
+                  {enableTranslation && parallelTranslation ? (
+                    <Group gap="sm" align="center" className="workspace-concurrency-row">
+                      <Text size="sm" fw={600} c="dark">
+                        并发数
+                      </Text>
+                      <SegmentedControl
+                        value={translationConcurrency}
+                        onChange={setTranslationConcurrency}
+                        data={[
+                          { label: "2", value: "2" },
+                          { label: "3", value: "3" },
+                          { label: "4", value: "4" },
+                        ]}
+                        size="sm"
+                      />
+                    </Group>
+                  ) : null}
                 </div>
 
                 <Group justify="space-between" align="center">
@@ -387,7 +406,7 @@ export function MainWindow() {
                     onClick={handleSubmit}
                     loading={task.isRunning}
                   >
-                    开始翻译
+                    {enableTranslation ? "开始翻译" : "开始提取"}
                   </Button>
                 </Group>
               </div>
@@ -398,7 +417,7 @@ export function MainWindow() {
         <footer className="workspace-statusbar">
           <div className="workspace-statusbar-main">
             <Text className="workspace-status-label">{task.stage === "failed" ? "失败" : "任务进度"}</Text>
-            <Progress value={task.progress} color={task.stage === "failed" ? "red" : "teal"} className="workspace-progress" />
+            <Progress value={task.progress} color={task.stage === "failed" ? "dark" : "appleBlue"} className="workspace-progress" />
           </div>
           <Group gap="md" wrap="nowrap">
             <Text size="sm" c="dimmed">

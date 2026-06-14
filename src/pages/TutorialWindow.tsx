@@ -69,7 +69,7 @@ export function TutorialWindow() {
           <Box className="window-page-header">
             <Group justify="space-between" align="flex-start">
               <Group gap="sm">
-                <ThemeIcon size={42} radius="xl" color="grape">
+                <ThemeIcon size={42} radius="xl" color="appleBlue" variant="light">
                   <IconBook2 size={22} />
                 </ThemeIcon>
                 <Box>

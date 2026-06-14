@@ -1,5 +1,6 @@
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { MainWindow } from "./pages/MainWindow";
+import { HistoryWindow } from "./pages/HistoryWindow";
 import { ProgressWindow } from "./pages/ProgressWindow";
 import { SettingsWindow } from "./pages/SettingsWindow";
 import { TutorialWindow } from "./pages/TutorialWindow";
@@ -12,6 +13,8 @@ function App() {
 
   if (windowLabel === "settings") {
     page = <SettingsWindow />;
+  } else if (windowLabel === "history") {
+    page = <HistoryWindow />;
   } else if (windowLabel === "task-progress") {
     page = <ProgressWindow />;
   } else if (windowLabel === "tutorial") {

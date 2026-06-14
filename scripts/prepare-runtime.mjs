@@ -14,11 +14,17 @@ function copyFileOrDir(source, destination) {
   const stat = fs.statSync(source);
 
   if (stat.isDirectory()) {
+    if (fs.existsSync(destination)) {
+      fs.rmSync(destination, { recursive: true, force: true });
+    }
     fs.cpSync(source, destination, { recursive: true, force: true });
     return;
   }
 
   ensureDir(path.dirname(destination));
+  if (fs.existsSync(destination)) {
+    fs.rmSync(destination, { force: true });
+  }
   fs.copyFileSync(source, destination);
   fs.chmodSync(destination, stat.mode);
 }

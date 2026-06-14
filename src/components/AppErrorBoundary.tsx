@@ -49,18 +49,20 @@ export class AppErrorBoundary extends React.Component<AppErrorBoundaryProps, App
       <div className="app-error-shell">
         <Paper className="app-error-card" radius="xl" shadow="xl">
           <Stack gap="md">
-            <Title order={2}>{windowTitleFromLabel(this.props.windowLabel)}出了点问题</Title>
-            <Text c="dimmed" size="sm">
+            <Title order={2} className="app-error-title">
+              {windowTitleFromLabel(this.props.windowLabel)}出了点问题
+            </Title>
+            <Text className="app-error-copy" size="sm">
               窗口没有关闭，前端刚刚遇到了一个异常。你可以直接刷新当前窗口，或者先关闭再重新打开。
             </Text>
             <Text className="app-error-message" size="sm">
               {this.state.error.message || "Unknown error"}
             </Text>
-            <Group>
-              <Button variant="default" onClick={() => window.location.reload()}>
+            <Group className="app-error-actions">
+              <Button variant="default" className="app-error-refresh" onClick={() => window.location.reload()}>
                 刷新窗口
               </Button>
-              <Button variant="light" onClick={() => void getCurrentWebviewWindow().close()}>
+              <Button className="app-error-close" onClick={() => void getCurrentWebviewWindow().close()}>
                 关闭窗口
               </Button>
             </Group>

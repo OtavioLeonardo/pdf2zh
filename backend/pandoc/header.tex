@@ -1,7 +1,38 @@
 \usepackage{xeCJK}
 \usepackage{caption}
 \usepackage{float}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{etoolbox}
 \usepackage{setspace}
+\defaultCJKfontfeatures{Scale=1.08}
 \captionsetup{font=small,labelfont=bf}
+\KOMAoptions{
+  parskip=half,
+  headings=big
+}
+\setkomafont{disposition}{\normalfont\bfseries}
+\setkomafont{section}{\Large}
+\setkomafont{subsection}{\large}
+\setkomafont{subsubsection}{\normalsize}
+\setkomafont{pageheadfoot}{\normalfont\small}
+\RedeclareSectionCommand[
+  beforeskip=1.2\baselineskip,
+  afterskip=0.6\baselineskip
+]{section}
+\RedeclareSectionCommand[
+  beforeskip=1.0\baselineskip,
+  afterskip=0.5\baselineskip
+]{subsection}
+\RedeclareSectionCommand[
+  beforeskip=0.8\baselineskip,
+  afterskip=0.4\baselineskip
+]{subsubsection}
+\IfFontExistsTF{Kaiti SC}{
+  \setCJKfamilyfont{pdfzhquote}{Kaiti SC}
+}{
+  \setCJKfamilyfont{pdfzhquote}{Songti SC}
+}
+\AtBeginEnvironment{quote}{\CJKfamily{pdfzhquote}}
 \setlength{\parindent}{2em}
-\setlength{\parskip}{0.4em}
+\setlength{\parskip}{0.2em}

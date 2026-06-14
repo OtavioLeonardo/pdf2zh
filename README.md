@@ -43,7 +43,7 @@ npm run tauri dev
 - `pandoc`
 - `tectonic`
 - `python` 运行时目录或 Python 可执行文件
-- `site-packages` 里的 Python 依赖，例如 `keybert`、`pyate`、`spacy`
+- `site-packages` 里的可选 Python 依赖，例如 `keybert`、`pyate`、`spacy`
 
 准备方式：
 
@@ -57,7 +57,7 @@ export PDF2ZH_BUNDLE_PYTHON_BIN=/absolute/path/to/python3
 npm run runtime:prepare
 ```
 
-如果你希望把术语预处理依赖也一起装进运行时目录，再执行：
+如果你希望把可选术语增强依赖也一起装进运行时目录，再执行：
 
 ```bash
 npm run runtime:python-deps
@@ -107,19 +107,20 @@ export PDF2ZH_PYTHON=/path/to/python3
 - 后端现在支持 `MinerU` 同步接口和异步任务接口两种模式。
 - 术语表有三层来源：用户导入术语表、AI 预处理术语表、翻译过程中的增量术语更新。
 - 默认优先级是“用户术语优先，AI 自动补充，不覆盖已有术语”。
-- 设置页支持切换术语预处理方案：`hybrid`、`llm_only`、`pyate_only`、`keybert_only`。
-- 默认术语预处理方案是 `hybrid`：先用 `pyate + KeyBERT` 产出候选，再用 LLM 做清洗、去重和中文定名。
+- 设置页支持切换术语预处理方案：`llm_only`、`hybrid`、`pyate_only`、`keybert_only`。
+- 默认术语预处理方案是 `llm_only`：直接用 LLM 基于标题、摘要和前文抽取并清洗术语。
 - 术语表阶段可以单独指定模型，不必和正文翻译模型完全一致；当前默认沿用同一提供方和 API Key。
-- 如果你执行了 `npm run runtime:python-deps`，这些术语预处理依赖也会被一起打进安装包，默认混合方案会更完整可用。
+- 官方安装包默认只内置主流程需要的运行时；如果你额外执行了 `npm run runtime:python-deps`，这些可选术语增强依赖也会一起打进安装包。高阶用户可以在设置页切换到 `hybrid`、`pyate_only` 或 `keybert_only`。
+- 设置页提供“检测术语增强环境”按钮，可以检查当前运行时是否已经安装 `pyate / KeyBERT` 相关依赖。
 - 如果 `MinerU API` 响应里包含 `assets` 或 `images` 字段，脚本会尝试把图片资源写到导出目录的 `assets/` 中。
 - PDF 生成时会优先使用内置打包的 `pandoc / tectonic / python`，找不到才回退系统环境。
 - PDF 生成失败时，仍会保留 `translated.md` 和 `translation_report.json`。
 
 ## 术语表预处理策略
 
-- 默认开启 AI 术语预处理，不需要额外开关。
-- 预处理阶段会基于论文标题、摘要和前几段正文，抽取最多 40 个高价值术语。
-- 如果本地安装了 `pyate` 或 `KeyBERT`，应用会按设置自动启用它们做候选术语抽取；如果缺依赖，会自动回退，不中断主流程。
+- 默认开启 LLM 术语预处理，不需要额外开关。
+- 默认方案会基于论文标题、摘要和前几段正文，抽取最多 40 个高价值术语。
+- 如果本地安装了 `pyate` 或 `KeyBERT`，高阶用户可以在设置页切换到增强方案，让它们先做候选术语抽取；如果缺依赖，会自动回退，不中断主流程。
 - 重点保留这些类型：
   - 缩写
   - 方法名

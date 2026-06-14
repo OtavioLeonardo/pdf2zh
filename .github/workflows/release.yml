@@ -1,0 +1,95 @@
+name: release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  macos:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: astral-sh/setup-uv@v5
+      - run: npm ci
+      - name: Install runtime tools
+        run: brew install pandoc tectonic
+      - name: Prepare runtime
+        run: |
+          uv python install 3.12
+          PYTHON_BIN="$(uv python find 3.12)"
+          PYTHON_HOME="$(dirname "$(dirname "$PYTHON_BIN")")"
+          export PDF2ZH_BUNDLE_PANDOC="$(command -v pandoc)"
+          export PDF2ZH_BUNDLE_TECTONIC="$(command -v tectonic)"
+          export PDF2ZH_BUNDLE_PYTHON_HOME="$PYTHON_HOME"
+          export PDF2ZH_RUNTIME_PYTHON="$PYTHON_BIN"
+          npm run runtime:prepare
+      - name: Build macOS app bundle
+        run: npm run tauri build -- --bundles app
+      - name: Runtime and app size summary
+        run: |
+          echo "Runtime size:"
+          du -sh backend/runtime
+          echo "App bundle size:"
+          du -sh src-tauri/target/release/bundle/macos/PDF2ZH.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pdf2zh-macos-app
+          path: src-tauri/target/release/bundle/macos/PDF2ZH.app
+      - name: Build macOS dmg
+        continue-on-error: true
+        run: npm run tauri build -- --bundles dmg
+      - name: DMG size summary
+        if: ${{ hashFiles('src-tauri/target/release/bundle/dmg/*.dmg') != '' }}
+        run: du -sh src-tauri/target/release/bundle/dmg/*.dmg
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('src-tauri/target/release/bundle/dmg/*.dmg') != '' }}
+        with:
+          name: pdf2zh-macos-dmg
+          path: src-tauri/target/release/bundle/dmg/*.dmg
+
+  windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: astral-sh/setup-uv@v5
+      - run: npm ci
+      - name: Install runtime tools
+        run: choco install pandoc tectonic -y
+      - name: Prepare runtime
+        shell: pwsh
+        run: |
+          uv python install 3.12
+          $pythonBin = uv python find 3.12
+          $pythonHome = Split-Path -Parent $pythonBin
+          $env:PDF2ZH_BUNDLE_PANDOC = (Get-Command pandoc).Source
+          $env:PDF2ZH_BUNDLE_TECTONIC = (Get-Command tectonic).Source
+          $env:PDF2ZH_BUNDLE_PYTHON_HOME = $pythonHome
+          $env:PDF2ZH_RUNTIME_PYTHON = $pythonBin
+          npm run runtime:prepare
+      - name: Build
+        run: npm run tauri build
+      - name: Bundle size summary
+        shell: pwsh
+        run: |
+          Write-Host "Runtime size:"
+          Get-ChildItem backend/runtime -Recurse | Measure-Object -Property Length -Sum
+          Write-Host "Bundle outputs:"
+          Get-ChildItem src-tauri/target/release/bundle -Recurse -File | Select-Object FullName,Length
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pdf2zh-windows
+          path: src-tauri/target/release/bundle/**

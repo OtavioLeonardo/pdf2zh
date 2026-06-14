@@ -3,9 +3,11 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import {
   type AppBootstrap,
+  type HistoryEntry,
   type AppSettings,
   type ServiceTestRequest,
   type ServiceTestResult,
+  type GlossaryRuntimeStatus,
   type TaskSnapshot,
   type TranslationEvent,
   DEFAULT_SETTINGS,
@@ -21,23 +23,41 @@ export function useAppBootstrap() {
   useEffect(() => {
     let mounted = true;
 
-    void invoke<AppBootstrap>("get_app_bootstrap")
-      .then((bootstrap) => {
+    const loadBootstrap = async () => {
+      const bootstrap = await invoke<AppBootstrap>("get_app_bootstrap");
+      if (!mounted) {
+        return;
+      }
+
+      setSettings(bootstrap.settings);
+      setTask((current) => {
+        if (bootstrap.task.taskId && current.taskId === bootstrap.task.taskId) {
+          return {
+            ...bootstrap.task,
+            updatedAt: Math.max(bootstrap.task.updatedAt, current.updatedAt),
+          };
+        }
+
+        return bootstrap.task;
+      });
+    };
+
+    void loadBootstrap()
+      .catch(() => null)
+      .finally(() => {
         if (!mounted) {
           return;
         }
-
-        setSettings(bootstrap.settings);
-        setTask(bootstrap.task);
-      })
-      .finally(() => {
-        if (mounted) {
-          setLoading(false);
-        }
+        setLoading(false);
       });
+
+    const timer = window.setInterval(() => {
+      void loadBootstrap().catch(() => null);
+    }, 2000);
 
     return () => {
       mounted = false;
+      window.clearInterval(timer);
     };
   }, []);
 
@@ -53,7 +73,7 @@ export function useAppBootstrap() {
 
   useEffect(() => {
     const unlistenPromise = listen<TranslationEvent>("translation-event", (event) => {
-      setTask(taskSnapshotFromEvent(event.payload));
+      setTask((current) => taskSnapshotFromEvent(event.payload, current));
     });
 
     return () => {
@@ -76,6 +96,10 @@ export async function testMineruConnection(request: ServiceTestRequest) {
   return invoke<ServiceTestResult>("test_mineru_connection", { request });
 }
 
+export async function inspectGlossaryRuntime() {
+  return invoke<GlossaryRuntimeStatus>("inspect_glossary_runtime");
+}
+
 export async function openSettingsWindow() {
   await invoke("open_settings_window");
 }
@@ -86,4 +110,20 @@ export async function openProgressWindow() {
 
 export async function openTutorialWindow() {
   await invoke("open_tutorial_window");
+}
+
+export async function rerenderPdf(outputDir: string) {
+  return invoke<string>("rerender_pdf", { request: { outputDir } });
+}
+
+export async function cancelTranslation() {
+  return invoke<void>("cancel_translation");
+}
+
+export async function openHistoryWindow() {
+  await invoke("open_history_window");
+}
+
+export async function getTranslationHistory() {
+  return invoke<HistoryEntry[]>("get_translation_history");
 }

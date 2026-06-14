@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import base64
 import csv
+import html
 import http.client
 import json
 import os
@@ -13,6 +14,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -469,6 +471,542 @@ def rewrite_mineru_asset_paths(markdown: str) -> str:
     return rewritten
 
 
+def flatten_mineru_text_fragments(value: object) -> str:
+    if isinstance(value, str):
+        return value.strip()
+
+    if isinstance(value, list):
+        parts = [flatten_mineru_text_fragments(entry) for entry in value]
+        normalized = [part for part in parts if part]
+        return " ".join(normalized).strip()
+
+    if isinstance(value, dict):
+        content = value.get("content")
+        if isinstance(content, str):
+            return content.strip()
+        if content is not None:
+            return flatten_mineru_text_fragments(content)
+
+    return ""
+
+
+def collect_mineru_block_lines(value: object) -> List[str]:
+    if isinstance(value, str):
+        stripped = value.strip()
+        return [stripped] if stripped else []
+
+    if isinstance(value, list):
+        lines: List[str] = []
+        for entry in value:
+            lines.extend(collect_mineru_block_lines(entry))
+        return lines
+
+    if isinstance(value, dict):
+        content = value.get("content")
+        if content is not None:
+            return collect_mineru_block_lines(content)
+
+    return []
+
+
+def markdown_image_from_path(path_value: str, alt_text: str = "") -> str:
+    normalized = path_value.strip()
+    if not normalized:
+        return ""
+    return f"![{alt_text}](assets/{normalized})"
+
+
+def extract_image_path_from_content(content: object) -> str:
+    if isinstance(content, dict):
+        direct = content.get("path")
+        if isinstance(direct, str) and direct.strip():
+            return direct.strip()
+        nested = content.get("image_source")
+        if isinstance(nested, dict):
+            path_value = nested.get("path")
+            if isinstance(path_value, str) and path_value.strip():
+                return path_value.strip()
+    return ""
+
+
+def strip_html_tags(value: str) -> str:
+    normalized = re.sub(r"(?i)<br\s*/?>", "\n", value)
+    normalized = re.sub(r"(?s)<[^>]+>", "", normalized)
+    normalized = html.unescape(normalized)
+    normalized = re.sub(r"\s*\n\s*", " ", normalized)
+    return re.sub(r"\s+", " ", normalized).strip()
+
+
+def escape_latex_text(value: str) -> str:
+    escaped = value
+    for source, target in (
+        ("\\", r"\textbackslash{}"),
+        ("&", r"\&"),
+        ("%", r"\%"),
+        ("$", r"\$"),
+        ("#", r"\#"),
+        ("_", r"\_"),
+        ("{", r"\{"),
+        ("}", r"\}"),
+        ("~", r"\textasciitilde{}"),
+        ("^", r"\textasciicircum{}"),
+    ):
+        escaped = escaped.replace(source, target)
+    return escaped
+
+
+def extract_table_cells(row_html: str) -> List[dict]:
+    cell_matches = re.findall(r'(?is)<t([dh])\b([^>]*)>(.*?)</t[dh]>', row_html)
+    cells: List[dict] = []
+    for cell_type, attrs, content in cell_matches:
+        rowspan_match = re.search(r'(?i)rowspan\s*=\s*["\']?(\d+)', attrs)
+        colspan_match = re.search(r'(?i)colspan\s*=\s*["\']?(\d+)', attrs)
+        cells.append(
+            {
+                "type": cell_type,
+                "text": strip_html_tags(content),
+                "rowspan": int(rowspan_match.group(1)) if rowspan_match else 1,
+                "colspan": int(colspan_match.group(1)) if colspan_match else 1,
+            }
+        )
+    return cells
+
+
+def build_table_grid(table_html: str) -> Optional[List[List[dict]]]:
+    row_matches = re.findall(r"(?is)<tr\b[^>]*>(.*?)</tr>", table_html)
+    if not row_matches:
+        return None
+
+    grid: List[List[dict]] = []
+    rowspan_map: dict[int, int] = {}
+
+    for row_html in row_matches:
+        row: List[dict] = []
+        col = 0
+        cells = extract_table_cells(row_html)
+
+        def consume_rowspans_until(stop_col: Optional[int] = None) -> None:
+            nonlocal col
+            while rowspan_map.get(col, 0) > 0 and (stop_col is None or col < stop_col):
+                row.append({"kind": "rowspan"})
+                rowspan_map[col] -= 1
+                if rowspan_map[col] <= 0:
+                    del rowspan_map[col]
+                col += 1
+
+        for cell in cells:
+            consume_rowspans_until()
+
+            row.append({**cell, "kind": "cell"})
+            for _ in range(cell["colspan"] - 1):
+                row.append({"kind": "colspan"})
+
+            if cell["rowspan"] > 1:
+                for span_col in range(col, col + cell["colspan"]):
+                    rowspan_map[span_col] = max(rowspan_map.get(span_col, 0), cell["rowspan"] - 1)
+            col += cell["colspan"]
+
+        if rowspan_map:
+            final_col = max([col] + [index + 1 for index in rowspan_map])
+            while col < final_col:
+                if rowspan_map.get(col, 0) > 0:
+                    row.append({"kind": "rowspan"})
+                    rowspan_map[col] -= 1
+                    if rowspan_map[col] <= 0:
+                        del rowspan_map[col]
+                else:
+                    row.append({"kind": "blank"})
+                col += 1
+
+        grid.append(row)
+
+    column_count = max((len(row) for row in grid), default=0)
+    if column_count == 0:
+        return None
+
+    normalized: List[List[dict]] = []
+    for row in grid:
+        normalized.append(row + ([{"kind": "blank"}] * (column_count - len(row))))
+    return normalized
+
+
+def convert_html_table_to_latex(table_html: str) -> Optional[str]:
+    grid = build_table_grid(table_html)
+    if not grid:
+        return None
+
+    column_count = max(len(row) for row in grid)
+    if column_count == 0:
+        return None
+
+    column_spec = "|".join(["l"] * column_count)
+    lines = [
+        r"\begin{table}[H]",
+        r"\centering",
+        r"\resizebox{\linewidth}{!}{%",
+        rf"\begin{{tabular}}{{|{column_spec}|}}",
+        r"\hline",
+    ]
+
+    for row in grid:
+        cells: List[str] = []
+        col = 0
+        while col < column_count:
+            cell = row[col]
+            if cell["kind"] in {"rowspan", "blank"}:
+                cells.append("")
+                col += 1
+                continue
+            if cell["kind"] == "colspan":
+                col += 1
+                continue
+
+            text = escape_latex_text(cell["text"])
+            if cell["rowspan"] > 1 and cell["colspan"] > 1:
+                text = rf"\multirow{{{cell['rowspan']}}}{{*}}{{\multicolumn{{{cell['colspan']}}}{{|l|}}{{{text}}}}}"
+            elif cell["rowspan"] > 1:
+                text = rf"\multirow{{{cell['rowspan']}}}{{*}}{{{text}}}"
+            elif cell["colspan"] > 1:
+                text = rf"\multicolumn{{{cell['colspan']}}}{{|l|}}{{{text}}}"
+
+            cells.append(text)
+            col += cell["colspan"]
+
+        lines.append(" & ".join(cells) + r" \\ \hline")
+
+    lines.extend([
+        r"\end{tabular}%",
+        r"}",
+        r"\end{table}",
+    ])
+    return "\n".join(lines)
+
+
+def convert_html_table_to_markdown(table_html: str) -> Optional[str]:
+    if re.search(r"(?i)\b(?:rowspan|colspan)\s*=", table_html):
+        return None
+
+    row_matches = re.findall(r"(?is)<tr\b[^>]*>(.*?)</tr>", table_html)
+    if not row_matches:
+        return None
+
+    rows: List[List[str]] = []
+    for row_html in row_matches:
+        cell_matches = re.findall(r"(?is)<t[dh]\b[^>]*>(.*?)</t[dh]>", row_html)
+        if not cell_matches:
+            continue
+        row = [strip_html_tags(cell).replace("|", r"\|") for cell in cell_matches]
+        rows.append(row)
+
+    if len(rows) < 2:
+        return None
+
+    column_count = max(len(row) for row in rows)
+    if column_count == 0:
+        return None
+
+    normalized_rows = [row + [""] * (column_count - len(row)) for row in rows]
+    header = normalized_rows[0]
+    body = normalized_rows[1:]
+    separator = ["---"] * column_count
+
+    def format_row(row: List[str]) -> str:
+        return "| " + " | ".join(cell.strip() for cell in row) + " |"
+
+    return "\n".join([format_row(header), format_row(separator)] + [format_row(row) for row in body]).strip()
+
+
+def render_mineru_structured_block(item: dict) -> str:
+    item_type = str(item.get("type") or "").strip()
+
+    if item_type == "equation":
+        value = item.get("text")
+        return value.strip() if isinstance(value, str) else ""
+
+    if item_type == "table":
+        caption = flatten_mineru_text_fragments(item.get("table_caption"))
+        body = item.get("table_body")
+        if not isinstance(body, str) or not body.strip():
+            body = dig_value(item, ["content", "html"])
+        footnote = flatten_mineru_text_fragments(item.get("table_footnote"))
+        image_path = str(item.get("img_path") or "").strip()
+        if not image_path:
+            image_path = extract_image_path_from_content(item.get("content"))
+
+        parts: List[str] = []
+        if caption:
+            parts.append(caption)
+        rendered_table = convert_html_table_to_markdown(body) if isinstance(body, str) and body.strip() else None
+        latex_table = None
+        if not rendered_table and isinstance(body, str) and body.strip():
+            latex_table = convert_html_table_to_latex(body)
+        if rendered_table:
+            parts.append(rendered_table)
+        elif latex_table:
+            parts.append(latex_table)
+        elif image_path:
+            parts.append(markdown_image_from_path(image_path, caption or "table"))
+        elif isinstance(body, str) and body.strip():
+            parts.append(body.strip())
+        if footnote:
+            parts.append(footnote)
+        elif image_path and not rendered_table and not latex_table:
+            parts.append(markdown_image_from_path(image_path, caption or "table"))
+        return "\n\n".join(part for part in parts if part).strip()
+
+    if item_type in {"image", "chart"}:
+        caption_key = "image_caption" if item_type == "image" else "chart_caption"
+        footnote_key = "image_footnote" if item_type == "image" else "chart_footnote"
+        caption = flatten_mineru_text_fragments(item.get(caption_key))
+        content = flatten_mineru_text_fragments(item.get("content"))
+        footnote = flatten_mineru_text_fragments(item.get(footnote_key))
+        image_path = str(item.get("img_path") or "").strip()
+        if not image_path:
+            image_path = extract_image_path_from_content(item.get("content"))
+
+        parts: List[str] = []
+        if caption:
+            parts.append(caption)
+        if image_path:
+            parts.append(markdown_image_from_path(image_path, caption or item_type))
+        if content:
+            parts.append(content)
+        if footnote:
+            parts.append(footnote)
+        return "\n\n".join(part for part in parts if part).strip()
+
+    if item_type in {"paragraph", "title"}:
+        field_name = "title_content" if item_type == "title" else "paragraph_content"
+        lines = collect_mineru_block_lines(dig_value(item, ["content", field_name]))
+        text = "\n".join(line for line in lines if line).strip()
+        if item_type == "title" and text:
+            level = dig_value(item, ["content", "level"])
+            heading_level = level if isinstance(level, int) and level > 0 else 1
+            heading_level = max(1, min(heading_level, 6))
+            return f"{'#' * heading_level} {text}"
+        return text
+
+    if item_type in {"equation_inline", "equation_interline"}:
+        math_content = dig_value(item, ["content", "math_content"])
+        if isinstance(math_content, str) and math_content.strip():
+            if item_type == "equation_interline":
+                return f"$$\n{math_content.strip()}\n$$"
+            return f"${math_content.strip()}$"
+
+    return ""
+
+
+def extract_text_from_content_item(item: dict) -> str:
+    item_type = str(item.get("type") or "").strip()
+
+    if item_type == "text":
+        value = item.get("text")
+        return value.strip() if isinstance(value, str) else ""
+
+    if item_type == "list":
+        values = item.get("list_items")
+        if isinstance(values, list):
+            parts = [entry.strip() for entry in values if isinstance(entry, str) and entry.strip()]
+            return "\n".join(parts)
+        return ""
+
+    if item_type == "page_footnote":
+        value = item.get("text")
+        return value.strip() if isinstance(value, str) else ""
+
+    return render_mineru_structured_block(item)
+
+
+def is_numbered_footnote_list(item: dict) -> bool:
+    if str(item.get("type") or "").strip() != "list":
+        return False
+
+    values = item.get("list_items")
+    if not isinstance(values, list) or not values:
+        return False
+
+    normalized = [entry.strip() for entry in values if isinstance(entry, str) and entry.strip()]
+    if not normalized:
+        return False
+
+    return all(re.match(r"^\d+\.\s", entry) for entry in normalized)
+
+
+def normalize_inline_footnote_markers(text: str) -> str:
+    return re.sub(r"([A-Za-z])(\d{1,2})(?=$|[\s,.;:)\]])", r"\1^\2", text)
+
+
+def format_list_as_markdown(item: dict) -> str:
+    values = item.get("list_items")
+    if not isinstance(values, list):
+        return ""
+
+    normalized = [entry.strip() for entry in values if isinstance(entry, str) and entry.strip()]
+    if not normalized:
+        return ""
+
+    if all(re.match(r"^\d+[.)]\s+", entry) for entry in normalized):
+        return "\n".join(re.sub(r"^(\d+)[.)]\s+", r"\1. ", entry) for entry in normalized)
+
+    if all(re.match(r"^[-*+•]\s+", entry) for entry in normalized):
+        return "\n".join(re.sub(r"^[-*+•]\s+", "- ", entry) for entry in normalized)
+
+    return "\n".join(f"- {entry}" for entry in normalized)
+
+
+def format_content_item_as_markdown(item: dict, text: str) -> str:
+    item_type = str(item.get("type") or "").strip()
+    if item_type == "list":
+        return format_list_as_markdown(item)
+
+    text_level = item.get("text_level")
+    if isinstance(text_level, int) and text_level > 0:
+        heading_level = max(1, min(text_level, 6))
+        return f"{'#' * heading_level} {text}"
+
+    return text
+
+
+def is_markdown_heading(block: str) -> bool:
+    return bool(re.match(r"^#{1,6}\s+", block))
+
+
+def is_markdown_list(block: str) -> bool:
+    return bool(re.match(r"^(?:[-*+]\s+|\d+\.\s+)", block))
+
+
+def is_markdown_blockquote(block: str) -> bool:
+    return bool(re.match(r"^>\s?", block))
+
+
+def is_plain_markdown_paragraph(block: str) -> bool:
+    if not block or is_markdown_heading(block) or is_markdown_list(block) or is_markdown_blockquote(block):
+        return False
+    if block.startswith("<table") or block.startswith("![") or block.startswith("$$"):
+        return False
+    return True
+
+
+def should_normalize_footnote_markers(item_type: str) -> bool:
+    return item_type in {"text", "list", "page_footnote", "paragraph", "title"}
+
+
+def format_as_blockquote(block: str) -> str:
+    return "\n".join(f"> {line}" if line.strip() else ">" for line in block.splitlines())
+
+
+def should_promote_to_blockquote(previous_block: str, current_block: str) -> bool:
+    if not is_plain_markdown_paragraph(previous_block) or not is_plain_markdown_paragraph(current_block):
+        return False
+
+    if not re.search(r"[:：]\s*$", previous_block):
+        return False
+
+    current = current_block.lstrip()
+    return bool(current) and bool(re.match(r'^[A-Z"“‘\[]', current))
+
+
+def should_merge_with_previous(previous_block: str, current_block: str) -> bool:
+    if not is_plain_markdown_paragraph(previous_block) or not is_plain_markdown_paragraph(current_block):
+        return False
+
+    if re.search(r"[:：]\s*$", previous_block):
+        return False
+
+    previous = previous_block.rstrip()
+    current = current_block.lstrip()
+
+    if previous.endswith("-") and re.match(r"^[a-z]", current):
+        return True
+
+    if re.search(r"[.!?。！？]$", previous):
+        return False
+
+    return bool(re.match(r'^[a-z(“"‘\[]', current))
+
+
+def merge_markdown_blocks(blocks: List[str]) -> List[str]:
+    merged: List[str] = []
+
+    for raw_block in blocks:
+        block = raw_block.strip()
+        if not block:
+            continue
+
+        if merged and should_promote_to_blockquote(merged[-1], block):
+            block = format_as_blockquote(block)
+
+        if merged and should_merge_with_previous(merged[-1], block):
+            previous = merged[-1].rstrip()
+            current = block.lstrip()
+
+            if previous.endswith("-") and re.match(r"^[a-z]", current):
+                merged[-1] = f"{previous[:-1]}{current}"
+            else:
+                merged[-1] = f"{previous} {current}"
+            continue
+
+        merged.append(block)
+
+    return merged
+
+
+def rebuild_markdown_from_content_list(extracted_dir: Path) -> Optional[str]:
+    content_list_candidates = sorted(extracted_dir.rglob("*_content_list.json"))
+    if not content_list_candidates:
+        append_mineru_log("No content_list.json found in MinerU zip; falling back to full.md")
+        return None
+
+    content_list_path = content_list_candidates[0]
+    append_mineru_log(f"Rebuilding markdown from {content_list_path.relative_to(extracted_dir)}")
+
+    try:
+        data = json.loads(content_list_path.read_text(encoding="utf-8"))
+    except Exception as error:
+        append_mineru_log(f"Failed to parse content_list.json: {error}")
+        return None
+
+    if not isinstance(data, list):
+        append_mineru_log(f"content_list.json has unexpected shape: {summarize_json_shape(data)}")
+        return None
+
+    body_parts: List[str] = []
+    footnote_parts: List[str] = []
+
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+
+        item_type = str(item.get("type") or "").strip()
+        if item_type in {"header", "footer", "page_number"}:
+            continue
+
+        text = extract_text_from_content_item(item)
+        if not text:
+            continue
+        if should_normalize_footnote_markers(item_type):
+            text = normalize_inline_footnote_markers(text)
+
+        if item_type == "page_footnote" or is_numbered_footnote_list(item):
+            footnote_parts.append(text)
+        else:
+            body_parts.append(format_content_item_as_markdown(item, text))
+
+    if not body_parts:
+        append_mineru_log("content_list.json did not yield body text; falling back to full.md")
+        return None
+
+    body_parts = merge_markdown_blocks(body_parts)
+    markdown = "\n\n".join(body_parts).strip()
+    if footnote_parts:
+        markdown = f"{markdown}\n\n## Footnotes\n\n" + "\n\n".join(footnote_parts).strip()
+
+    append_mineru_log(
+        f"Rebuilt markdown from content_list: body_blocks={len(body_parts)}, footnotes={len(footnote_parts)}"
+    )
+    return rewrite_mineru_asset_paths(markdown)
+
+
 def extract_mineru_zip(zip_path: Path, work_dir: Path) -> Tuple[Path, dict]:
     extracted_dir = ensure_dir(work_dir / "mineru_zip")
     assets_dir = ensure_dir(work_dir / "assets")
@@ -484,7 +1022,9 @@ def extract_mineru_zip(zip_path: Path, work_dir: Path) -> Tuple[Path, dict]:
             raise RuntimeError("MinerU 结果压缩包中没有找到 full.md。")
         markdown_candidate = matches[0]
 
-    markdown = rewrite_mineru_asset_paths(markdown_candidate.read_text(encoding="utf-8"))
+    markdown = rebuild_markdown_from_content_list(extracted_dir)
+    if markdown is None:
+        markdown = rewrite_mineru_asset_paths(markdown_candidate.read_text(encoding="utf-8"))
     raw_md_path.write_text(markdown, encoding="utf-8")
 
     asset_count = 0
@@ -1345,6 +1885,196 @@ def merge_ai_glossary(glossary: Dict[str, str], ai_terms: List[dict]) -> int:
     return added
 
 
+def clamp_translation_concurrency(value: object) -> int:
+    try:
+        concurrency = int(value)
+    except (TypeError, ValueError):
+        concurrency = 3
+    return max(2, min(4, concurrency))
+
+
+def translate_segment_with_retries(
+    index: int,
+    segment: str,
+    provider: str,
+    api_key: str,
+    model: str,
+    title: str,
+    abstract: str,
+    previous_context: str,
+    glossary_snapshot: Dict[str, str],
+) -> dict:
+    translated = None
+    glossary_updates: List[dict] = []
+    last_error = None
+    retries = 0
+    failed = False
+
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            translated, glossary_updates = translate_segment(
+                provider=provider,
+                api_key=api_key,
+                model=model,
+                title=title,
+                abstract=abstract,
+                previous_context=previous_context,
+                glossary=glossary_snapshot,
+                content=segment,
+            )
+            break
+        except Exception as error:
+            last_error = str(error)
+            retries += 1
+            if attempt < MAX_RETRIES:
+                time.sleep(1.2 * (attempt + 1))
+
+    if translated is None:
+        failed = True
+        translated = segment
+
+    return {
+        "index": index,
+        "translated": translated,
+        "glossary_updates": glossary_updates,
+        "error": last_error if failed else None,
+        "retries": retries,
+    }
+
+
+def translate_segments_serial(
+    segments: List[str],
+    provider: str,
+    api_key: str,
+    model: str,
+    title: str,
+    abstract: str,
+    glossary: Dict[str, str],
+    report: dict,
+    task_id: str,
+) -> List[str]:
+    translated_segments: List[str] = []
+    previous_context = abstract[:900]
+
+    for index, segment in enumerate(segments, start=1):
+        segment_progress = 38 + int((index / max(len(segments), 1)) * 40)
+        emit("status", "translating", segment_progress, f"正在翻译第 {index}/{len(segments)} 段。", taskId=task_id)
+
+        translated = None
+        last_error = None
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                translated, glossary_updates = translate_segment(
+                    provider=provider,
+                    api_key=api_key,
+                    model=model,
+                    title=title,
+                    abstract=abstract,
+                    previous_context=previous_context[-1200:],
+                    glossary=glossary,
+                    content=segment,
+                )
+                merge_glossary(glossary, glossary_updates)
+                break
+            except Exception as error:
+                last_error = str(error)
+                report["retries"] += 1
+                if attempt < MAX_RETRIES:
+                    emit(
+                        "status",
+                        "translating",
+                        segment_progress,
+                        f"第 {index} 段翻译失败，正在重试 {attempt + 1}/{MAX_RETRIES}。",
+                        taskId=task_id,
+                    )
+                    time.sleep(1.2 * (attempt + 1))
+
+        if translated is None:
+            report["failed_segments"].append({"index": index, "error": last_error})
+            translated = segment
+
+        translated_segments.append(translated)
+        previous_context = f"{previous_context}\n\n{translated}"[-2400:]
+
+    return translated_segments
+
+
+def translate_segments_parallel(
+    segments: List[str],
+    provider: str,
+    api_key: str,
+    model: str,
+    title: str,
+    abstract: str,
+    glossary: Dict[str, str],
+    report: dict,
+    task_id: str,
+    concurrency: int,
+) -> List[str]:
+    translated_segments: List[Optional[str]] = [None] * len(segments)
+    glossary_snapshot = dict(glossary)
+    batch_size = max(1, concurrency)
+    previous_context = abstract[:900]
+    all_glossary_updates: List[dict] = []
+
+    for batch_start in range(0, len(segments), batch_size):
+        batch = list(enumerate(segments[batch_start : batch_start + batch_size], start=batch_start + 1))
+        batch_context = previous_context[-1200:]
+        emit(
+            "status",
+            "translating",
+            38 + int(((batch_start + 1) / max(len(segments), 1)) * 40),
+            f"正在并行翻译第 {batch_start + 1}-{batch[-1][0]} 段（并发 {batch_size}）。",
+            taskId=task_id,
+        )
+
+        with ThreadPoolExecutor(max_workers=batch_size) as executor:
+            futures = {
+                executor.submit(
+                    translate_segment_with_retries,
+                    index,
+                    segment,
+                    provider,
+                    api_key,
+                    model,
+                    title,
+                    abstract,
+                    batch_context,
+                    glossary_snapshot,
+                ): index
+                for index, segment in batch
+            }
+
+            results = []
+            for future in as_completed(futures):
+                try:
+                    results.append(future.result())
+                except Exception as error:
+                    index = futures[future]
+                    results.append(
+                        {
+                            "index": index,
+                            "translated": segments[index - 1],
+                            "glossary_updates": [],
+                            "error": str(error),
+                            "retries": 0,
+                        }
+                    )
+
+        for result in sorted(results, key=lambda item: item["index"]):
+            index = result["index"]
+            translated = result["translated"]
+            if result["error"]:
+                report["failed_segments"].append({"index": index, "error": result["error"]})
+            report["retries"] += int(result["retries"])
+            translated_segments[index - 1] = translated
+            all_glossary_updates.extend(result["glossary_updates"])
+            previous_context = f"{previous_context}\n\n{translated}"[-2400:]
+
+    merge_glossary(glossary, all_glossary_updates)
+    return [segment if segment is not None else "" for segment in translated_segments]
+
+
 def resolve_runtime_binary(env_key: str, fallback_name: str) -> Optional[str]:
     explicit = os.environ.get(env_key, "").strip()
     if explicit and Path(explicit).exists():
@@ -1395,19 +2125,72 @@ def render_pdf(markdown_path: Path, output_pdf: Path) -> Optional[str]:
     return None
 
 
+def rerender_existing_pdf(payload: dict) -> None:
+    task_id = str(payload.get("taskId") or f"task-{int(time.time())}")
+    output_dir = ensure_dir(Path(payload["outputDir"]).expanduser())
+    translated_md_path = output_dir / "translated.md"
+    translated_pdf_path = output_dir / "translated.pdf"
+    report_path = output_dir / "translation_report.json"
+
+    if not translated_md_path.exists():
+        fail(f"Translated markdown does not exist: {translated_md_path}")
+
+    emit("status", "rendering_pdf", 90, "正在检查已翻译的 Markdown。", taskId=task_id, outputDir=str(output_dir))
+    emit("status", "rendering_pdf", 93, "正在调用 Pandoc 和 Tectonic 生成 PDF，这一步首次通常会比较慢。", taskId=task_id, outputDir=str(output_dir))
+    start = time.time()
+    pdf_error = render_pdf(translated_md_path, translated_pdf_path)
+    duration = round(time.time() - start, 2)
+
+    report = {
+        "task_id": task_id,
+        "mode": "rerender_pdf",
+        "output_dir": str(output_dir),
+        "translated_md": str(translated_md_path),
+        "translated_pdf": str(translated_pdf_path),
+        "started_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "stages": {"rendering_pdf": duration},
+        "pdf_generated": pdf_error is None and translated_pdf_path.exists(),
+    }
+    if pdf_error:
+        report["pdf_error"] = pdf_error
+
+    write_report(report_path, report)
+
+    if pdf_error:
+        fail(pdf_error, report)
+
+    emit(
+        "result",
+        "completed",
+        100,
+        "PDF 已重新生成完成。",
+        taskId=task_id,
+        outputDir=str(output_dir),
+        translatedMd=str(translated_md_path),
+        translatedPdf=str(translated_pdf_path),
+        reportPath=str(report_path),
+    )
+
+
 def write_report(report_path: Path, report: dict) -> None:
     report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def main() -> None:
     payload = read_payload()
+    if payload.get("mode") == "rerender_pdf":
+        rerender_existing_pdf(payload)
+        return
+
     task_id = payload.get("taskId", f"task-{int(time.time())}")
+    enable_translation = bool(payload.get("enableTranslation", True))
     input_pdf = Path(payload["inputPdf"]).expanduser().resolve()
     os.environ["MINERU_API_URL"] = str(payload.get("mineruApiUrl", os.environ.get("MINERU_API_URL", "")))
     if payload.get("mineruApiKey"):
         os.environ["MINERU_API_KEY"] = str(payload["mineruApiKey"])
     output_dir = ensure_dir(Path(payload["outputDir"]).expanduser())
     work_dir = ensure_dir(output_dir / ".work")
+    raw_output_path = output_dir / "raw.md"
     translated_md_path = output_dir / "translated.md"
     translated_pdf_path = output_dir / "translated.pdf"
     report_path = output_dir / "translation_report.json"
@@ -1422,6 +2205,7 @@ def main() -> None:
         "provider": payload.get("provider"),
         "model": payload.get("model"),
         "started_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "enable_translation": enable_translation,
         "stages": {},
         "retries": 0,
         "failed_segments": [],
@@ -1455,6 +2239,25 @@ def main() -> None:
                 shutil.copy2(item, destination)
 
     raw_markdown = raw_md_path.read_text(encoding="utf-8")
+    raw_output_path.write_text(raw_markdown, encoding="utf-8")
+
+    if not enable_translation:
+        write_report(report_path, report)
+        emit(
+            "result",
+            "completed",
+            100,
+            "MinerU 提取完成，已导出 raw.md。",
+            taskId=task_id,
+            outputDir=str(output_dir),
+            rawMd=str(raw_output_path),
+            translatedMd=None,
+            translatedPdf=None,
+            reportPath=str(report_path),
+            retriedSegments=0,
+        )
+        return
+
     emit("status", "preprocessing", 24, "正在保护图片、公式、表格与参考文献结构。", taskId=task_id)
     start = time.time()
     protected_markdown, placeholders = protect_blocks(raw_markdown)
@@ -1518,51 +2321,38 @@ def main() -> None:
         report["ai_glossary_error"] = ai_glossary_error
 
     report["stages"]["preprocessing"] = round(time.time() - start, 2)
+    parallel_translation_enabled = bool(payload.get("parallelTranslation"))
+    translation_concurrency = clamp_translation_concurrency(payload.get("translationConcurrency"))
+    report["parallel_translation_enabled"] = parallel_translation_enabled
+    report["translation_concurrency"] = translation_concurrency if parallel_translation_enabled else 1
 
     emit("status", "translating", 38, "正在按章节和段落分段翻译正文。", taskId=task_id)
     start = time.time()
-    translated_segments: List[str] = []
-    previous_context = abstract[:900]
-
-    for index, segment in enumerate(segments, start=1):
-        segment_progress = 38 + int((index / max(len(segments), 1)) * 40)
-        emit("status", "translating", segment_progress, f"正在翻译第 {index}/{len(segments)} 段。", taskId=task_id)
-
-        translated = None
-        last_error = None
-        for attempt in range(MAX_RETRIES + 1):
-            try:
-                translated, glossary_updates = translate_segment(
-                    provider=str(payload["provider"]),
-                    api_key=str(payload["apiKey"]),
-                    model=str(payload["model"]),
-                    title=title,
-                    abstract=abstract,
-                    previous_context=previous_context[-1200:],
-                    glossary=glossary,
-                    content=segment,
-                )
-                merge_glossary(glossary, glossary_updates)
-                break
-            except Exception as error:
-                last_error = str(error)
-                report["retries"] += 1
-                if attempt < MAX_RETRIES:
-                    emit(
-                        "status",
-                        "translating",
-                        segment_progress,
-                        f"第 {index} 段翻译失败，正在重试 {attempt + 1}/{MAX_RETRIES}。",
-                        taskId=task_id,
-                    )
-                    time.sleep(1.2 * (attempt + 1))
-
-        if translated is None:
-            report["failed_segments"].append({"index": index, "error": last_error})
-            translated = segment
-
-        translated_segments.append(translated)
-        previous_context = f"{previous_context}\n\n{translated}"[-2400:]
+    if parallel_translation_enabled:
+        translated_segments = translate_segments_parallel(
+            segments=segments,
+            provider=str(payload["provider"]),
+            api_key=str(payload["apiKey"]),
+            model=str(payload["model"]),
+            title=title,
+            abstract=abstract,
+            glossary=glossary,
+            report=report,
+            task_id=task_id,
+            concurrency=translation_concurrency,
+        )
+    else:
+        translated_segments = translate_segments_serial(
+            segments=segments,
+            provider=str(payload["provider"]),
+            api_key=str(payload["apiKey"]),
+            model=str(payload["model"]),
+            title=title,
+            abstract=abstract,
+            glossary=glossary,
+            report=report,
+            task_id=task_id,
+        )
 
     report["final_glossary_size"] = len(glossary)
     report["stages"]["translating"] = round(time.time() - start, 2)
@@ -1575,7 +2365,8 @@ def main() -> None:
     write_glossary_tsv(glossary_output_path, glossary)
     report["stages"]["rebuilding"] = round(time.time() - start, 2)
 
-    emit("status", "rendering_pdf", 92, "正在使用 Pandoc 生成 PDF。", taskId=task_id)
+    emit("status", "rendering_pdf", 90, "正在准备 PDF 排版资源。", taskId=task_id)
+    emit("status", "rendering_pdf", 93, "正在调用 Pandoc 和 Tectonic 生成 PDF，这一步首次通常会比较慢。", taskId=task_id)
     start = time.time()
     pdf_error = render_pdf(translated_md_path, translated_pdf_path)
     report["stages"]["rendering_pdf"] = round(time.time() - start, 2)
@@ -1592,6 +2383,7 @@ def main() -> None:
         "翻译完成。",
         taskId=task_id,
         outputDir=str(output_dir),
+        rawMd=str(raw_output_path),
         translatedMd=str(translated_md_path),
         translatedPdf=str(translated_pdf_path) if translated_pdf_path.exists() else None,
         reportPath=str(report_path),

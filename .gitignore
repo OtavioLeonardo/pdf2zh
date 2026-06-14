@@ -13,6 +13,8 @@ dist-ssr
 .pycache
 src-tauri/target
 *.local
+backend/runtime/bin/
+backend/runtime/python/
 
 # Editor directories and files
 .vscode/*
