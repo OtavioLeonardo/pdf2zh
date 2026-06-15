@@ -125,11 +125,29 @@ jobs:
               -not $shimRoot -or -not $_.StartsWith($shimRoot, [System.StringComparison]::OrdinalIgnoreCase)
             } | Select-Object -First 1
 
-            if (-not $preferred) {
-              throw "Resolved only Chocolatey shim paths for ${name}: $($sources -join ', ')"
+            if ($preferred) {
+              return $preferred
             }
 
-            return $preferred
+            $libRoot = if ($env:ChocolateyInstall) {
+              Join-Path $env:ChocolateyInstall "lib"
+            } else {
+              $null
+            }
+
+            if ($libRoot -and (Test-Path $libRoot)) {
+              $candidates = Get-ChildItem -Path $libRoot -Recurse -Filter $name -File -ErrorAction SilentlyContinue |
+                Where-Object {
+                  -not $shimRoot -or -not $_.FullName.StartsWith($shimRoot, [System.StringComparison]::OrdinalIgnoreCase)
+                } |
+                Sort-Object FullName
+
+              if ($candidates.Count -gt 0) {
+                return $candidates[0].FullName
+              }
+            }
+
+            throw "Resolved only Chocolatey shim paths for ${name}: $($sources -join ', ')"
           }
 
           uv python install 3.12
