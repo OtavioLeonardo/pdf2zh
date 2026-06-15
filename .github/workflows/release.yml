@@ -126,7 +126,7 @@ jobs:
             } | Select-Object -First 1
 
             if (-not $preferred) {
-              throw "Resolved only Chocolatey shim paths for $name: $($sources -join ', ')"
+              throw "Resolved only Chocolatey shim paths for ${name}: $($sources -join ', ')"
             }
 
             return $preferred
