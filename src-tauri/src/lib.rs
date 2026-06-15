@@ -340,7 +340,7 @@ fn create_aux_window(
     title: &str,
     width: f64,
     height: f64,
-    use_native_titlebar: bool,
+    _use_native_titlebar: bool,
 ) -> Result<WebviewWindow, String> {
     if let Some(existing) = app.get_webview_window(label) {
         ensure_window(existing.clone(), title)?;
@@ -355,7 +355,7 @@ fn create_aux_window(
         .center();
 
     #[cfg(target_os = "macos")]
-    let builder = if use_native_titlebar {
+    let builder = if _use_native_titlebar {
         builder
     } else {
         builder

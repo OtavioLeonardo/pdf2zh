@@ -6,6 +6,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
 jobs:
   macos:
     runs-on: macos-latest
@@ -39,6 +42,11 @@ jobs:
           du -sh backend/runtime
           echo "App bundle size:"
           du -sh src-tauri/target/release/bundle/macos/PDF2ZH.app
+      - name: Archive macOS app for release
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent \
+            src-tauri/target/release/bundle/macos/PDF2ZH.app \
+            "src-tauri/target/release/bundle/macos/PDF2ZH_${GITHUB_REF_NAME}_macos_app.zip"
       - uses: actions/upload-artifact@v4
         with:
           name: pdf2zh-macos-app
@@ -54,6 +62,17 @@ jobs:
         with:
           name: pdf2zh-macos-dmg
           path: src-tauri/target/release/bundle/dmg/*.dmg
+      - name: Upload macOS assets to GitHub Release
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          shopt -s nullglob
+          files=(
+            src-tauri/target/release/bundle/macos/PDF2ZH_${GITHUB_REF_NAME}_macos_app.zip
+            src-tauri/target/release/bundle/dmg/*.dmg
+          )
+          gh release upload "${GITHUB_REF_NAME}" "${files[@]}" --clobber
 
   windows:
     runs-on: windows-latest
@@ -93,3 +112,18 @@ jobs:
         with:
           name: pdf2zh-windows
           path: src-tauri/target/release/bundle/**
+      - name: Upload Windows assets to GitHub Release
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $files = Get-ChildItem src-tauri/target/release/bundle -Recurse -File |
+            Where-Object { $_.Extension -in @('.msi', '.exe') } |
+            Select-Object -ExpandProperty FullName
+
+          if ($files.Count -gt 0) {
+            gh release upload $env:GITHUB_REF_NAME $files --clobber
+          } else {
+            Write-Host "No Windows release assets found to upload."
+          }
