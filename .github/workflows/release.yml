@@ -163,22 +163,46 @@ jobs:
               return $preferred
             }
 
-            $libRoot = if ($env:ChocolateyInstall) {
-              Join-Path $env:ChocolateyInstall "lib"
-            } else {
-              $null
+            $searchRoots = New-Object System.Collections.Generic.List[string]
+            $packageName = [System.IO.Path]::GetFileNameWithoutExtension($name)
+
+            if ($env:ChocolateyInstall) {
+              $searchRoots.Add((Join-Path $env:ChocolateyInstall "lib"))
             }
 
-            if ($libRoot -and (Test-Path $libRoot)) {
-              $candidates = Get-ChildItem -Path $libRoot -Recurse -Filter $name -File -ErrorAction SilentlyContinue |
-                Where-Object {
-                  -not $shimRoot -or -not $_.FullName.StartsWith($shimRoot, [System.StringComparison]::OrdinalIgnoreCase)
-                } |
-                Sort-Object FullName
-
-              if ($candidates.Count -gt 0) {
-                return $candidates[0].FullName
+            foreach ($root in @(
+              $env:ProgramFiles,
+              ${env:ProgramFiles(x86)},
+              (Join-Path $env:LOCALAPPDATA "Programs")
+            )) {
+              if (-not $root) {
+                continue
               }
+
+              $searchRoots.Add($root)
+
+              foreach ($subdir in @($packageName, (Get-Culture).TextInfo.ToTitleCase($packageName))) {
+                $candidateRoot = Join-Path $root $subdir
+                if (Test-Path $candidateRoot) {
+                  $searchRoots.Insert(0, $candidateRoot)
+                }
+              }
+            }
+
+            $candidate = $searchRoots |
+              Where-Object { $_ -and (Test-Path $_) } |
+              Select-Object -Unique |
+              ForEach-Object {
+                Get-ChildItem -Path $_ -Recurse -Filter $name -File -ErrorAction SilentlyContinue
+              } |
+              Where-Object {
+                -not $shimRoot -or -not $_.FullName.StartsWith($shimRoot, [System.StringComparison]::OrdinalIgnoreCase)
+              } |
+              Sort-Object FullName |
+              Select-Object -First 1
+
+            if ($candidate) {
+              return $candidate.FullName
             }
 
             throw "Resolved only Chocolatey shim paths for ${name}: $($sources -join ', ')"
@@ -189,6 +213,8 @@ jobs:
           $pythonHome = Split-Path -Parent $pythonBin
           $env:PDF2ZH_BUNDLE_PANDOC = Get-NonShimCommandPath "pandoc.exe"
           $env:PDF2ZH_BUNDLE_TECTONIC = Get-NonShimCommandPath "tectonic.exe"
+          Write-Host "Resolved pandoc binary: $env:PDF2ZH_BUNDLE_PANDOC"
+          Write-Host "Resolved tectonic binary: $env:PDF2ZH_BUNDLE_TECTONIC"
           $env:PDF2ZH_BUNDLE_PYTHON_HOME = $pythonHome
           $env:PDF2ZH_RUNTIME_PYTHON = $pythonBin
           npm run runtime:prepare
