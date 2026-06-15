@@ -340,7 +340,7 @@ fn create_aux_window(
     title: &str,
     width: f64,
     height: f64,
-    use_native_titlebar: bool,
+    _use_native_titlebar: bool,
 ) -> Result<WebviewWindow, String> {
     if let Some(existing) = app.get_webview_window(label) {
         ensure_window(existing.clone(), title)?;
@@ -355,7 +355,7 @@ fn create_aux_window(
         .center();
 
     #[cfg(target_os = "macos")]
-    let builder = if use_native_titlebar {
+    let builder = if _use_native_titlebar {
         builder
     } else {
         builder
@@ -366,12 +366,18 @@ fn create_aux_window(
     #[cfg(not(target_os = "macos"))]
     let builder = builder;
 
-    let main_window = app.get_webview_window("main");
-    let builder = if let Some(main) = main_window {
-        builder.parent(&main).map_err(|error| format!("Failed to set window parent: {error}"))?
-    } else {
-        builder
+    #[cfg(target_os = "macos")]
+    let builder = {
+        let main_window = app.get_webview_window("main");
+        if let Some(main) = main_window {
+            builder.parent(&main).map_err(|error| format!("Failed to set window parent: {error}"))?
+        } else {
+            builder
+        }
     };
+
+    #[cfg(not(target_os = "macos"))]
+    let builder = builder;
 
     let window = builder
         .build()
@@ -415,6 +421,21 @@ fn resolve_readme_path() -> Result<PathBuf, String> {
 
     if dev_path.exists() {
         return Ok(dev_path);
+    }
+
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(exe_dir) = exe_path.parent() {
+            let candidates = [
+                exe_dir.join("resources").join(README_FILE_NAME),
+                exe_dir.join(README_FILE_NAME),
+            ];
+
+            for bundled_path in candidates {
+                if bundled_path.exists() {
+                    return Ok(bundled_path);
+                }
+            }
+        }
     }
 
     Err("Could not locate README.md".to_string())

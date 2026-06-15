@@ -28,6 +28,7 @@
     "active": true,
     "targets": "all",
     "resources": [
+      "../README.md",
       "../backend/**/*"
     ],
     "icon": [
