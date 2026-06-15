@@ -67,6 +67,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          if ! gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --notes "" || \
+              gh release view "${GITHUB_REF_NAME}" >/dev/null
+          fi
           shopt -s nullglob
           files=(
             src-tauri/target/release/bundle/macos/PDF2ZH_${GITHUB_REF_NAME}_macos_app.zip
@@ -118,6 +122,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          gh release view $env:GITHUB_REF_NAME *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $env:GITHUB_REF_NAME --title $env:GITHUB_REF_NAME --notes "" *> $null
+            if ($LASTEXITCODE -ne 0) {
+              gh release view $env:GITHUB_REF_NAME *> $null
+            }
+          }
+
           $files = Get-ChildItem src-tauri/target/release/bundle -Recurse -File |
             Where-Object { $_.Extension -in @('.msi', '.exe') } |
             Select-Object -ExpandProperty FullName

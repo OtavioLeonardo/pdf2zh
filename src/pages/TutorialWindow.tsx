@@ -57,9 +57,17 @@ function renderMarkdown(markdown: string) {
 
 export function TutorialWindow() {
   const [content, setContent] = useState<TutorialContent | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
-    void invoke<TutorialContent>("get_tutorial_content").then(setContent);
+    void invoke<TutorialContent>("get_tutorial_content")
+      .then((result) => {
+        setContent(result);
+        setLoadError(null);
+      })
+      .catch((error) => {
+        setLoadError(error instanceof Error ? error.message : String(error));
+      });
   }, []);
 
   return (
@@ -94,6 +102,13 @@ export function TutorialWindow() {
           {content ? (
             <Stack gap="xl" className="tutorial-body">
               {renderMarkdown(content.markdown)}
+            </Stack>
+          ) : loadError ? (
+            <Stack gap="sm">
+              <Text fw={700}>暂时无法加载教程内容</Text>
+              <Text size="sm" c="dimmed">
+                {loadError}
+              </Text>
             </Stack>
           ) : (
             <Group justify="center" py="xl">

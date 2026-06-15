@@ -1,7 +1,7 @@
 {
   "name": "pdf2zh",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Desktop app for translating academic PDFs into Chinese Markdown and PDF with terminology-aware workflows.",
   "license": "MIT",
   "type": "module",
@@ -9,6 +9,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "version:set": "node scripts/set-version.mjs",
     "runtime:prepare": "node scripts/prepare-runtime.mjs",
     "runtime:python-deps": "node scripts/prepare-python-deps.mjs",
     "tauri": "tauri"
