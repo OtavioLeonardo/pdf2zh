@@ -244,9 +244,10 @@ jobs:
             throw "Bundled Python interpreter was not prepared."
           }
 
-          $bundledPython = $pythonCandidates[0]
+          $bundledPython = (Resolve-Path -LiteralPath $pythonCandidates[0]).Path
+          Write-Host "Resolved bundled Python: $bundledPython"
 
-          & $bundledPython --version
+          & "$bundledPython" --version
           & $pandoc --version | Select-Object -First 2
           & $tectonic --version
       - name: Build
