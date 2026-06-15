@@ -34,6 +34,20 @@ jobs:
           export PDF2ZH_BUNDLE_PYTHON_HOME="$PYTHON_HOME"
           export PDF2ZH_RUNTIME_PYTHON="$PYTHON_BIN"
           npm run runtime:prepare
+      - name: Verify bundled runtime
+        run: |
+          test -f backend/runtime/bin/pandoc
+          test -f backend/runtime/bin/tectonic
+          test -x backend/runtime/bin/pandoc
+          test -x backend/runtime/bin/tectonic
+          BUNDLED_PYTHON="backend/runtime/python/bin/python3"
+          if [ ! -x "$BUNDLED_PYTHON" ]; then
+            BUNDLED_PYTHON="backend/runtime/python/bin/python"
+          fi
+          test -x "$BUNDLED_PYTHON"
+          "$BUNDLED_PYTHON" --version
+          backend/runtime/bin/pandoc --version | head -n 2
+          backend/runtime/bin/tectonic --version
       - name: Build macOS app bundle
         run: npm run tauri build -- --bundles app
       - name: Runtime and app size summary
@@ -95,14 +109,68 @@ jobs:
       - name: Prepare runtime
         shell: pwsh
         run: |
+          function Get-NonShimCommandPath([string]$name) {
+            $sources = @(Get-Command $name -All | Select-Object -ExpandProperty Source -Unique)
+            if ($sources.Count -eq 0) {
+              throw "Could not resolve command path for $name."
+            }
+
+            $shimRoot = if ($env:ChocolateyInstall) {
+              Join-Path $env:ChocolateyInstall "bin"
+            } else {
+              $null
+            }
+
+            $preferred = $sources | Where-Object {
+              -not $shimRoot -or -not $_.StartsWith($shimRoot, [System.StringComparison]::OrdinalIgnoreCase)
+            } | Select-Object -First 1
+
+            if (-not $preferred) {
+              throw "Resolved only Chocolatey shim paths for $name: $($sources -join ', ')"
+            }
+
+            return $preferred
+          }
+
           uv python install 3.12
           $pythonBin = uv python find 3.12
           $pythonHome = Split-Path -Parent $pythonBin
-          $env:PDF2ZH_BUNDLE_PANDOC = (Get-Command pandoc).Source
-          $env:PDF2ZH_BUNDLE_TECTONIC = (Get-Command tectonic).Source
+          $env:PDF2ZH_BUNDLE_PANDOC = Get-NonShimCommandPath "pandoc.exe"
+          $env:PDF2ZH_BUNDLE_TECTONIC = Get-NonShimCommandPath "tectonic.exe"
           $env:PDF2ZH_BUNDLE_PYTHON_HOME = $pythonHome
           $env:PDF2ZH_RUNTIME_PYTHON = $pythonBin
           npm run runtime:prepare
+      - name: Verify bundled runtime
+        shell: pwsh
+        run: |
+          $runtimeBin = Join-Path $PWD "backend/runtime/bin"
+          $runtimePython = Join-Path $PWD "backend/runtime/python"
+          $pandoc = Join-Path $runtimeBin "pandoc.exe"
+          $tectonic = Join-Path $runtimeBin "tectonic.exe"
+
+          if (!(Test-Path $pandoc)) {
+            throw "Bundled pandoc.exe was not prepared."
+          }
+          if (!(Test-Path $tectonic)) {
+            throw "Bundled tectonic.exe was not prepared."
+          }
+
+          $pythonCandidates = @(
+            (Join-Path $runtimePython "python.exe"),
+            (Join-Path $runtimePython "python3.exe"),
+            (Join-Path $runtimePython "bin/python.exe"),
+            (Join-Path $runtimePython "bin/python3.exe")
+          ) | Where-Object { Test-Path $_ }
+
+          if ($pythonCandidates.Count -eq 0) {
+            throw "Bundled Python interpreter was not prepared."
+          }
+
+          $bundledPython = $pythonCandidates[0]
+
+          & $bundledPython --version
+          & $pandoc --version | Select-Object -First 2
+          & $tectonic --version
       - name: Build
         run: npm run tauri build
       - name: Bundle size summary
