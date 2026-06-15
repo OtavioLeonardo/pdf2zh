@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{
     fs,
-    io::{BufRead, BufReader, Write},
+    io::{self, BufRead, BufReader, Write},
     path::{Path, PathBuf},
     process::{Command, Stdio},
     sync::{Arc, Mutex},
@@ -742,6 +742,41 @@ fn is_bundled_python_binary(python_bin: &str, runtime_root: &Path) -> bool {
     resolved_python.starts_with(resolved_bundled_root)
 }
 
+fn configure_python_command(command: &mut Command, runtime_root: Option<&Path>, python_bin: &str) {
+    command
+        .env("PYTHONIOENCODING", "utf-8")
+        .env("PYTHONUTF8", "1");
+
+    if let Some(root) = runtime_root {
+        command
+            .env("PDF2ZH_RUNTIME_ROOT", root)
+            .env("PDF2ZH_PANDOC", root.join("bin").join(binary_name("pandoc")))
+            .env("PDF2ZH_TECTONIC", root.join("bin").join(binary_name("tectonic")))
+            .env("PDF2ZH_RUNTIME_SITE_PACKAGES", root.join("site-packages"))
+            .env("PYTHONPATH", root.join("site-packages"));
+
+        let bundled_python_home = root.join("python");
+        if bundled_python_home.exists() && is_bundled_python_binary(python_bin, root) {
+            command.env("PYTHONHOME", bundled_python_home);
+        }
+    }
+}
+
+fn read_lossy_line(reader: &mut BufReader<impl io::Read>) -> io::Result<Option<String>> {
+    let mut buffer = Vec::new();
+    let bytes_read = reader.read_until(b'\n', &mut buffer)?;
+
+    if bytes_read == 0 {
+        return Ok(None);
+    }
+
+    while matches!(buffer.last(), Some(b'\n' | b'\r')) {
+        buffer.pop();
+    }
+
+    Ok(Some(String::from_utf8_lossy(&buffer).into_owned()))
+}
+
 fn open_path_with_system(path: &str) -> Result<(), String> {
     #[cfg(target_os = "macos")]
     let mut command = {
@@ -807,20 +842,7 @@ fn run_python_service_test(
 
     let mut command = Command::new(&python_bin);
     command.arg(&script_path);
-
-    if let Some(root) = runtime_root.as_ref() {
-        command
-            .env("PDF2ZH_RUNTIME_ROOT", root)
-            .env("PDF2ZH_PANDOC", root.join("bin").join(binary_name("pandoc")))
-            .env("PDF2ZH_TECTONIC", root.join("bin").join(binary_name("tectonic")))
-            .env("PDF2ZH_RUNTIME_SITE_PACKAGES", root.join("site-packages"))
-            .env("PYTHONPATH", root.join("site-packages"));
-
-        let bundled_python_home = root.join("python");
-        if bundled_python_home.exists() && is_bundled_python_binary(&python_bin, root) {
-            command.env("PYTHONHOME", bundled_python_home);
-        }
-    }
+    configure_python_command(&mut command, runtime_root.as_deref(), &python_bin);
 
     let mut child = command
         .env("PDF2ZH_SERVICE_TEST", test_kind)
@@ -976,18 +998,7 @@ print(json.dumps({
 
     let mut command = Command::new(&python_bin);
     command.arg("-c").arg(script);
-
-    if let Some(root) = runtime_root.as_ref() {
-        command
-            .env("PDF2ZH_RUNTIME_ROOT", root)
-            .env("PDF2ZH_RUNTIME_SITE_PACKAGES", root.join("site-packages"))
-            .env("PYTHONPATH", root.join("site-packages"));
-
-        let bundled_python_home = root.join("python");
-        if bundled_python_home.exists() && is_bundled_python_binary(&python_bin, root) {
-            command.env("PYTHONHOME", bundled_python_home);
-        }
-    }
+    configure_python_command(&mut command, runtime_root.as_deref(), &python_bin);
 
     let output = command
         .output()
@@ -1421,20 +1432,7 @@ fn run_translation_process(
 ) -> Result<(), String> {
     let mut command = Command::new(python_bin);
     command.arg(script_path);
-
-    if let Some(root) = runtime_root.as_ref() {
-        command
-            .env("PDF2ZH_RUNTIME_ROOT", root)
-            .env("PDF2ZH_PANDOC", root.join("bin").join(binary_name("pandoc")))
-            .env("PDF2ZH_TECTONIC", root.join("bin").join(binary_name("tectonic")))
-            .env("PDF2ZH_RUNTIME_SITE_PACKAGES", root.join("site-packages"))
-            .env("PYTHONPATH", root.join("site-packages"));
-
-        let bundled_python_home = root.join("python");
-        if bundled_python_home.exists() && is_bundled_python_binary(python_bin, root) {
-            command.env("PYTHONHOME", bundled_python_home);
-        }
-    }
+    configure_python_command(&mut command, runtime_root.as_deref(), python_bin);
 
     let mut child = command
         .stdin(Stdio::piped())
@@ -1467,8 +1465,8 @@ fn run_translation_process(
         .ok_or_else(|| "Failed to capture Python stderr".to_string())?;
 
     std::thread::spawn(move || {
-        let reader = BufReader::new(stderr);
-        for line in reader.lines().map_while(Result::ok) {
+        let mut reader = BufReader::new(stderr);
+        while let Ok(Some(line)) = read_lossy_line(&mut reader) {
             if let Ok(mut buffer) = stderr_clone.lock() {
                 buffer.push_str(&line);
                 buffer.push('\n');
@@ -1480,11 +1478,12 @@ fn run_translation_process(
         .stdout
         .take()
         .ok_or_else(|| "Failed to capture Python stdout".to_string())?;
-    let reader = BufReader::new(stdout);
+    let mut reader = BufReader::new(stdout);
     let mut saw_terminal_event = false;
 
-    for line in reader.lines() {
-        let line = line.map_err(|error| format!("Failed to read pipeline output: {error}"))?;
+    while let Some(line) =
+        read_lossy_line(&mut reader).map_err(|error| format!("Failed to read pipeline output: {error}"))?
+    {
         if line.trim().is_empty() {
             continue;
         }

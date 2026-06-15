@@ -58,6 +58,11 @@ if runtime_site_packages and Path(runtime_site_packages).exists():
 
 MINERU_DEBUG_LOG_PATH: Optional[Path] = None
 
+for stream_name in ("stdout", "stderr"):
+    stream = getattr(sys, stream_name, None)
+    if stream and hasattr(stream, "reconfigure"):
+        stream.reconfigure(encoding="utf-8", errors="replace")
+
 
 def emit(event_type: str, stage: str, progress: int, message: str, **extra: object) -> None:
     payload = {
@@ -1669,6 +1674,13 @@ def call_translation_model(provider: str, api_key: str, model: str, system: str,
     raise RuntimeError(f"Unsupported provider: {provider}")
 
 
+def resolve_api_base_url(env_name: str, default_url: str) -> str:
+    override = os.environ.get(env_name, "").strip()
+    if override:
+        return override.rstrip("/")
+    return default_url.rstrip("/")
+
+
 def extract_ai_glossary(
     provider: str,
     api_key: str,
@@ -1689,8 +1701,9 @@ def extract_ai_glossary(
 
 
 def call_openai(api_key: str, model: str, system: str, user: str) -> str:
+    endpoint = f"{resolve_api_base_url('PDF2ZH_OPENAI_BASE_URL', 'https://api.openai.com')}/v1/chat/completions"
     response = http_json_request(
-        "https://api.openai.com/v1/chat/completions",
+        endpoint,
         {
             "model": model,
             "temperature": 0.2,
@@ -1714,8 +1727,9 @@ def call_openai(api_key: str, model: str, system: str, user: str) -> str:
 
 
 def call_claude(api_key: str, model: str, system: str, user: str) -> str:
+    endpoint = f"{resolve_api_base_url('PDF2ZH_ANTHROPIC_BASE_URL', 'https://api.anthropic.com')}/v1/messages"
     response = http_json_request(
-        "https://api.anthropic.com/v1/messages",
+        endpoint,
         {
             "model": model,
             "max_tokens": 4096,
@@ -1740,8 +1754,9 @@ def call_claude(api_key: str, model: str, system: str, user: str) -> str:
 
 
 def call_deepseek(api_key: str, model: str, system: str, user: str) -> str:
+    endpoint = f"{resolve_api_base_url('PDF2ZH_DEEPSEEK_BASE_URL', 'https://api.deepseek.com')}/chat/completions"
     response = http_json_request(
-        "https://api.deepseek.com/chat/completions",
+        endpoint,
         {
             "model": model,
             "temperature": 0.2,

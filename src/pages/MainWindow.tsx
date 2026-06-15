@@ -31,7 +31,14 @@ import {
   deriveOutputDir,
   isTerminalStage,
 } from "../app-types";
-import { openHistoryWindow, openProgressWindow, openSettingsWindow, openTutorialWindow, useAppBootstrap } from "../tauri-state";
+import {
+  isTauriRuntime,
+  openHistoryWindow,
+  openProgressWindow,
+  openSettingsWindow,
+  openTutorialWindow,
+  useAppBootstrap,
+} from "../tauri-state";
 
 function getStoredValue(key: string, fallback: string) {
   return localStorage.getItem(key) ?? fallback;
@@ -59,6 +66,10 @@ export function MainWindow() {
   }, [enableTranslation, glossaryPath, inputPdf, parallelTranslation, translationConcurrency]);
 
   useEffect(() => {
+    if (!isTauriRuntime()) {
+      return;
+    }
+
     let isMounted = true;
 
     const setup = async () => {

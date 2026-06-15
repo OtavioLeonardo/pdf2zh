@@ -7,8 +7,16 @@ import { TutorialWindow } from "./pages/TutorialWindow";
 import { AppErrorBoundary } from "./components/AppErrorBoundary";
 import "./App.css";
 
+function resolveWindowLabel() {
+  try {
+    return getCurrentWebviewWindow().label;
+  } catch {
+    return "main";
+  }
+}
+
 function App() {
-  const windowLabel = getCurrentWebviewWindow().label;
+  const windowLabel = resolveWindowLabel();
   let page = <MainWindow />;
 
   if (windowLabel === "settings") {

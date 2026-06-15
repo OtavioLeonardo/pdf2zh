@@ -15,12 +15,21 @@ import {
   taskSnapshotFromEvent,
 } from "./app-types";
 
+export function isTauriRuntime() {
+  return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+}
+
 export function useAppBootstrap() {
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [task, setTask] = useState<TaskSnapshot>(DEFAULT_TASK);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isTauriRuntime()) {
+      setLoading(false);
+      return;
+    }
+
     let mounted = true;
 
     const loadBootstrap = async () => {
@@ -62,6 +71,10 @@ export function useAppBootstrap() {
   }, []);
 
   useEffect(() => {
+    if (!isTauriRuntime()) {
+      return;
+    }
+
     const unlistenPromise = listen<AppSettings>("settings-updated", (event) => {
       setSettings(event.payload);
     });
@@ -72,6 +85,10 @@ export function useAppBootstrap() {
   }, []);
 
   useEffect(() => {
+    if (!isTauriRuntime()) {
+      return;
+    }
+
     const unlistenPromise = listen<TranslationEvent>("translation-event", (event) => {
       setTask((current) => taskSnapshotFromEvent(event.payload, current));
     });
