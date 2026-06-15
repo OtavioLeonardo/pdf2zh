@@ -347,7 +347,7 @@ fn create_aux_window(
         return Ok(existing);
     }
 
-    let builder = WebviewWindowBuilder::new(app, label, WebviewUrl::default())
+    let builder = WebviewWindowBuilder::new(app, label, WebviewUrl::App("index.html".into()))
         .title(title)
         .inner_size(width, height)
         .min_inner_size(560.0, 460.0)
@@ -401,6 +401,15 @@ fn open_tutorial_window_internal(app: &AppHandle) -> Result<(), String> {
 
 fn open_history_window_internal(app: &AppHandle) -> Result<(), String> {
     create_aux_window(app, HISTORY_WINDOW_LABEL, "翻译历史", 860.0, 860.0, true).map(|_| ())
+}
+
+fn schedule_aux_window<F>(app: AppHandle, open_fn: F)
+where
+    F: Fn(&AppHandle) -> Result<(), String> + Send + 'static,
+{
+    tauri::async_runtime::spawn(async move {
+        let _ = open_fn(&app);
+    });
 }
 
 fn resolve_history_root(app: &AppHandle) -> Result<PathBuf, String> {
@@ -892,22 +901,26 @@ print(json.dumps({
 
 #[tauri::command]
 fn open_settings_window(app: AppHandle) -> Result<(), String> {
-    open_settings_window_internal(&app)
+    schedule_aux_window(app, open_settings_window_internal);
+    Ok(())
 }
 
 #[tauri::command]
 fn open_progress_window(app: AppHandle) -> Result<(), String> {
-    open_progress_window_internal(&app)
+    schedule_aux_window(app, open_progress_window_internal);
+    Ok(())
 }
 
 #[tauri::command]
 fn open_tutorial_window(app: AppHandle) -> Result<(), String> {
-    open_tutorial_window_internal(&app)
+    schedule_aux_window(app, open_tutorial_window_internal);
+    Ok(())
 }
 
 #[tauri::command]
 fn open_history_window(app: AppHandle) -> Result<(), String> {
-    open_history_window_internal(&app)
+    schedule_aux_window(app, open_history_window_internal);
+    Ok(())
 }
 
 #[tauri::command]
@@ -1431,13 +1444,13 @@ pub fn run() {
         .menu(|app| build_app_menu(app))
         .on_menu_event(|app, event| {
             if event.id().0 == SETTINGS_MENU_ID {
-                let _ = open_settings_window_internal(app);
+                schedule_aux_window(app.clone(), open_settings_window_internal);
             }
             if event.id().0 == HISTORY_MENU_ID {
-                let _ = open_history_window_internal(app);
+                schedule_aux_window(app.clone(), open_history_window_internal);
             }
             if event.id().0 == TUTORIAL_MENU_ID {
-                let _ = open_tutorial_window_internal(app);
+                schedule_aux_window(app.clone(), open_tutorial_window_internal);
             }
         })
         .setup(|app| {
