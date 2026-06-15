@@ -120,7 +120,24 @@ jobs:
         env:
           EXPECTED_VERSION: ${{ github.ref_name }}
         run: |
-          node -e "const fs=require('fs'); const expected=(process.env.EXPECTED_VERSION||'').replace(/^v/,''); const pkg=JSON.parse(fs.readFileSync('package.json','utf8')).version; const tauri=JSON.parse(fs.readFileSync('src-tauri/tauri.conf.json','utf8')).version; const cargo=fs.readFileSync('src-tauri/Cargo.toml','utf8').match(/^version = \"([^\"]+)\"/m)?.[1]; const versions={pkg,tauri,cargo}; const mismatched=Object.entries(versions).filter(([,v])=>v!==expected); if(mismatched.length){console.error('Tag/version mismatch', {expected, versions}); process.exit(1);} console.log('Verified release version', expected);"
+          @'
+          const fs = require("fs");
+          const expected = (process.env.EXPECTED_VERSION || "").replace(/^v/, "");
+          const pkg = JSON.parse(fs.readFileSync("package.json", "utf8")).version;
+          const tauri = JSON.parse(fs.readFileSync("src-tauri/tauri.conf.json", "utf8")).version;
+          const cargo = fs
+            .readFileSync("src-tauri/Cargo.toml", "utf8")
+            .match(/^version = "([^"]+)"/m)?.[1];
+          const versions = { pkg, tauri, cargo };
+          const mismatched = Object.entries(versions).filter(([, value]) => value !== expected);
+
+          if (mismatched.length) {
+            console.error("Tag/version mismatch", { expected, versions });
+            process.exit(1);
+          }
+
+          console.log("Verified release version", expected);
+          '@ | node
       - name: Install runtime tools
         run: choco install pandoc tectonic -y
       - name: Prepare runtime
