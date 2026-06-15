@@ -432,22 +432,103 @@ fn resolve_readme_path() -> Result<PathBuf, String> {
         return Ok(dev_path);
     }
 
-    if let Ok(exe_path) = std::env::current_exe() {
-        if let Some(exe_dir) = exe_path.parent() {
-            let candidates = [
-                exe_dir.join("resources").join(README_FILE_NAME),
-                exe_dir.join(README_FILE_NAME),
-            ];
+    for root in collect_resource_roots_from_exe() {
+        let candidates = [root.join(README_FILE_NAME), root.join("backend").join(README_FILE_NAME)];
 
-            for bundled_path in candidates {
-                if bundled_path.exists() {
-                    return Ok(bundled_path);
-                }
+        for bundled_path in candidates {
+            if bundled_path.exists() {
+                return Ok(bundled_path);
             }
         }
     }
 
     Err("Could not locate README.md".to_string())
+}
+
+fn push_existing_path(paths: &mut Vec<PathBuf>, candidate: PathBuf) {
+    if candidate.exists() && !paths.iter().any(|path| path == &candidate) {
+        paths.push(candidate);
+    }
+}
+
+fn collect_resource_roots_from_exe() -> Vec<PathBuf> {
+    let mut roots = Vec::new();
+
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(exe_dir) = exe_path.parent() {
+            let exe_dir = exe_dir.to_path_buf();
+            push_existing_path(&mut roots, exe_dir.clone());
+            push_existing_path(&mut roots, exe_dir.join("resources"));
+            push_existing_path(&mut roots, exe_dir.join("resources").join("_up_"));
+        }
+    }
+
+    roots
+}
+
+fn collect_resource_roots(app: &AppHandle) -> Vec<PathBuf> {
+    let mut roots = Vec::new();
+
+    if let Ok(resource_dir) = app.path().resource_dir() {
+        push_existing_path(&mut roots, resource_dir.clone());
+        push_existing_path(&mut roots, resource_dir.join("_up_"));
+    }
+
+    for root in collect_resource_roots_from_exe() {
+        push_existing_path(&mut roots, root);
+    }
+
+    roots
+}
+
+fn find_path_by_name(root: &Path, target_name: &str, max_depth: usize) -> Option<PathBuf> {
+    if !root.exists() {
+        return None;
+    }
+
+    let entries = fs::read_dir(root).ok()?;
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.file_name().and_then(|name| name.to_str()) == Some(target_name) {
+            return Some(path);
+        }
+
+        if max_depth > 0 && path.is_dir() {
+            if let Some(found) = find_path_by_name(&path, target_name, max_depth - 1) {
+                return Some(found);
+            }
+        }
+    }
+
+    None
+}
+
+fn find_runtime_dir(root: &Path, max_depth: usize) -> Option<PathBuf> {
+    if !root.exists() {
+        return None;
+    }
+
+    let entries = fs::read_dir(root).ok()?;
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.is_dir() {
+            let is_runtime_dir = path.file_name().and_then(|name| name.to_str()) == Some("runtime");
+            let looks_like_runtime =
+                path.join("python").exists() || path.join("bin").exists() || path.join("README.md").exists();
+
+            if is_runtime_dir && looks_like_runtime {
+                return Some(path);
+            }
+
+            if max_depth > 0 {
+                if let Some(found) = find_runtime_dir(&path, max_depth - 1) {
+                    return Some(found);
+                }
+            }
+        }
+    }
+
+    None
 }
 
 fn build_app_menu(app: &AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
@@ -537,15 +618,20 @@ fn resolve_backend_script(app: &AppHandle) -> Result<PathBuf, String> {
         return Ok(dev_path);
     }
 
-    let resource_candidate = app
-        .path()
-        .resource_dir()
-        .ok()
-        .map(|path| path.join("backend").join("translator_pipeline.py"));
+    for root in collect_resource_roots(app) {
+        let direct_candidates = [
+            root.join("backend").join("translator_pipeline.py"),
+            root.join("translator_pipeline.py"),
+        ];
 
-    if let Some(path) = resource_candidate {
-        if path.exists() {
-            return Ok(path);
+        for candidate in direct_candidates {
+            if candidate.exists() {
+                return Ok(candidate);
+            }
+        }
+
+        if let Some(found) = find_path_by_name(&root, "translator_pipeline.py", 4) {
+            return Ok(found);
         }
     }
 
@@ -585,15 +671,26 @@ fn resolve_runtime_root(app: &AppHandle) -> Option<PathBuf> {
         return Some(dev_candidate);
     }
 
-    let resource_candidate = app
-        .path()
-        .resource_dir()
-        .ok()
-        .map(|path| path.join("backend").join("runtime"));
+    for root in collect_resource_roots(app) {
+        let direct_candidates = [root.join("backend").join("runtime"), root.join("runtime")];
 
-    if let Some(path) = resource_candidate {
-        if path.exists() {
-            return Some(path);
+        for candidate in direct_candidates {
+            if candidate.exists() {
+                return Some(candidate);
+            }
+        }
+
+        if let Some(script_path) = find_path_by_name(&root, "translator_pipeline.py", 4) {
+            if let Some(script_dir) = script_path.parent() {
+                let sibling_runtime = script_dir.join("runtime");
+                if sibling_runtime.exists() {
+                    return Some(sibling_runtime);
+                }
+            }
+        }
+
+        if let Some(runtime_dir) = find_runtime_dir(&root, 4) {
+            return Some(runtime_dir);
         }
     }
 
@@ -613,6 +710,8 @@ fn resolve_python_binary(runtime_root: Option<&Path>) -> String {
         let candidates = [
             root.join("python").join("bin").join(binary_name("python3")),
             root.join("python").join("bin").join(binary_name("python")),
+            root.join("python").join(binary_name("python3")),
+            root.join("python").join(binary_name("python")),
             root.join("bin").join(binary_name("python3")),
             root.join("bin").join(binary_name("python")),
         ];
@@ -624,7 +723,15 @@ fn resolve_python_binary(runtime_root: Option<&Path>) -> String {
         }
     }
 
-    "python3".to_string()
+    #[cfg(target_os = "windows")]
+    {
+        "python".to_string()
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        "python3".to_string()
+    }
 }
 
 fn is_bundled_python_binary(python_bin: &str, runtime_root: &Path) -> bool {
