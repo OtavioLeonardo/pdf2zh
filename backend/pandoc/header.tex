@@ -3,9 +3,11 @@
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{multirow}
+\usepackage{fontspec}
 \usepackage{etoolbox}
 \usepackage{setspace}
 \defaultCJKfontfeatures{Scale=1.08}
+\defaultfontfeatures{Ligatures=TeX}
 \captionsetup{font=small,labelfont=bf}
 \KOMAoptions{
   parskip=half,
@@ -28,10 +30,53 @@
   beforeskip=0.8\baselineskip,
   afterskip=0.4\baselineskip
 ]{subsubsection}
-\IfFontExistsTF{Kaiti SC}{
-  \setCJKfamilyfont{pdfzhquote}{Kaiti SC}
+
+% Prefer common Windows system fonts, then fall back to bundled fonts.
+\IfFontExistsTF{Times New Roman}{
+  \setmainfont{Times New Roman}
 }{
-  \setCJKfamilyfont{pdfzhquote}{Songti SC}
+  \setmainfont{SourceSerif4-Regular}[
+    Path=fonts/,
+    Extension=.otf,
+    UprightFont=*,
+    BoldFont=SourceSerif4-Bold,
+    ItalicFont=SourceSerif4-It,
+    BoldItalicFont=SourceSerif4-BoldIt
+  ]
+}
+\setsansfont{SourceHanSansSC-Normal}[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=*,
+  BoldFont=SourceHanSansSC-Bold
+]
+\setmonofont{SourceSerif4-Regular}[
+  Path=fonts/,
+  Extension=.otf,
+  UprightFont=*,
+  BoldFont=SourceSerif4-Bold,
+  ItalicFont=SourceSerif4-It,
+  BoldItalicFont=SourceSerif4-BoldIt
+]
+\IfFontExistsTF{SimSun}{
+  \setCJKmainfont{SimSun}
+}{
+  \setCJKmainfont{SourceHanSerifSC-Regular}[
+    Path=fonts/,
+    Extension=.otf,
+    UprightFont=*,
+    BoldFont=SourceHanSerifSC-Bold
+  ]
+}
+\IfFontExistsTF{KaiTi}{
+  \setCJKfamilyfont{pdfzhquote}{KaiTi}
+}{
+  \setCJKfamilyfont{pdfzhquote}{LXGWWenKai-Regular}[
+    Path=fonts/,
+    Extension=.ttf,
+    UprightFont=*,
+    BoldFont=LXGWWenKai-Medium
+  ]
 }
 \AtBeginEnvironment{quote}{\CJKfamily{pdfzhquote}}
 \setlength{\parindent}{2em}

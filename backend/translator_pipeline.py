@@ -2113,12 +2113,14 @@ def render_pdf(markdown_path: Path, output_pdf: Path) -> Optional[str]:
         return "pandoc is not installed or not available in PATH."
 
     pdf_engine = resolve_runtime_binary("PDF2ZH_TECTONIC", "tectonic") or "tectonic"
+    resource_path = os.pathsep.join([str(markdown_path.parent), str(PANDOC_DEFAULTS.parent)])
 
     command = [
         pandoc_bin,
         str(markdown_path),
         "--defaults",
         str(PANDOC_DEFAULTS),
+        f"--resource-path={resource_path}",
         f"--pdf-engine={pdf_engine}",
         "--output",
         str(output_pdf),
@@ -2127,7 +2129,7 @@ def render_pdf(markdown_path: Path, output_pdf: Path) -> Optional[str]:
     try:
         subprocess.run(
             command,
-            cwd=str(markdown_path.parent),
+            cwd=str(PANDOC_DEFAULTS.parent),
             check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
