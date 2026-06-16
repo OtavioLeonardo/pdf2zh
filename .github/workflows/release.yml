@@ -37,8 +37,10 @@ jobs:
           PYTHON_HOME="$(dirname "$(dirname "$PYTHON_BIN")")"
           export PDF2ZH_BUNDLE_PANDOC="$(command -v pandoc)"
           export PDF2ZH_BUNDLE_TECTONIC="$(command -v tectonic)"
+          export PDF2ZH_BUNDLE_TECTONIC_CACHE="$RUNNER_TEMP/pdf2zh-tectonic-cache"
           export PDF2ZH_BUNDLE_PYTHON_HOME="$PYTHON_HOME"
           export PDF2ZH_RUNTIME_PYTHON="$PYTHON_BIN"
+          npm run runtime:prepare-tectonic-cache
           npm run runtime:prepare
       - name: Verify bundled runtime
         run: npm run runtime:verify
@@ -201,10 +203,12 @@ jobs:
           $pythonHome = Split-Path -Parent $pythonBin
           $env:PDF2ZH_BUNDLE_PANDOC = Get-NonShimCommandPath "pandoc.exe"
           $env:PDF2ZH_BUNDLE_TECTONIC = Get-NonShimCommandPath "tectonic.exe"
+          $env:PDF2ZH_BUNDLE_TECTONIC_CACHE = Join-Path $env:RUNNER_TEMP "pdf2zh-tectonic-cache"
           Write-Host "Resolved pandoc binary: $env:PDF2ZH_BUNDLE_PANDOC"
           Write-Host "Resolved tectonic binary: $env:PDF2ZH_BUNDLE_TECTONIC"
           $env:PDF2ZH_BUNDLE_PYTHON_HOME = $pythonHome
           $env:PDF2ZH_RUNTIME_PYTHON = $pythonBin
+          npm run runtime:prepare-tectonic-cache
           npm run runtime:prepare
       - name: Verify bundled runtime
         run: npm run runtime:verify

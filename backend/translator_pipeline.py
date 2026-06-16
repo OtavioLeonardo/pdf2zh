@@ -56,6 +56,8 @@ runtime_site_packages = os.environ.get("PDF2ZH_RUNTIME_SITE_PACKAGES", "").strip
 if runtime_site_packages and Path(runtime_site_packages).exists():
     sys.path.insert(0, runtime_site_packages)
 
+REQUIRE_BUNDLED_RUNTIME = os.environ.get("PDF2ZH_REQUIRE_BUNDLED_RUNTIME", "").strip() == "1"
+
 MINERU_DEBUG_LOG_PATH: Optional[Path] = None
 
 for stream_name in ("stdout", "stderr"):
@@ -2090,7 +2092,7 @@ def translate_segments_parallel(
     return [segment if segment is not None else "" for segment in translated_segments]
 
 
-def resolve_runtime_binary(env_key: str, fallback_name: str) -> Optional[str]:
+def resolve_runtime_binary(env_key: str, fallback_name: str, *, require_bundled: bool = False) -> Optional[str]:
     explicit = os.environ.get(env_key, "").strip()
     if explicit and Path(explicit).exists():
         return explicit
@@ -2104,16 +2106,54 @@ def resolve_runtime_binary(env_key: str, fallback_name: str) -> Optional[str]:
             if candidate.exists():
                 return str(candidate)
 
+    if require_bundled:
+        return None
+
     return shutil.which(fallback_name)
 
 
+def describe_binary(command: str) -> str:
+    try:
+        result = subprocess.run(
+            [command, "--version"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError, OSError):
+        return "unknown version"
+
+    first_line = (result.stdout.strip() or result.stderr.strip() or "").splitlines()
+    return first_line[0] if first_line else "unknown version"
+
+
 def render_pdf(markdown_path: Path, output_pdf: Path) -> Optional[str]:
-    pandoc_bin = resolve_runtime_binary("PDF2ZH_PANDOC", "pandoc")
+    pandoc_bin = resolve_runtime_binary("PDF2ZH_PANDOC", "pandoc", require_bundled=REQUIRE_BUNDLED_RUNTIME)
     if not pandoc_bin:
+        if REQUIRE_BUNDLED_RUNTIME:
+            return "Bundled pandoc runtime is missing from this release package."
         return "pandoc is not installed or not available in PATH."
 
-    pdf_engine = resolve_runtime_binary("PDF2ZH_TECTONIC", "tectonic") or "tectonic"
+    pdf_engine = resolve_runtime_binary("PDF2ZH_TECTONIC", "tectonic", require_bundled=REQUIRE_BUNDLED_RUNTIME)
+    if not pdf_engine:
+        if REQUIRE_BUNDLED_RUNTIME:
+            return "Bundled tectonic runtime is missing from this release package."
+        pdf_engine = "tectonic"
     resource_path = os.pathsep.join([str(markdown_path.parent), str(PANDOC_DEFAULTS.parent)])
+    tectonic_cache_dir = os.environ.get("TECTONIC_CACHE_DIR", "").strip()
+    offline_bundle = ""
+    if tectonic_cache_dir:
+        bundle_candidates = [
+            Path(tectonic_cache_dir) / "bundles" / "default_bundle",
+            Path(tectonic_cache_dir) / "bundles" / "default_bundle.tar",
+            Path(tectonic_cache_dir) / "bundles" / "default_bundle.zip",
+            Path(tectonic_cache_dir) / "bundles" / "default_bundle.ttb",
+        ]
+        for candidate in bundle_candidates:
+            if candidate.exists():
+                offline_bundle = candidate.resolve().as_uri()
+                break
 
     command = [
         pandoc_bin,
@@ -2122,22 +2162,43 @@ def render_pdf(markdown_path: Path, output_pdf: Path) -> Optional[str]:
         str(PANDOC_DEFAULTS),
         f"--resource-path={resource_path}",
         f"--pdf-engine={pdf_engine}",
+        "--pdf-engine-opt=--keep-logs",
         "--output",
         str(output_pdf),
     ]
+    if offline_bundle:
+        command.append(f"--pdf-engine-opt=--bundle={offline_bundle}")
+    if tectonic_cache_dir:
+        command.append("--pdf-engine-opt=--only-cached")
 
     try:
-        subprocess.run(
+        result = subprocess.run(
             command,
             cwd=str(PANDOC_DEFAULTS.parent),
             check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            env={
+                **os.environ,
+                **({"TECTONIC_CACHE_DIR": tectonic_cache_dir} if tectonic_cache_dir else {}),
+            },
         )
     except subprocess.CalledProcessError as error:
         details = error.stderr.strip() or error.stdout.strip()
-        return details or "Pandoc failed to render PDF."
+        diagnostics = [
+            f"pandoc: {pandoc_bin} ({describe_binary(pandoc_bin)})",
+            f"tectonic: {pdf_engine} ({describe_binary(pdf_engine)})",
+        ]
+        if tectonic_cache_dir:
+            diagnostics.append(f"tectonic cache: {tectonic_cache_dir}")
+        if offline_bundle:
+            diagnostics.append(f"tectonic bundle: {offline_bundle}")
+        detail_text = details or "Pandoc failed to render PDF."
+        return f"{detail_text}\n\nRuntime diagnostics:\n" + "\n".join(diagnostics)
+
+    if result.stderr.strip():
+        append_mineru_log(f"PDF render stderr: {result.stderr.strip()}")
 
     return None
 

@@ -5,12 +5,17 @@ const root = process.cwd();
 const runtimeRoot = path.join(root, "backend", "runtime");
 const runtimeBin = path.join(runtimeRoot, "bin");
 const runtimePython = path.join(runtimeRoot, "python");
+const runtimeTectonicCache = path.join(runtimeRoot, "tectonic-cache");
 
 function ensureDir(target) {
   fs.mkdirSync(target, { recursive: true });
 }
 
 function copyFileOrDir(source, destination) {
+  if (path.resolve(source) === path.resolve(destination)) {
+    return;
+  }
+
   const stat = fs.statSync(source);
 
   if (stat.isDirectory()) {
@@ -44,6 +49,7 @@ function maybeCopy(source, destination, label) {
 
 ensureDir(runtimeBin);
 ensureDir(runtimePython);
+ensureDir(runtimeTectonicCache);
 
 const copied = [];
 
@@ -65,6 +71,16 @@ if (
   )
 ) {
   copied.push("tectonic");
+}
+
+if (
+  maybeCopy(
+    process.env.PDF2ZH_BUNDLE_TECTONIC_CACHE,
+    runtimeTectonicCache,
+    "Tectonic cache seed",
+  )
+) {
+  copied.push("tectonic-cache");
 }
 
 if (

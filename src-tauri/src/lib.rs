@@ -23,6 +23,8 @@ const HISTORY_WINDOW_LABEL: &str = "history";
 const SETTINGS_FILE_NAME: &str = "settings.json";
 const README_FILE_NAME: &str = "README.md";
 const DEFAULT_MINERU_API_URL: &str = "https://mineru.net/api/v4/file-urls/batch";
+const TECTONIC_CACHE_SEED_DIR_NAME: &str = "tectonic-cache";
+const TECTONIC_CACHE_RUNTIME_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 struct AppState {
     running_task: Arc<Mutex<bool>>,
@@ -701,9 +703,13 @@ fn resolve_runtime_root(app: &AppHandle) -> Option<PathBuf> {
     None
 }
 
-fn resolve_python_binary(runtime_root: Option<&Path>) -> String {
+fn release_runtime_required() -> bool {
+    !cfg!(debug_assertions)
+}
+
+fn resolve_python_binary(runtime_root: Option<&Path>) -> Result<String, String> {
     if let Ok(path) = std::env::var("PDF2ZH_PYTHON") {
-        return path;
+        return Ok(path);
     }
 
     if let Some(root) = runtime_root {
@@ -718,19 +724,23 @@ fn resolve_python_binary(runtime_root: Option<&Path>) -> String {
 
         for candidate in candidates {
             if candidate.exists() {
-                return candidate.to_string_lossy().to_string();
+                return Ok(candidate.to_string_lossy().to_string());
             }
         }
     }
 
+    if release_runtime_required() {
+        return Err("Bundled Python runtime is missing from this release package.".to_string());
+    }
+
     #[cfg(target_os = "windows")]
     {
-        "python".to_string()
+        Ok("python".to_string())
     }
 
     #[cfg(not(target_os = "windows"))]
     {
-        "python3".to_string()
+        Ok("python3".to_string())
     }
 }
 
@@ -760,6 +770,89 @@ fn configure_python_command(command: &mut Command, runtime_root: Option<&Path>, 
             command.env("PYTHONHOME", bundled_python_home);
         }
     }
+
+    if release_runtime_required() {
+        command.env("PDF2ZH_REQUIRE_BUNDLED_RUNTIME", "1");
+    }
+}
+
+fn copy_dir_recursive(source: &Path, destination: &Path) -> Result<(), String> {
+    fs::create_dir_all(destination)
+        .map_err(|error| format!("Failed to create directory {}: {error}", destination.display()))?;
+
+    let entries = fs::read_dir(source)
+        .map_err(|error| format!("Failed to read directory {}: {error}", source.display()))?;
+
+    for entry in entries {
+        let entry = entry.map_err(|error| format!("Failed to read directory entry: {error}"))?;
+        let source_path = entry.path();
+        let destination_path = destination.join(entry.file_name());
+
+        if source_path.is_dir() {
+            copy_dir_recursive(&source_path, &destination_path)?;
+        } else {
+            if let Some(parent) = destination_path.parent() {
+                fs::create_dir_all(parent).map_err(|error| {
+                    format!("Failed to create directory {}: {error}", parent.display())
+                })?;
+            }
+            fs::copy(&source_path, &destination_path).map_err(|error| {
+                format!(
+                    "Failed to copy {} to {}: {error}",
+                    source_path.display(),
+                    destination_path.display()
+                )
+            })?;
+        }
+    }
+
+    Ok(())
+}
+
+fn ensure_tectonic_cache_dir(app: &AppHandle, runtime_root: Option<&Path>) -> Result<Option<PathBuf>, String> {
+    let Some(root) = runtime_root else {
+        return Ok(None);
+    };
+
+    let seed_dir = root.join(TECTONIC_CACHE_SEED_DIR_NAME);
+    if !seed_dir.exists() {
+        if release_runtime_required() {
+            return Err("Bundled Tectonic cache is missing from this release package.".to_string());
+        }
+        return Ok(None);
+    }
+
+    let app_cache_root = app
+        .path()
+        .app_cache_dir()
+        .map_err(|error| format!("Failed to resolve app cache directory: {error}"))?;
+    let cache_dir = app_cache_root
+        .join("tectonic")
+        .join(TECTONIC_CACHE_RUNTIME_VERSION);
+    let marker_path = cache_dir.join(".seed-version");
+    let marker_matches = fs::read_to_string(&marker_path)
+        .map(|value| value.trim() == TECTONIC_CACHE_RUNTIME_VERSION)
+        .unwrap_or(false);
+
+    if !marker_matches {
+        if cache_dir.exists() {
+            fs::remove_dir_all(&cache_dir).map_err(|error| {
+                format!(
+                    "Failed to refresh Tectonic cache directory {}: {error}",
+                    cache_dir.display()
+                )
+            })?;
+        }
+        copy_dir_recursive(&seed_dir, &cache_dir)?;
+        fs::write(&marker_path, TECTONIC_CACHE_RUNTIME_VERSION).map_err(|error| {
+            format!(
+                "Failed to write Tectonic cache marker {}: {error}",
+                marker_path.display()
+            )
+        })?;
+    }
+
+    Ok(Some(cache_dir))
 }
 
 fn read_lossy_line(reader: &mut BufReader<impl io::Read>) -> io::Result<Option<String>> {
@@ -838,11 +931,15 @@ fn run_python_service_test(
 ) -> Result<ServiceTestResult, String> {
     let script_path = resolve_backend_script(app)?;
     let runtime_root = resolve_runtime_root(app);
-    let python_bin = resolve_python_binary(runtime_root.as_deref());
+    let python_bin = resolve_python_binary(runtime_root.as_deref())?;
+    let tectonic_cache_dir = ensure_tectonic_cache_dir(app, runtime_root.as_deref())?;
 
     let mut command = Command::new(&python_bin);
     command.arg(&script_path);
     configure_python_command(&mut command, runtime_root.as_deref(), &python_bin);
+    if let Some(cache_dir) = tectonic_cache_dir {
+        command.env("TECTONIC_CACHE_DIR", cache_dir);
+    }
 
     let mut child = command
         .env("PDF2ZH_SERVICE_TEST", test_kind)
@@ -955,7 +1052,8 @@ fn test_mineru_connection(app: AppHandle, request: ServiceTestRequest) -> Result
 #[tauri::command]
 fn inspect_glossary_runtime(app: AppHandle) -> Result<GlossaryRuntimeStatus, String> {
     let runtime_root = resolve_runtime_root(&app);
-    let python_bin = resolve_python_binary(runtime_root.as_deref());
+    let python_bin = resolve_python_binary(runtime_root.as_deref())?;
+    let tectonic_cache_dir = ensure_tectonic_cache_dir(&app, runtime_root.as_deref())?;
     let script = r#"
 import importlib.util
 import json
@@ -999,6 +1097,9 @@ print(json.dumps({
     let mut command = Command::new(&python_bin);
     command.arg("-c").arg(script);
     configure_python_command(&mut command, runtime_root.as_deref(), &python_bin);
+    if let Some(cache_dir) = tectonic_cache_dir {
+        command.env("TECTONIC_CACHE_DIR", cache_dir);
+    }
 
     let output = command
         .output()
@@ -1217,7 +1318,8 @@ fn start_translation(
 
     let script_path = resolve_backend_script(&app)?;
     let runtime_root = resolve_runtime_root(&app);
-    let python_bin = resolve_python_binary(runtime_root.as_deref());
+    let python_bin = resolve_python_binary(runtime_root.as_deref())?;
+    let tectonic_cache_dir = ensure_tectonic_cache_dir(&app, runtime_root.as_deref())?;
     let task_id_for_thread = task_id.clone();
     let app_handle = app.clone();
     let state_handle = app.state::<AppState>();
@@ -1233,6 +1335,7 @@ fn start_translation(
             &python_bin,
             &script_path,
             runtime_root.clone(),
+            tectonic_cache_dir.clone(),
             payload_json,
         );
 
@@ -1309,7 +1412,8 @@ fn rerender_pdf(
 
     let script_path = resolve_backend_script(&app)?;
     let runtime_root = resolve_runtime_root(&app);
-    let python_bin = resolve_python_binary(runtime_root.as_deref());
+    let python_bin = resolve_python_binary(runtime_root.as_deref())?;
+    let tectonic_cache_dir = ensure_tectonic_cache_dir(&app, runtime_root.as_deref())?;
     let task_id_for_thread = task_id.clone();
     let app_handle = app.clone();
     let state_handle = app.state::<AppState>();
@@ -1325,6 +1429,7 @@ fn rerender_pdf(
             &python_bin,
             &script_path,
             runtime_root.clone(),
+            tectonic_cache_dir.clone(),
             payload_json,
         );
 
@@ -1428,11 +1533,15 @@ fn run_translation_process(
     python_bin: &str,
     script_path: &Path,
     runtime_root: Option<PathBuf>,
+    tectonic_cache_dir: Option<PathBuf>,
     payload_json: Value,
 ) -> Result<(), String> {
     let mut command = Command::new(python_bin);
     command.arg(script_path);
     configure_python_command(&mut command, runtime_root.as_deref(), python_bin);
+    if let Some(cache_dir) = tectonic_cache_dir {
+        command.env("TECTONIC_CACHE_DIR", cache_dir);
+    }
 
     let mut child = command
         .stdin(Stdio::piped())

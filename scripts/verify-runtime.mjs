@@ -8,6 +8,7 @@ const runtimeRoot = process.env.PDF2ZH_RUNTIME_ROOT
   : path.join(root, "backend", "runtime");
 const runtimeBin = path.join(runtimeRoot, "bin");
 const runtimePython = path.join(runtimeRoot, "python");
+const runtimeTectonicCache = path.join(runtimeRoot, "tectonic-cache");
 
 function firstExisting(paths) {
   const candidates = Array.isArray(paths) ? paths : [paths];
@@ -58,10 +59,18 @@ if (!tectonic) {
 if (!python) {
   throw new Error("Bundled Python interpreter was not prepared.");
 }
+if (!fs.existsSync(runtimeTectonicCache)) {
+  throw new Error("Bundled Tectonic cache seed was not prepared.");
+}
+const tectonicCacheEntries = fs.readdirSync(runtimeTectonicCache);
+if (tectonicCacheEntries.length === 0) {
+  throw new Error("Bundled Tectonic cache seed is empty.");
+}
 
 console.log(`Verified bundled Python: ${python}`);
 console.log(`Verified bundled pandoc: ${pandoc}`);
 console.log(`Verified bundled tectonic: ${tectonic}`);
+console.log(`Verified bundled Tectonic cache seed: ${runtimeTectonicCache}`);
 console.log(runChecked(python, ["--version"]));
 console.log(runChecked(pandoc, ["--version"]).split(/\r?\n/).slice(0, 2).join("\n"));
 console.log(runChecked(tectonic, ["--version"]));

@@ -42,6 +42,7 @@ npm run tauri dev
 
 - `pandoc`
 - `tectonic`
+- `tectonic` 离线缓存种子（用于 PDF 首次渲染时不联网）
 - `python` 运行时目录或 Python 可执行文件
 - `site-packages` 里的可选 Python 依赖，例如 `keybert`、`pyate`、`spacy`
 
@@ -50,10 +51,12 @@ npm run tauri dev
 ```bash
 export PDF2ZH_BUNDLE_PANDOC=/absolute/path/to/pandoc
 export PDF2ZH_BUNDLE_TECTONIC=/absolute/path/to/tectonic
+export PDF2ZH_BUNDLE_TECTONIC_CACHE=/absolute/path/to/tectonic-cache
 export PDF2ZH_BUNDLE_PYTHON_HOME=/absolute/path/to/python/home
 # 或者只提供 Python 可执行文件
 export PDF2ZH_BUNDLE_PYTHON_BIN=/absolute/path/to/python3
 
+npm run runtime:prepare-tectonic-cache
 npm run runtime:prepare
 ```
 
@@ -63,11 +66,15 @@ npm run runtime:prepare
 npm run runtime:python-deps
 ```
 
-脚本会把这些文件复制到 `backend/runtime/`，Tauri 打包时会自动带上。运行时解析顺序是：
+脚本会把这些文件复制到 `backend/runtime/`，Tauri 打包时会自动带上。
 
-1. 显式环境变量，例如 `PDF2ZH_PYTHON`
-2. 安装包里的 `backend/runtime`
-3. 系统 PATH
+运行时解析策略：
+
+1. 开发环境优先看显式环境变量，例如 `PDF2ZH_PYTHON`
+2. 然后尝试 `backend/runtime`
+3. 只有开发环境才会再回退系统 PATH
+
+Release 安装包不会再回退系统 PATH；如果内置 runtime 不完整，会直接报错。
 
 ## 必需环境
 
@@ -114,6 +121,8 @@ export PDF2ZH_PYTHON=/path/to/python3
 - 设置页提供“检测术语增强环境”按钮，可以检查当前运行时是否已经安装 `pyate / KeyBERT` 相关依赖。
 - 如果 `MinerU API` 响应里包含 `assets` 或 `images` 字段，脚本会尝试把图片资源写到导出目录的 `assets/` 中。
 - PDF 生成时会优先使用内置打包的 `pandoc / tectonic / python`，找不到才回退系统环境。
+- Release 安装包会强制使用内置打包的 `pandoc / tectonic / python / tectonic cache`，不再回退系统 PATH。
+- 只要安装包内置 runtime 完整，用户离线状态下也可以直接重排和导出 PDF。
 - PDF 生成失败时，仍会保留 `translated.md` 和 `translation_report.json`。
 
 ## 术语表预处理策略
