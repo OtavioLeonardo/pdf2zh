@@ -28,6 +28,55 @@ const samplePdf = path.join(buildDir, "sample.pdf");
 const defaultsFile = path.join(root, "backend", "pandoc", "defaults.yaml");
 const resourcePath = path.join(root, "backend", "pandoc");
 
+function runChecked(command, args, options = {}) {
+  const result = spawnSync(command, args, {
+    encoding: "utf8",
+    ...options,
+  });
+
+  if (result.error) {
+    throw result.error;
+  }
+  if (result.status !== 0) {
+    throw new Error(result.stderr || result.stdout || `${path.basename(command)} failed with exit code ${result.status}`);
+  }
+
+  return result.stdout.trim() || result.stderr.trim();
+}
+
+function copyDirRecursive(source, destination) {
+  fs.mkdirSync(destination, { recursive: true });
+
+  for (const entry of fs.readdirSync(source, { withFileTypes: true })) {
+    const sourcePath = path.join(source, entry.name);
+    const destinationPath = path.join(destination, entry.name);
+
+    if (entry.isDirectory()) {
+      copyDirRecursive(sourcePath, destinationPath);
+    } else {
+      fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
+      fs.copyFileSync(sourcePath, destinationPath);
+    }
+  }
+}
+
+function countFilesRecursive(target) {
+  if (!fs.existsSync(target)) {
+    return 0;
+  }
+
+  let count = 0;
+  for (const entry of fs.readdirSync(target, { withFileTypes: true })) {
+    const entryPath = path.join(target, entry.name);
+    if (entry.isDirectory()) {
+      count += countFilesRecursive(entryPath);
+    } else {
+      count += 1;
+    }
+  }
+  return count;
+}
+
 fs.writeFileSync(
   sampleMd,
   [
@@ -55,7 +104,7 @@ fs.writeFileSync(
   "utf8",
 );
 
-const result = spawnSync(
+runChecked(
   pandocBin,
   [
     sampleMd,
@@ -69,7 +118,6 @@ const result = spawnSync(
   ],
   {
     cwd: resourcePath,
-    encoding: "utf8",
     env: {
       ...process.env,
       TECTONIC_CACHE_DIR: resolvedCacheRoot,
@@ -77,11 +125,25 @@ const result = spawnSync(
   },
 );
 
-if (result.error) {
-  throw result.error;
+if (countFilesRecursive(resolvedCacheRoot) === 0) {
+  const defaultCacheRoot = runChecked(
+    tectonicBin,
+    ["-X", "show", "user-cache-dir"],
+    {
+      cwd: resourcePath,
+      env: {
+        ...process.env,
+      },
+    },
+  );
+
+  if (defaultCacheRoot && path.resolve(defaultCacheRoot) !== resolvedCacheRoot && fs.existsSync(defaultCacheRoot)) {
+    copyDirRecursive(defaultCacheRoot, resolvedCacheRoot);
+  }
 }
-if (result.status !== 0) {
-  throw new Error(result.stderr || result.stdout || `tectonic cache warmup failed with exit code ${result.status}`);
+
+if (countFilesRecursive(resolvedCacheRoot) === 0) {
+  throw new Error(`Prepared Tectonic cache seed is still empty at ${resolvedCacheRoot}`);
 }
 
 console.log(`Prepared bundled Tectonic cache seed at ${resolvedCacheRoot}`);

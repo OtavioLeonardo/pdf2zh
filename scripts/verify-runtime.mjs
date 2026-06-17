@@ -15,6 +15,23 @@ function firstExisting(paths) {
   return candidates.find((candidate) => candidate && fs.existsSync(candidate));
 }
 
+function countFilesRecursive(target) {
+  if (!fs.existsSync(target)) {
+    return 0;
+  }
+
+  let count = 0;
+  for (const entry of fs.readdirSync(target, { withFileTypes: true })) {
+    const entryPath = path.join(target, entry.name);
+    if (entry.isDirectory()) {
+      count += countFilesRecursive(entryPath);
+    } else {
+      count += 1;
+    }
+  }
+  return count;
+}
+
 function runChecked(command, args) {
   const result = spawnSync(command, args, {
     cwd: root,
@@ -65,6 +82,9 @@ if (!fs.existsSync(runtimeTectonicCache)) {
 const tectonicCacheEntries = fs.readdirSync(runtimeTectonicCache);
 if (tectonicCacheEntries.length === 0) {
   throw new Error("Bundled Tectonic cache seed is empty.");
+}
+if (countFilesRecursive(runtimeTectonicCache) === 0) {
+  throw new Error("Bundled Tectonic cache seed has no files.");
 }
 
 console.log(`Verified bundled Python: ${python}`);
