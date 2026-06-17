@@ -1,7 +1,7 @@
 {
   "name": "pdf2zh",
   "private": true,
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Desktop app for translating academic PDFs into Chinese Markdown and PDF with terminology-aware workflows.",
   "license": "MIT",
   "type": "module",
