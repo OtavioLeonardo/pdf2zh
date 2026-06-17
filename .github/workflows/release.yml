@@ -135,83 +135,32 @@ jobs:
           console.log("Verified release version", expected);
           '@ | node
       - name: Install runtime tools
-        run: choco install pandoc tectonic -y
+        shell: pwsh
+        run: |
+          choco install pandoc -y
+          $tectonicVersion = "0.16.9"
+          $tectonicArchive = "tectonic-$tectonicVersion-x86_64-pc-windows-msvc.zip"
+          $tectonicUrl = "https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%40$tectonicVersion/$tectonicArchive"
+          $tectonicRoot = Join-Path $env:RUNNER_TEMP "tectonic-$tectonicVersion"
+          $tectonicZip = Join-Path $env:RUNNER_TEMP $tectonicArchive
+          Invoke-WebRequest -Uri $tectonicUrl -OutFile $tectonicZip
+          if (Test-Path $tectonicRoot) {
+            Remove-Item $tectonicRoot -Recurse -Force
+          }
+          Expand-Archive -Path $tectonicZip -DestinationPath $tectonicRoot
+          $env:GITHUB_PATH | Out-File -Append -Encoding utf8 -InputObject $tectonicRoot
       - name: Prepare runtime
         shell: pwsh
         run: |
-          function Get-NonShimCommandPath([string]$name) {
-            $sources = @(Get-Command $name -All | Select-Object -ExpandProperty Source -Unique)
-            if ($sources.Count -eq 0) {
-              throw "Could not resolve command path for $name."
-            }
-
-            $shimRoot = if ($env:ChocolateyInstall) {
-              Join-Path $env:ChocolateyInstall "bin"
-            } else {
-              $null
-            }
-
-            $preferred = $sources | Where-Object {
-              -not $shimRoot -or -not $_.StartsWith($shimRoot, [System.StringComparison]::OrdinalIgnoreCase)
-            } | Select-Object -First 1
-
-            if ($preferred) {
-              return $preferred
-            }
-
-            $searchRoots = New-Object System.Collections.Generic.List[string]
-            $packageName = [System.IO.Path]::GetFileNameWithoutExtension($name)
-
-            if ($env:ChocolateyInstall) {
-              $searchRoots.Add((Join-Path $env:ChocolateyInstall "lib"))
-            }
-
-            foreach ($root in @(
-              $env:ProgramFiles,
-              ${env:ProgramFiles(x86)},
-              (Join-Path $env:LOCALAPPDATA "Programs")
-            )) {
-              if (-not $root) {
-                continue
-              }
-
-              $searchRoots.Add($root)
-
-              foreach ($subdir in @($packageName, (Get-Culture).TextInfo.ToTitleCase($packageName))) {
-                $candidateRoot = Join-Path $root $subdir
-                if (Test-Path $candidateRoot) {
-                  $searchRoots.Insert(0, $candidateRoot)
-                }
-              }
-            }
-
-            $candidate = $searchRoots |
-              Where-Object { $_ -and (Test-Path $_) } |
-              Select-Object -Unique |
-              ForEach-Object {
-                Get-ChildItem -Path $_ -Recurse -Filter $name -File -ErrorAction SilentlyContinue
-              } |
-              Where-Object {
-                -not $shimRoot -or -not $_.FullName.StartsWith($shimRoot, [System.StringComparison]::OrdinalIgnoreCase)
-              } |
-              Sort-Object FullName |
-              Select-Object -First 1
-
-            if ($candidate) {
-              return $candidate.FullName
-            }
-
-            throw "Resolved only Chocolatey shim paths for ${name}: $($sources -join ', ')"
-          }
-
           uv python install 3.12
           $pythonBin = uv python find 3.12
           $pythonHome = Split-Path -Parent $pythonBin
-          $env:PDF2ZH_BUNDLE_PANDOC = Get-NonShimCommandPath "pandoc.exe"
-          $env:PDF2ZH_BUNDLE_TECTONIC = Get-NonShimCommandPath "tectonic.exe"
+          $env:PDF2ZH_BUNDLE_PANDOC = (Get-Command pandoc.exe).Source
+          $env:PDF2ZH_BUNDLE_TECTONIC = (Get-Command tectonic.exe).Source
           $env:PDF2ZH_BUNDLE_TECTONIC_CACHE = Join-Path $PWD "backend/runtime/tectonic-cache"
           Write-Host "Resolved pandoc binary: $env:PDF2ZH_BUNDLE_PANDOC"
           Write-Host "Resolved tectonic binary: $env:PDF2ZH_BUNDLE_TECTONIC"
+          & $env:PDF2ZH_BUNDLE_TECTONIC --version
           $env:PDF2ZH_BUNDLE_PYTHON_HOME = $pythonHome
           $env:PDF2ZH_RUNTIME_PYTHON = $pythonBin
           npm run runtime:prepare-tectonic-cache
