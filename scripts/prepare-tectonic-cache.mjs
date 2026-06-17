@@ -8,6 +8,18 @@ const cacheRoot = process.env.PDF2ZH_BUNDLE_TECTONIC_CACHE;
 const tectonicBin = process.env.PDF2ZH_BUNDLE_TECTONIC;
 const pandocBin = process.env.PDF2ZH_BUNDLE_PANDOC;
 
+function log(message) {
+  console.log(`[prepare-tectonic-cache] ${message}`);
+}
+
+function quoteArg(arg) {
+  return /\s/.test(arg) ? JSON.stringify(arg) : arg;
+}
+
+function formatCommand(command, args) {
+  return [quoteArg(command), ...args.map(quoteArg)].join(" ");
+}
+
 if (!cacheRoot) {
   throw new Error("PDF2ZH_BUNDLE_TECTONIC_CACHE is required.");
 }
@@ -19,6 +31,12 @@ if (!pandocBin || !fs.existsSync(pandocBin)) {
 }
 
 const resolvedCacheRoot = path.resolve(cacheRoot);
+log(`root: ${root}`);
+log(`pandoc: ${pandocBin}`);
+log(`tectonic: ${tectonicBin}`);
+log(`cache root: ${resolvedCacheRoot}`);
+
+log("resetting cache directory");
 fs.rmSync(resolvedCacheRoot, { recursive: true, force: true });
 fs.mkdirSync(resolvedCacheRoot, { recursive: true });
 
@@ -29,8 +47,12 @@ const defaultsFile = path.join(root, "backend", "pandoc", "defaults.yaml");
 const resourcePath = path.join(root, "backend", "pandoc");
 
 function runChecked(command, args, options = {}) {
+  const startedAt = Date.now();
+  log(`running: ${formatCommand(command, args)}`);
+
   const result = spawnSync(command, args, {
     encoding: "utf8",
+    stdio: ["ignore", "inherit", "inherit"],
     ...options,
   });
 
@@ -41,7 +63,8 @@ function runChecked(command, args, options = {}) {
     throw new Error(result.stderr || result.stdout || `${path.basename(command)} failed with exit code ${result.status}`);
   }
 
-  return result.stdout.trim() || result.stderr.trim();
+  log(`finished in ${Date.now() - startedAt} ms`);
+  return result.stdout?.trim() || result.stderr?.trim();
 }
 
 function copyDirRecursive(source, destination) {
@@ -104,6 +127,10 @@ fs.writeFileSync(
   "utf8",
 );
 
+log(`wrote probe markdown: ${sampleMd}`);
+log(`probe pdf output: ${samplePdf}`);
+log("warming cache with pandoc + tectonic");
+
 runChecked(
   pandocBin,
   [
@@ -126,6 +153,7 @@ runChecked(
 );
 
 if (countFilesRecursive(resolvedCacheRoot) === 0) {
+  log("cache directory is still empty after render; checking tectonic default user cache");
   const defaultCacheRoot = runChecked(
     tectonicBin,
     ["-X", "show", "user-cache-dir"],
@@ -138,6 +166,7 @@ if (countFilesRecursive(resolvedCacheRoot) === 0) {
   );
 
   if (defaultCacheRoot && path.resolve(defaultCacheRoot) !== resolvedCacheRoot && fs.existsSync(defaultCacheRoot)) {
+    log(`copying existing cache from ${defaultCacheRoot}`);
     copyDirRecursive(defaultCacheRoot, resolvedCacheRoot);
   }
 }
@@ -146,4 +175,4 @@ if (countFilesRecursive(resolvedCacheRoot) === 0) {
   throw new Error(`Prepared Tectonic cache seed is still empty at ${resolvedCacheRoot}`);
 }
 
-console.log(`Prepared bundled Tectonic cache seed at ${resolvedCacheRoot}`);
+log(`prepared bundled Tectonic cache seed at ${resolvedCacheRoot}`);
