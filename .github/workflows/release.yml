@@ -148,7 +148,7 @@ jobs:
             Remove-Item $tectonicRoot -Recurse -Force
           }
           Expand-Archive -Path $tectonicZip -DestinationPath $tectonicRoot
-          $env:GITHUB_PATH | Out-File -Append -Encoding utf8 -InputObject $tectonicRoot
+          Add-Content -Path $env:GITHUB_PATH -Value $tectonicRoot
       - name: Prepare runtime
         shell: pwsh
         run: |
