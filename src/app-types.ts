@@ -8,6 +8,7 @@ export type Stage =
   | "rebuilding"
   | "rendering_pdf"
   | "completed"
+  | "cancelled"
   | "failed";
 
 export type TranslationRequest = {
@@ -21,6 +22,9 @@ export type TranslationRequest = {
   mineruApiKey?: string | null;
   outputDir: string;
   glossaryPath?: string | null;
+  enableTranslation?: boolean | null;
+  parallelTranslation?: boolean | null;
+  translationConcurrency?: number | null;
 };
 
 export type TranslationEvent = {
@@ -30,12 +34,14 @@ export type TranslationEvent = {
   progress: number;
   message: string;
   outputDir?: string;
+  rawMd?: string | null;
   translatedMd?: string;
   translatedPdf?: string | null;
   glossaryPath?: string | null;
   reportPath?: string;
   retriedSegments?: number;
   report?: Record<string, unknown>;
+  startedAt?: number | null;
 };
 
 export type AppSettings = {
@@ -61,6 +67,34 @@ export type ServiceTestResult = {
   message: string;
 };
 
+export type GlossaryRuntimeStatus = {
+  pyateAvailable: boolean;
+  spacyAvailable: boolean;
+  keybertAvailable: boolean;
+  sentenceTransformersAvailable: boolean;
+  recommendedReady: boolean;
+  message: string;
+};
+
+export type HistoryEntry = {
+  id: string;
+  title: string;
+  outputDir: string;
+  inputFile: string | null;
+  rawMd: string | null;
+  translatedMd: string | null;
+  translatedPdf: string | null;
+  reportPath: string | null;
+  mineruLogPath: string | null;
+  glossaryPath: string | null;
+  updatedAt: number;
+  startedAt: string | null;
+  provider: string | null;
+  model: string | null;
+  pdfGenerated: boolean;
+  statusLabel: string;
+};
+
 export type TaskSnapshot = {
   taskId: string | null;
   type: "status" | "result" | "error";
@@ -69,10 +103,13 @@ export type TaskSnapshot = {
   message: string;
   isRunning: boolean;
   outputDir: string | null;
+  rawMd: string | null;
   translatedMd: string | null;
   translatedPdf: string | null;
   reportPath: string | null;
   retriedSegments: number | null;
+  startedAt: number | null;
+  canRetry: boolean;
   updatedAt: number;
 };
 
@@ -96,9 +133,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
   provider: "openai",
   model: PROVIDER_MODELS.openai,
   apiKey: "",
-  glossaryStrategy: "hybrid",
+  glossaryStrategy: "llm_only",
   glossaryModel: PROVIDER_MODELS.openai,
-  mineruApiUrl: "",
+  mineruApiUrl: "https://mineru.net/api/v4/file-urls/batch",
   mineruApiKey: "",
 };
 
@@ -110,10 +147,13 @@ export const DEFAULT_TASK: TaskSnapshot = {
   message: "选择论文 PDF，然后点击开始翻译。",
   isRunning: false,
   outputDir: null,
+  rawMd: null,
   translatedMd: null,
   translatedPdf: null,
   reportPath: null,
   retriedSegments: null,
+  startedAt: null,
+  canRetry: false,
   updatedAt: 0,
 };
 
@@ -135,8 +175,8 @@ export const PROVIDER_MODEL_OPTIONS: Record<Provider, Array<{ label: string; val
 };
 
 export const GLOSSARY_STRATEGY_OPTIONS: Array<{ label: string; value: GlossaryStrategy }> = [
+  { label: "只用 LLM（默认）", value: "llm_only" },
   { label: "混合方案（KeyBERT + pyate + LLM）", value: "hybrid" },
-  { label: "只用 LLM", value: "llm_only" },
   { label: "只用 pyate", value: "pyate_only" },
   { label: "只用 KeyBERT", value: "keybert_only" },
 ];
@@ -159,20 +199,33 @@ export const STAGE_LABELS: Record<Stage, string> = {
   rebuilding: "回填结构",
   rendering_pdf: "生成 PDF",
   completed: "完成",
+  cancelled: "已取消",
   failed: "失败",
 };
+
+export function isTerminalStage(stage: Stage) {
+  return stage === "completed" || stage === "cancelled" || stage === "failed";
+}
+
+export function isTaskRunning(event: Pick<TranslationEvent, "type" | "stage">) {
+  return event.type !== "result" && event.type !== "error" && !isTerminalStage(event.stage);
+}
 
 export function deriveOutputDir(pdfPath: string) {
   const normalized = pdfPath.replace(/\\/g, "/");
   const lastSlash = normalized.lastIndexOf("/");
-  const folder = lastSlash >= 0 ? normalized.slice(0, lastSlash) : ".";
   const fileName = lastSlash >= 0 ? normalized.slice(lastSlash + 1) : normalized;
   const baseName = fileName.replace(/\.pdf$/i, "");
-  return `${folder}/${baseName}-translated`;
+  return `~/Documents/pdf2zh/${baseName}-translated`;
 }
 
-export function taskSnapshotFromEvent(event: TranslationEvent): TaskSnapshot {
-  const isRunning = event.type !== "result" && event.type !== "error" && event.stage !== "completed" && event.stage !== "failed";
+export function taskSnapshotFromEvent(event: TranslationEvent, previousTask?: TaskSnapshot | null): TaskSnapshot {
+  const isRunning = isTaskRunning(event);
+  const isSameTask = previousTask?.taskId != null && event.taskId != null && previousTask.taskId === event.taskId;
+  const startedAt = isSameTask
+    ? previousTask?.startedAt ?? event.startedAt ?? Date.now()
+    : event.startedAt ?? Date.now();
+  const canRetry = isTerminalStage(event.stage);
 
   return {
     taskId: event.taskId ?? null,
@@ -181,11 +234,14 @@ export function taskSnapshotFromEvent(event: TranslationEvent): TaskSnapshot {
     progress: event.progress,
     message: event.message,
     isRunning,
-    outputDir: event.outputDir ?? null,
-    translatedMd: event.translatedMd ?? null,
-    translatedPdf: event.translatedPdf ?? null,
-    reportPath: event.reportPath ?? null,
-    retriedSegments: event.retriedSegments ?? null,
+    outputDir: event.outputDir ?? (isSameTask ? previousTask?.outputDir ?? null : null),
+    rawMd: event.rawMd ?? (isSameTask ? previousTask?.rawMd ?? null : null),
+    translatedMd: event.translatedMd ?? (isSameTask ? previousTask?.translatedMd ?? null : null),
+    translatedPdf: event.translatedPdf ?? (isSameTask ? previousTask?.translatedPdf ?? null : null),
+    reportPath: event.reportPath ?? (isSameTask ? previousTask?.reportPath ?? null : null),
+    retriedSegments: event.retriedSegments ?? (isSameTask ? previousTask?.retriedSegments ?? null : null),
+    startedAt,
+    canRetry,
     updatedAt: Date.now(),
   };
 }

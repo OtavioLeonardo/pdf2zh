@@ -20,23 +20,31 @@ import {
   type AppSettings,
   type GlossaryStrategy,
   type Provider,
+  type GlossaryRuntimeStatus,
   GLOSSARY_STRATEGY_OPTIONS,
   PROVIDER_MODELS,
   PROVIDER_MODEL_OPTIONS,
 } from "../app-types";
-import { saveAppSettings, testLlmConnection, testMineruConnection, useAppBootstrap } from "../tauri-state";
+import { inspectGlossaryRuntime, saveAppSettings, testLlmConnection, testMineruConnection, useAppBootstrap } from "../tauri-state";
 import { SecretInput } from "../components/SecretInput";
+
+const DEFAULT_MINERU_API_URL = "https://mineru.net/api/v4/file-urls/batch";
 
 export function SettingsWindow() {
   const { loading, settings } = useAppBootstrap();
   const [draft, setDraft] = useState<AppSettings>(settings);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [saving, setSaving] = useState(false);
   const [testingLlm, setTestingLlm] = useState(false);
   const [testingMineru, setTestingMineru] = useState(false);
+  const [checkingGlossaryRuntime, setCheckingGlossaryRuntime] = useState(false);
+  const [glossaryRuntimeStatus, setGlossaryRuntimeStatus] = useState<GlossaryRuntimeStatus | null>(null);
 
   useEffect(() => {
-    setDraft(settings);
-  }, [settings]);
+    if (!hasUnsavedChanges) {
+      setDraft(settings);
+    }
+  }, [hasUnsavedChanges, settings]);
 
   const modelOptions = useMemo(() => PROVIDER_MODEL_OPTIONS[draft.provider], [draft.provider]);
   const glossaryModelOptions = useMemo(() => PROVIDER_MODEL_OPTIONS[draft.provider], [draft.provider]);
@@ -56,16 +64,18 @@ export function SettingsWindow() {
   async function handleSave() {
     setSaving(true);
     try {
-      await saveAppSettings(draft);
+      const savedSettings = await saveAppSettings(draft);
+      setDraft(savedSettings);
+      setHasUnsavedChanges(false);
       notifications.show({
-        color: "teal",
+        color: "appleBlue",
         title: "设置已保存",
         message: "主窗口和任务窗口已经同步到最新设置。",
         icon: <IconCheck size={16} />,
       });
     } catch (error) {
       notifications.show({
-        color: "red",
+        color: "dark",
         title: "保存失败",
         message: error instanceof Error ? error.message : String(error),
       });
@@ -79,14 +89,14 @@ export function SettingsWindow() {
     try {
       const result = await testLlmConnection(draft);
       notifications.show({
-        color: "teal",
+        color: "appleBlue",
         title: "LLM API 测试成功",
         message: result.message,
         icon: <IconCheck size={16} />,
       });
     } catch (error) {
       notifications.show({
-        color: "red",
+        color: "dark",
         title: "LLM API 测试失败",
         message: error instanceof Error ? error.message : String(error),
       });
@@ -100,19 +110,41 @@ export function SettingsWindow() {
     try {
       const result = await testMineruConnection(draft);
       notifications.show({
-        color: "teal",
+        color: "appleBlue",
         title: "MinerU 测试成功",
         message: result.message,
         icon: <IconCheck size={16} />,
       });
     } catch (error) {
       notifications.show({
-        color: "red",
+        color: "dark",
         title: "MinerU 测试失败",
         message: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setTestingMineru(false);
+    }
+  }
+
+  async function handleInspectGlossaryRuntime() {
+    setCheckingGlossaryRuntime(true);
+    try {
+      const result = await inspectGlossaryRuntime();
+      setGlossaryRuntimeStatus(result);
+      notifications.show({
+        color: result.recommendedReady ? "appleBlue" : "gray",
+        title: result.recommendedReady ? "术语增强环境已就绪" : "术语增强环境未完全就绪",
+        message: result.message,
+        icon: <IconCheck size={16} />,
+      });
+    } catch (error) {
+      notifications.show({
+        color: "dark",
+        title: "检测失败",
+        message: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setCheckingGlossaryRuntime(false);
     }
   }
 
@@ -122,7 +154,7 @@ export function SettingsWindow() {
         <Stack gap="lg">
           <Box className="window-page-header">
             <Group gap="sm">
-              <ThemeIcon size={42} radius="xl" color="teal">
+              <ThemeIcon size={42} radius="xl" color="appleBlue" variant="light">
                 <IconSettings2 size={22} />
               </ThemeIcon>
               <Box>
@@ -144,7 +176,8 @@ export function SettingsWindow() {
               ]}
               value={draft.provider}
               disabled={loading}
-              onChange={(value) =>
+              onChange={(value) => {
+                setHasUnsavedChanges(true);
                 setDraft((current) => {
                   const provider = (value as Provider | null) ?? "openai";
                   return {
@@ -153,8 +186,8 @@ export function SettingsWindow() {
                     model: PROVIDER_MODELS[provider],
                     glossaryModel: PROVIDER_MODELS[provider],
                   };
-                })
-              }
+                });
+              }}
             />
 
             <Select
@@ -165,18 +198,32 @@ export function SettingsWindow() {
               allowDeselect={false}
               searchable
               nothingFoundMessage="没有匹配的模型"
-              onChange={(value) =>
-                setDraft((current) => ({ ...current, model: value ?? PROVIDER_MODELS[current.provider] }))
-              }
+              onChange={(value) => {
+                setHasUnsavedChanges(true);
+                setDraft((current) => ({ ...current, model: value ?? PROVIDER_MODELS[current.provider] }));
+              }}
             />
 
             <SecretInput
               label="模型 API Key"
               placeholder="填写 OpenAI、Claude 或 DeepSeek 的 API Key"
+              helpTitle="去哪里申请模型 API Key？"
+              helpDescription="选择你正在使用的模型提供方，在对应控制台创建 API Key 后粘贴到这里。"
+              helpSteps={[
+                "DeepSeek：打开 DeepSeek 开放平台，登录后进入 API Keys 创建密钥。",
+                "OpenAI / Claude：分别到 OpenAI Platform 或 Anthropic Console 的 API Keys 页面创建。",
+                "创建后建议只复制一次并妥善保存，之后可以回到这里测试 LLM API。",
+              ]}
+              helpLinks={[
+                { label: "打开 DeepSeek API Keys", url: "https://platform.deepseek.com/api_keys" },
+                { label: "打开 OpenAI API Keys", url: "https://platform.openai.com/api-keys" },
+                { label: "打开 Anthropic Console", url: "https://console.anthropic.com/settings/keys" },
+              ]}
               value={draft.apiKey}
               disabled={loading}
               onChange={(event) => {
                 const value = event.currentTarget.value;
+                setHasUnsavedChanges(true);
                 setDraft((current) => ({ ...current, apiKey: value }));
               }}
             />
@@ -200,17 +247,18 @@ export function SettingsWindow() {
 
             <Select
               label="术语预处理方案"
-              description="默认是混合方案，现代语义和术语约束会一起用。"
+              description="默认使用 LLM 术语预处理；需要更强术语增强时，可切换到混合方案或单独方案。"
               data={GLOSSARY_STRATEGY_OPTIONS}
               value={draft.glossaryStrategy}
               disabled={loading}
               allowDeselect={false}
-              onChange={(value) =>
+              onChange={(value) => {
+                setHasUnsavedChanges(true);
                 setDraft((current) => ({
                   ...current,
-                  glossaryStrategy: (value as GlossaryStrategy | null) ?? "hybrid",
-                }))
-              }
+                  glossaryStrategy: (value as GlossaryStrategy | null) ?? "llm_only",
+                }));
+              }}
             />
 
             <Select
@@ -222,13 +270,35 @@ export function SettingsWindow() {
               allowDeselect={false}
               searchable
               nothingFoundMessage="没有匹配的模型"
-              onChange={(value) =>
+              onChange={(value) => {
+                setHasUnsavedChanges(true);
                 setDraft((current) => ({
                   ...current,
                   glossaryModel: value ?? PROVIDER_MODELS[current.provider],
-                }))
-              }
-            />
+                }));
+              }}
+              />
+
+            <Group justify="space-between" align="center">
+              <Text size="sm" c="dimmed">
+                只有需要更强术语抽取时才建议安装 pyate / KeyBERT。
+              </Text>
+              <Button
+                variant="light"
+                leftSection={checkingGlossaryRuntime ? <Loader size={14} /> : <IconPlugConnected size={16} />}
+                loading={checkingGlossaryRuntime}
+                disabled={loading}
+                onClick={() => void handleInspectGlossaryRuntime()}
+              >
+                检测术语增强环境
+              </Button>
+            </Group>
+
+            {glossaryRuntimeStatus ? (
+              <Text size="sm" c={glossaryRuntimeStatus.recommendedReady ? "green" : "dimmed"}>
+                {glossaryRuntimeStatus.message}
+              </Text>
+            ) : null}
 
             <Divider />
 
@@ -240,6 +310,7 @@ export function SettingsWindow() {
               disabled={loading}
               onChange={(event) => {
                 const value = event.currentTarget.value;
+                setHasUnsavedChanges(true);
                 setDraft((current) => ({ ...current, mineruApiUrl: value }));
               }}
             />
@@ -247,10 +318,19 @@ export function SettingsWindow() {
             <SecretInput
               label="MinerU API Key"
               placeholder="填写 MinerU API 管理页面创建的 Token"
+              helpTitle="去哪里申请 MinerU API Key？"
+              helpDescription={`默认接口地址就是 ${DEFAULT_MINERU_API_URL}，通常不需要修改。`}
+              helpSteps={[
+                "打开 MinerU 官网并登录账号。",
+                "进入 API 管理、开发者或 Token 页面，创建一个新的 API Token。",
+                "把 Token 粘贴到这里，再点击下方“测试 MinerU”确认可用。",
+              ]}
+              helpLinks={[{ label: "打开 MinerU 官网", url: "https://mineru.net" }]}
               value={draft.mineruApiKey}
               disabled={loading}
               onChange={(event) => {
                 const value = event.currentTarget.value;
+                setHasUnsavedChanges(true);
                 setDraft((current) => ({ ...current, mineruApiKey: value }));
               }}
             />
