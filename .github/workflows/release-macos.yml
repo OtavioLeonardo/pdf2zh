@@ -1,0 +1,116 @@
+name: Release macOS arm64
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Setup Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+
+      - name: Validate version consistency
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: node scripts/sync-version.mjs --check
+
+      - name: Verify bundled runtime resources
+        run: |
+          test -f backend/runtime/bin/typst
+          test -d backend/runtime/fonts
+          test -d backend/runtime/python
+          test -d backend/runtime/typst
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Build Tauri app bundle
+        run: npx tauri build --target aarch64-apple-darwin --bundles app,dmg
+
+      - name: Prepare release assets and notes
+        id: prepare
+        env:
+          APP_VERSION: ${{ github.ref_name }}
+        run: |
+          node scripts/generate-release-notes.mjs --output release-notes.generated.md
+          VERSION="${APP_VERSION#v}"
+          PRODUCT_NAME="PDF2ZH"
+          ARCH_SUFFIX="aarch64"
+          BUNDLE_DIR="src-tauri/target/aarch64-apple-darwin/release/bundle"
+          DMG_SOURCE="$(find "$BUNDLE_DIR/dmg" -maxdepth 1 -type f -name '*.dmg' | head -n 1)"
+          APP_SOURCE="$(find "$BUNDLE_DIR/macos" -maxdepth 1 -type d -name '*.app' | head -n 1)"
+          APP_ARCHIVE_SOURCE="$(find "$BUNDLE_DIR/macos" -maxdepth 1 -type f \( -name '*.app.tar.gz' -o -name '*.zip' \) | head -n 1)"
+
+          if [ -z "$DMG_SOURCE" ]; then
+            echo "No DMG artifact found in $BUNDLE_DIR/dmg" >&2
+            exit 1
+          fi
+
+          RELEASE_DMG="${PRODUCT_NAME}_${VERSION}_${ARCH_SUFFIX}.dmg"
+          RELEASE_APP_ZIP="${PRODUCT_NAME}_${VERSION}_${ARCH_SUFFIX}.app.zip"
+
+          cp "$DMG_SOURCE" "$RELEASE_DMG"
+
+          if [ -n "$APP_SOURCE" ]; then
+            ditto -c -k --sequesterRsrc --keepParent "$APP_SOURCE" "$RELEASE_APP_ZIP"
+          elif [ -n "$APP_ARCHIVE_SOURCE" ]; then
+            TEMP_DIR="$(mktemp -d)"
+            case "$APP_ARCHIVE_SOURCE" in
+              *.zip)
+                ditto -x -k "$APP_ARCHIVE_SOURCE" "$TEMP_DIR"
+                ;;
+              *.tar.gz)
+                tar -xzf "$APP_ARCHIVE_SOURCE" -C "$TEMP_DIR"
+                ;;
+              *)
+                echo "Unsupported app archive format: $APP_ARCHIVE_SOURCE" >&2
+                exit 1
+                ;;
+            esac
+
+            EXTRACTED_APP="$(find "$TEMP_DIR" -maxdepth 2 -type d -name '*.app' | head -n 1)"
+            if [ -z "$EXTRACTED_APP" ]; then
+              echo "Could not find .app bundle after extracting $APP_ARCHIVE_SOURCE" >&2
+              exit 1
+            fi
+
+            ditto -c -k --sequesterRsrc --keepParent "$EXTRACTED_APP" "$RELEASE_APP_ZIP"
+          else
+            echo "No app bundle or app archive found in $BUNDLE_DIR/macos" >&2
+            exit 1
+          fi
+
+          {
+            echo "release_dmg=$RELEASE_DMG"
+            echo "release_app_zip=$RELEASE_APP_ZIP"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release and upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          name: PDF2ZH ${{ github.ref_name }}
+          body_path: release-notes.generated.md
+          files: |
+            ${{ steps.prepare.outputs.release_dmg }}
+            ${{ steps.prepare.outputs.release_app_zip }}
