@@ -75,12 +75,14 @@ struct TranslationRequest {
     enable_translation: Option<bool>,
     parallel_translation: Option<bool>,
     translation_concurrency: Option<u8>,
+    table_mode: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct PdfRerenderRequest {
     output_dir: String,
+    table_mode: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -111,6 +113,7 @@ struct AppSettings {
     glossary_model: String,
     mineru_api_url: String,
     mineru_api_key: String,
+    typst_table_mode: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -180,6 +183,7 @@ impl Default for AppSettings {
             glossary_model: "gpt-5.4-mini".to_string(),
             mineru_api_url: DEFAULT_MINERU_API_URL.to_string(),
             mineru_api_key: String::new(),
+            typst_table_mode: "render".to_string(),
         }
     }
 }
@@ -256,6 +260,9 @@ fn load_settings(app: &AppHandle) -> AppSettings {
     let mut settings: AppSettings = serde_json::from_str(&raw).unwrap_or_default();
     if settings.mineru_api_url.trim().is_empty() {
         settings.mineru_api_url = DEFAULT_MINERU_API_URL.to_string();
+    }
+    if settings.typst_table_mode.trim().is_empty() {
+        settings.typst_table_mode = "render".to_string();
     }
     settings
 }
@@ -1262,6 +1269,7 @@ fn start_translation(
         "enableTranslation": request.enable_translation.unwrap_or(true),
         "parallelTranslation": request.parallel_translation.unwrap_or(false),
         "translationConcurrency": request.translation_concurrency.unwrap_or(3),
+        "tableMode": request.table_mode,
     });
 
     let script_path = resolve_backend_script(&app)?;
@@ -1357,6 +1365,7 @@ fn rerender_pdf(
         "taskId": task_id,
         "mode": "rerender_pdf",
         "outputDir": request.output_dir,
+        "tableMode": request.table_mode,
     });
 
     let script_path = resolve_backend_script(&app)?;

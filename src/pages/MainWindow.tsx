@@ -231,6 +231,7 @@ export function MainWindow() {
           enableTranslation,
           parallelTranslation: enableTranslation ? parallelTranslation : false,
           translationConcurrency: enableTranslation && parallelTranslation ? Number(translationConcurrency) : 1,
+          tableMode: settings.typstTableMode,
         } satisfies TranslationRequest,
       });
 

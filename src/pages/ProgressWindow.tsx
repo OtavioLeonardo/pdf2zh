@@ -73,7 +73,7 @@ function formatRelative(ms: number) {
 }
 
 export function ProgressWindow() {
-  const { task } = useAppBootstrap();
+  const { task, settings } = useAppBootstrap();
   const [now, setNow] = useState(Date.now());
   const [cancelling, setCancelling] = useState(false);
   const [rerendering, setRerendering] = useState(false);
@@ -138,7 +138,7 @@ export function ProgressWindow() {
 
     setRerendering(true);
     try {
-      await rerenderPdf(task.outputDir);
+      await rerenderPdf(task.outputDir, settings.typstTableMode);
       notifications.show({
         color: "appleBlue",
         title: "已开始重新生成 PDF",

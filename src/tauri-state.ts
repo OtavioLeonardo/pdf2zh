@@ -129,8 +129,8 @@ export async function openTutorialWindow() {
   await invoke("open_tutorial_window");
 }
 
-export async function rerenderPdf(outputDir: string) {
-  return invoke<string>("rerender_pdf", { request: { outputDir } });
+export async function rerenderPdf(outputDir: string, tableMode?: "render" | "image") {
+  return invoke<string>("rerender_pdf", { request: { outputDir, tableMode } });
 }
 
 export async function cancelTranslation() {

@@ -1,5 +1,6 @@
 export type Provider = "openai" | "claude" | "deepseek";
 export type GlossaryStrategy = "hybrid" | "llm_only" | "pyate_only" | "keybert_only";
+export type TypstTableMode = "render" | "image";
 export type Stage =
   | "queued"
   | "extracting"
@@ -25,6 +26,7 @@ export type TranslationRequest = {
   enableTranslation?: boolean | null;
   parallelTranslation?: boolean | null;
   translationConcurrency?: number | null;
+  tableMode?: TypstTableMode | null;
 };
 
 export type TranslationEvent = {
@@ -53,6 +55,7 @@ export type AppSettings = {
   glossaryModel: string;
   mineruApiUrl: string;
   mineruApiKey: string;
+  typstTableMode: TypstTableMode;
 };
 
 export type ServiceTestRequest = {
@@ -140,6 +143,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   glossaryModel: PROVIDER_MODELS.openai,
   mineruApiUrl: "https://mineru.net/api/v4/file-urls/batch",
   mineruApiKey: "",
+  typstTableMode: "render",
 };
 
 export const DEFAULT_TASK: TaskSnapshot = {
@@ -183,6 +187,11 @@ export const GLOSSARY_STRATEGY_OPTIONS: Array<{ label: string; value: GlossarySt
   { label: "混合方案（KeyBERT + pyate + LLM）", value: "hybrid" },
   { label: "只用 pyate", value: "pyate_only" },
   { label: "只用 KeyBERT", value: "keybert_only" },
+];
+
+export const TYPST_TABLE_MODE_OPTIONS: Array<{ label: string; value: TypstTableMode }> = [
+  { label: "渲染表格", value: "render" },
+  { label: "表格转图片", value: "image" },
 ];
 
 export const STAGE_ORDER: Stage[] = [

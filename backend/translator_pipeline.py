@@ -53,6 +53,8 @@ GLOSSARY_STOP_TERMS = {
 TYPST_TEMPLATE_ROOT = ROOT_DIR / "runtime" / "typst" / "templates"
 TYPST_DEFAULT_TEMPLATE = "pdf2zh-paper"
 TYPST_WILDCARD_WARN_LIMIT = 20
+DEFAULT_TYPST_TABLE_MODE = "render"
+TABLE_PLACEHOLDER_PREFIX = "[[[PDF2ZH_COMPLEX_TABLE_"
 
 runtime_site_packages = os.environ.get("PDF2ZH_RUNTIME_SITE_PACKAGES", "").strip()
 if runtime_site_packages and Path(runtime_site_packages).exists():
@@ -105,6 +107,26 @@ def read_service_test_payload() -> dict:
         return json.loads(raw)
     except json.JSONDecodeError as error:
         raise RuntimeError(f"Invalid service test payload JSON: {error}")
+
+
+def normalize_typst_table_mode(value: object) -> str:
+    normalized = str(value or "").strip().lower()
+    if normalized in {"image", "render"}:
+        return normalized
+    return DEFAULT_TYPST_TABLE_MODE
+
+
+def current_typst_table_mode() -> str:
+    return normalize_typst_table_mode(os.environ.get("PDF2ZH_TYPST_TABLE_MODE", DEFAULT_TYPST_TABLE_MODE))
+
+
+def normalize_asset_relative_path(path_value: str) -> str:
+    normalized = path_value.strip().replace("\\", "/")
+    if not normalized:
+        return normalized
+    if normalized.startswith(("http://", "https://", "data:", "/", "assets/")):
+        return normalized
+    return f"assets/{normalized}"
 
 
 def ensure_dir(path: Path) -> Path:
@@ -766,6 +788,53 @@ def convert_html_table_to_markdown(table_html: str) -> Optional[str]:
     return "\n".join([format_row(header), format_row(separator)] + [format_row(row) for row in body]).strip()
 
 
+def render_html_table_to_typst_markup(table_html: str, warnings: List[str]) -> Optional[str]:
+    grid = build_table_grid(table_html)
+    if not grid:
+        return None
+
+    column_count = max((len(row) for row in grid), default=0)
+    if column_count == 0:
+        return None
+
+    row_matches = re.findall(r"(?is)<tr\b[^>]*>(.*?)</tr>", table_html)
+    rendered_cells: List[str] = []
+
+    for row_html in row_matches:
+        for cell in extract_table_cells(row_html):
+            text = strip_html_tags(str(cell.get("text") or "")).strip()
+            content = render_typst_markup_text(text, warnings) if text else ""
+            rowspan = int(cell.get("rowspan") or 1)
+            colspan = int(cell.get("colspan") or 1)
+            args: List[str] = []
+            if rowspan > 1:
+                args.append(f"rowspan: {rowspan}")
+            if colspan > 1:
+                args.append(f"colspan: {colspan}")
+
+            if args:
+                rendered_cells.append(f"table.cell({', '.join(args)})[{content}]")
+            else:
+                rendered_cells.append(f"[{content}]")
+
+    if not rendered_cells:
+        return None
+
+    body = ",\n  ".join(rendered_cells)
+    return f"#table(\n  columns: {column_count},\n  {body}\n)"
+
+
+def make_complex_table_placeholder(body: str, caption: str, image_path: str, footnote: str) -> str:
+    payload = {
+        "html": body,
+        "caption": caption,
+        "image_path": image_path,
+        "footnote": footnote,
+    }
+    encoded = base64.urlsafe_b64encode(json.dumps(payload, ensure_ascii=False).encode("utf-8")).decode("ascii")
+    return f"{TABLE_PLACEHOLDER_PREFIX}{encoded}]]]"
+
+
 def render_mineru_structured_block(item: dict) -> str:
     item_type = str(item.get("type") or "").strip()
 
@@ -795,8 +864,8 @@ def render_mineru_structured_block(item: dict) -> str:
         latex_table = None
         if not rendered_table and not complex_html_table and isinstance(body, str) and body.strip():
             latex_table = convert_html_table_to_latex(body)
-        if complex_html_table and image_path:
-            parts.append(markdown_image_from_path(image_path, caption or "table"))
+        if complex_html_table and isinstance(body, str) and body.strip():
+            parts.append(make_complex_table_placeholder(body.strip(), caption, image_path, footnote))
         elif rendered_table:
             parts.append(rendered_table)
         elif latex_table:
@@ -1681,7 +1750,7 @@ def render_typst_markup_text(text: str, warnings: List[str]) -> str:
 
 
 def render_typst_image(path_value: str, alt: str, warnings: List[str], caption: Optional[str] = None) -> str:
-    image_path = typst_escape_string(path_value)
+    image_path = typst_escape_string(normalize_asset_relative_path(path_value))
     body = f'image("{image_path}", width: 100%)'
     if caption and caption.strip():
         caption_text = render_typst_markup_text(caption.strip(), warnings)
@@ -1728,6 +1797,45 @@ def render_typst_table(block: str, warnings: List[str]) -> str:
     if row_lines:
         body = f"{body},\n  {row_lines}"
     return f"#table(\n  {body}\n)"
+
+
+def render_typst_complex_table_placeholder(block: str, warnings: List[str]) -> str:
+    match = re.match(r"^\[\[\[PDF2ZH_COMPLEX_TABLE_(.+)\]\]\]$", block.strip())
+    if not match:
+        return render_typst_fallback_block(block, warnings)
+
+    try:
+        payload = json.loads(base64.urlsafe_b64decode(match.group(1).encode("ascii")).decode("utf-8"))
+    except Exception:
+        warnings.append("Failed to decode complex table placeholder; downgraded to raw text.")
+        return render_typst_fallback_block(block, warnings)
+
+    html_table = str(payload.get("html") or "").strip()
+    caption = str(payload.get("caption") or "").strip()
+    image_path = str(payload.get("image_path") or "").strip()
+    footnote = str(payload.get("footnote") or "").strip()
+
+    parts: List[str] = []
+    if caption:
+        parts.append(render_typst_paragraph(caption, warnings))
+
+    if current_typst_table_mode() == "image" and image_path:
+        parts.append(render_typst_image(image_path, caption or "table", warnings, caption=caption or None))
+    else:
+        rendered = render_html_table_to_typst_markup(html_table, warnings) if html_table else None
+        if rendered:
+            parts.append(rendered)
+        elif image_path:
+            warnings.append("Complex table render failed; used image fallback.")
+            parts.append(render_typst_image(image_path, caption or "table", warnings, caption=caption or None))
+        else:
+            warnings.append("Complex table render failed without image fallback; downgraded to raw text.")
+            parts.append(render_typst_fallback_block(html_table or block, warnings))
+
+    if footnote:
+        parts.append(render_typst_paragraph(footnote, warnings))
+
+    return "\n\n".join(part for part in parts if part)
 
 
 def render_typst_code_block(block: str) -> str:
@@ -1797,6 +1905,23 @@ def render_typst_paragraph(block: str, warnings: List[str]) -> str:
     return render_typst_markup_text(block.strip(), warnings)
 
 
+def is_raw_typst_block(block: str) -> bool:
+    stripped = block.strip()
+    return stripped.startswith("#table(") or stripped.startswith("#figure(") or stripped.startswith("#image(")
+
+
+def normalize_legacy_raw_typst_block(block: str) -> str:
+    stripped = block.strip()
+    if stripped.startswith("#table("):
+        stripped = stripped.replace("#table.cell(", "table.cell(")
+    stripped = re.sub(
+        r'image\("((?!https?://|data:|/|assets/)[^"]+)"',
+        lambda match: 'image("' + normalize_asset_relative_path(match.group(1)) + '"',
+        stripped,
+    )
+    return stripped
+
+
 def render_typst_math_block(block: str) -> str:
     inner = block.strip()[2:-2].strip() if block.strip().startswith("$$") and block.strip().endswith("$$") else block.strip()
     converted = convert_latex_math_to_typst(inner)
@@ -1832,6 +1957,10 @@ def markdown_to_typst(markdown: str, *, title: str, abstract: str) -> Tuple[str,
             body_fragments.append(render_typst_heading(block, warnings))
         elif block.strip() == "---":
             body_fragments.append("#line(length: 100%)")
+        elif is_raw_typst_block(block):
+            body_fragments.append(normalize_legacy_raw_typst_block(block))
+        elif block.startswith(TABLE_PLACEHOLDER_PREFIX):
+            body_fragments.append(render_typst_complex_table_placeholder(block, warnings))
         elif re.match(r"^!\[[^\]]*]\([^)]+\)$", block.strip()):
             image_match = re.match(r"^!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"([^\"]*)\")?\)$", block.strip())
             if image_match:
@@ -2674,6 +2803,8 @@ def write_report(report_path: Path, report: dict) -> None:
 
 def rerender_existing_pdf(payload: dict) -> None:
     task_id = str(payload.get("taskId") or f"task-{int(time.time())}")
+    table_mode = normalize_typst_table_mode(payload.get("tableMode"))
+    os.environ["PDF2ZH_TYPST_TABLE_MODE"] = table_mode
     output_dir = ensure_dir(Path(payload["outputDir"]).expanduser())
     translated_md_path = output_dir / "translated.md"
     translated_typ_path = output_dir / "translated.typ"
@@ -2701,6 +2832,7 @@ def rerender_existing_pdf(payload: dict) -> None:
         "task_id": task_id,
         "mode": "rerender_pdf",
         "output_dir": str(output_dir),
+        "typst_table_mode": table_mode,
         "translated_md": str(translated_md_path),
         "translated_typ": str(translated_typ_path),
         "translated_pdf": str(translated_pdf_path),
@@ -2741,6 +2873,8 @@ def main() -> None:
         return
 
     task_id = payload.get("taskId", f"task-{int(time.time())}")
+    table_mode = normalize_typst_table_mode(payload.get("tableMode"))
+    os.environ["PDF2ZH_TYPST_TABLE_MODE"] = table_mode
     enable_translation = bool(payload.get("enableTranslation", True))
     input_pdf = Path(payload["inputPdf"]).expanduser().resolve()
     os.environ["MINERU_API_URL"] = str(payload.get("mineruApiUrl", os.environ.get("MINERU_API_URL", "")))
@@ -2772,6 +2906,7 @@ def main() -> None:
         "typst_generated": False,
         "pdf_generated": False,
         "typst_template": TYPST_DEFAULT_TEMPLATE,
+        "typst_table_mode": table_mode,
         "typst_warnings": [],
         "typst_runtime": None,
     }

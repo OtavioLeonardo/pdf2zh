@@ -24,6 +24,7 @@ import {
   GLOSSARY_STRATEGY_OPTIONS,
   PROVIDER_MODELS,
   PROVIDER_MODEL_OPTIONS,
+  TYPST_TABLE_MODE_OPTIONS,
 } from "../app-types";
 import { inspectGlossaryRuntime, saveAppSettings, testLlmConnection, testMineruConnection, useAppBootstrap } from "../tauri-state";
 import { SecretInput } from "../components/SecretInput";
@@ -349,6 +350,24 @@ export function SettingsWindow() {
                 测试 MinerU
               </Button>
             </Group>
+
+            <Divider />
+
+            <Select
+              label="复杂表格输出"
+              description="渲染表格会尽量输出可编辑 Typst 表格；图片模式更稳，适合特别复杂的跨行跨列表格。"
+              data={TYPST_TABLE_MODE_OPTIONS}
+              value={draft.typstTableMode}
+              disabled={loading}
+              allowDeselect={false}
+              onChange={(value) => {
+                setHasUnsavedChanges(true);
+                setDraft((current) => ({
+                  ...current,
+                  typstTableMode: value === "image" ? "image" : "render",
+                }));
+              }}
+            />
           </Stack>
 
           <Group justify="space-between">

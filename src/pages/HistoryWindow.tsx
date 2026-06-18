@@ -16,7 +16,7 @@ import {
 import { notifications } from "@mantine/notifications";
 import { IconBook2, IconFileTypePdf, IconFolderOpen, IconHistory, IconRefresh } from "@tabler/icons-react";
 import { type HistoryEntry } from "../app-types";
-import { getTranslationHistory, openProgressWindow, rerenderPdf } from "../tauri-state";
+import { getTranslationHistory, openProgressWindow, rerenderPdf, useAppBootstrap } from "../tauri-state";
 
 function formatUpdatedAt(timestamp: number) {
   if (!timestamp) {
@@ -27,6 +27,7 @@ function formatUpdatedAt(timestamp: number) {
 }
 
 export function HistoryWindow() {
+  const { settings } = useAppBootstrap();
   const [entries, setEntries] = useState<HistoryEntry[] | null>(null);
   const [rerenderingEntryId, setRerenderingEntryId] = useState<string | null>(null);
 
@@ -79,7 +80,7 @@ export function HistoryWindow() {
     setRerenderingEntryId(entry.id);
 
     try {
-      await rerenderPdf(entry.outputDir);
+      await rerenderPdf(entry.outputDir, settings.typstTableMode);
       await openProgressWindow();
       notifications.show({
         color: "appleBlue",
