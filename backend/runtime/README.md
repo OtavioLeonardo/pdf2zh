@@ -4,8 +4,6 @@ This directory is designed to be bundled into the Tauri app.
 
 Expected layout:
 
-- `bin/pandoc`
-- `bin/tectonic`
 - `python/bin/python3`
 - `site-packages/`
 

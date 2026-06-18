@@ -15,9 +15,9 @@ import {
   Title,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconPlayerStopFilled, IconRefresh, IconFileTypePdf, IconFolderOpen, IconSparkles } from "@tabler/icons-react";
+import { IconPlayerStopFilled, IconFolderOpen, IconSparkles } from "@tabler/icons-react";
 import { isTerminalStage, STAGE_LABELS } from "../app-types";
-import { cancelTranslation, openHistoryWindow, rerenderPdf, useAppBootstrap } from "../tauri-state";
+import { cancelTranslation, openHistoryWindow, useAppBootstrap } from "../tauri-state";
 
 function joinOutputPath(outputDir: string | null, name: string) {
   if (!outputDir) {
@@ -33,7 +33,6 @@ const STAGE_DETAILS: Record<string, string> = {
   preprocessing: "正在保护公式、图表、代码块，并整理术语上下文。",
   translating: "正在分段翻译正文；如果卡住，多半是模型响应较慢或某一段重试中。",
   rebuilding: "正在把保护过的结构回填到译文，并写出 Markdown。",
-  rendering_pdf: "正在调用 Pandoc 和 Tectonic 重排 PDF，首次通常会比较久。",
   completed: "任务已经完成，可以直接打开目录查看结果。",
   cancelled: "任务已由你手动取消，当前结果会尽量保留。",
   failed: "任务已失败，建议查看当前阶段说明和输出目录里的日志。",
@@ -76,24 +75,17 @@ export function ProgressWindow() {
   const { task } = useAppBootstrap();
   const [now, setNow] = useState(Date.now());
   const [cancelling, setCancelling] = useState(false);
-  const [rerendering, setRerendering] = useState(false);
   const resolvedRawMd = task.rawMd ?? joinOutputPath(task.outputDir, "raw.md");
   const resolvedTranslatedMd = task.translatedMd ?? joinOutputPath(task.outputDir, "translated.md");
-  const resolvedTranslatedPdf = task.translatedPdf ?? joinOutputPath(task.outputDir, "translated.pdf");
   const resolvedGlossary = joinOutputPath(task.outputDir, "glossary.tsv");
   const resolvedMineruLog = joinOutputPath(task.outputDir, "mineru_debug.log");
   const resolvedReport = task.reportPath ?? joinOutputPath(task.outputDir, "translation_report.json");
-  const translationEnabled = Boolean(task.translatedMd || task.translatedPdf);
+  const translationEnabled = Boolean(task.translatedMd);
 
   const stepIndex =
     task.stage === "failed" || task.stage === "cancelled"
       ? 0
-      : Math.max(
-          ["queued", "extracting", "preprocessing", "translating", "rebuilding", "rendering_pdf", "completed"].indexOf(
-            task.stage,
-          ),
-          0,
-        );
+      : Math.max(["queued", "extracting", "preprocessing", "translating", "rebuilding", "completed"].indexOf(task.stage), 0);
   const stageDetail = STAGE_DETAILS[task.stage] ?? task.message;
   const elapsedMs = task.startedAt ? Math.max(0, (task.isRunning ? now : task.updatedAt || now) - task.startedAt) : 0;
   const sinceUpdateMs = task.updatedAt ? Math.max(0, now - task.updatedAt) : 0;
@@ -132,30 +124,6 @@ export function ProgressWindow() {
         title: "无法打开目录",
         message: error instanceof Error ? error.message : String(error),
       });
-    }
-  }
-
-  async function handleRerenderPdf() {
-    if (!task.outputDir) {
-      return;
-    }
-
-    setRerendering(true);
-    try {
-      await rerenderPdf(task.outputDir);
-      notifications.show({
-        color: "appleBlue",
-        title: "已开始重新生成 PDF",
-        message: "这次不会重跑 MinerU 和翻译，只会重新走 PDF 排版。",
-      });
-    } catch (error) {
-      notifications.show({
-        color: "dark",
-        title: "无法重新生成 PDF",
-        message: error instanceof Error ? error.message : String(error),
-      });
-    } finally {
-      setRerendering(false);
     }
   }
 
@@ -239,15 +207,6 @@ export function ProgressWindow() {
             >
               取消任务
             </Button>
-            <Button
-              leftSection={<IconRefresh size={16} />}
-              variant="default"
-              disabled={!task.outputDir || !task.translatedMd || task.isRunning || !task.canRetry}
-              loading={rerendering}
-              onClick={() => void handleRerenderPdf()}
-            >
-              重新生成 PDF
-            </Button>
           </Group>
 
           <Stepper active={stepIndex} orientation="vertical" color="appleBlue" iconSize={26}>
@@ -259,7 +218,7 @@ export function ProgressWindow() {
             />
             <Stepper.Step
               label="回填与导出"
-              description={translationEnabled ? "恢复结构并生成 PDF" : "直接导出 raw.md 与 MinerU 资源"}
+              description={translationEnabled ? "恢复结构并生成 Markdown、术语表与报告" : "直接导出 raw.md 与 MinerU 资源"}
             />
           </Stepper>
 
@@ -268,7 +227,7 @@ export function ProgressWindow() {
           <Stack gap="sm">
             <Text fw={700}>导出结果</Text>
             <Text size="sm" c="dimmed">
-              完成后这里会显示导出的 Markdown、PDF 和报告位置。
+              完成后这里会显示导出的 Markdown、术语表和报告位置。
             </Text>
 
             <Text size="sm" className="result-path">
@@ -276,9 +235,6 @@ export function ProgressWindow() {
             </Text>
             <Text size="sm" className="result-path">
               Markdown: {resolvedTranslatedMd ?? "等待生成"}
-            </Text>
-            <Text size="sm" className="result-path">
-              PDF: {resolvedTranslatedPdf ?? "等待生成"}
             </Text>
             <Text size="sm" className="result-path">
               Glossary: {resolvedGlossary ?? "等待生成"}
@@ -298,15 +254,6 @@ export function ProgressWindow() {
                 onClick={() => void openDirectory(task.outputDir)}
               >
                 打开输出目录
-              </Button>
-              <Button
-                leftSection={<IconFileTypePdf size={16} />}
-                variant="default"
-                disabled={!task.outputDir || !task.translatedMd || task.isRunning || !task.canRetry}
-                loading={rerendering}
-                onClick={() => void handleRerenderPdf()}
-              >
-                重新生成 PDF
               </Button>
               <Button variant="subtle" onClick={() => void openHistoryWindow()}>
                 去翻译历史

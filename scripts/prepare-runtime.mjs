@@ -43,26 +43,6 @@ const copied = [];
 
 if (
   maybeCopy(
-    process.env.PDF2ZH_BUNDLE_PANDOC,
-    path.join(runtimeBin, process.platform === "win32" ? "pandoc.exe" : "pandoc"),
-    "Pandoc binary",
-  )
-) {
-  copied.push("pandoc");
-}
-
-if (
-  maybeCopy(
-    process.env.PDF2ZH_BUNDLE_TECTONIC,
-    path.join(runtimeBin, process.platform === "win32" ? "tectonic.exe" : "tectonic"),
-    "Tectonic binary",
-  )
-) {
-  copied.push("tectonic");
-}
-
-if (
-  maybeCopy(
     process.env.PDF2ZH_BUNDLE_PYTHON_HOME,
     runtimePython,
     "Bundled Python home",
@@ -83,7 +63,7 @@ if (
 
 if (copied.length === 0) {
   console.log(
-    "No runtime assets copied. Set PDF2ZH_BUNDLE_PANDOC / PDF2ZH_BUNDLE_TECTONIC / PDF2ZH_BUNDLE_PYTHON_HOME / PDF2ZH_BUNDLE_PYTHON_BIN.",
+    "No runtime assets copied. Set PDF2ZH_BUNDLE_PYTHON_HOME / PDF2ZH_BUNDLE_PYTHON_BIN.",
   );
 } else {
   console.log(`Prepared runtime assets: ${copied.join(", ")}`);

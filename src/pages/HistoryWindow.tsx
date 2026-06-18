@@ -14,9 +14,9 @@ import {
   Title,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconBook2, IconFileTypePdf, IconFolderOpen, IconHistory, IconRefresh } from "@tabler/icons-react";
+import { IconBook2, IconFolderOpen, IconHistory } from "@tabler/icons-react";
 import { type HistoryEntry } from "../app-types";
-import { getTranslationHistory, openProgressWindow, rerenderPdf } from "../tauri-state";
+import { getTranslationHistory } from "../tauri-state";
 
 function formatUpdatedAt(timestamp: number) {
   if (!timestamp) {
@@ -28,7 +28,6 @@ function formatUpdatedAt(timestamp: number) {
 
 export function HistoryWindow() {
   const [entries, setEntries] = useState<HistoryEntry[] | null>(null);
-  const [rerenderingEntryId, setRerenderingEntryId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadEntries = async () => {
@@ -66,37 +65,6 @@ export function HistoryWindow() {
     }
   }
 
-  async function handleRerenderPdf(entry: HistoryEntry) {
-    if (!entry.translatedMd) {
-      notifications.show({
-        color: "gray",
-        title: "暂时无法重新生成",
-        message: "这个记录里还没有 translated.md，暂时不能直接重排 PDF。",
-      });
-      return;
-    }
-
-    setRerenderingEntryId(entry.id);
-
-    try {
-      await rerenderPdf(entry.outputDir);
-      await openProgressWindow();
-      notifications.show({
-        color: "appleBlue",
-        title: "已开始重新生成 PDF",
-        message: "这次不会重新翻译，只会重新走 PDF 排版导出。",
-      });
-    } catch (error) {
-      notifications.show({
-        color: "dark",
-        title: "无法重新生成 PDF",
-        message: error instanceof Error ? error.message : String(error),
-      });
-    } finally {
-      setRerenderingEntryId(null);
-    }
-  }
-
   return (
     <AppShell className="app-shell settings-shell" padding={0}>
       <AppShell.Main className="settings-main">
@@ -109,7 +77,7 @@ export function HistoryWindow() {
               <Box>
                 <Title order={2}>翻译历史</Title>
                 <Text c="dimmed" size="sm">
-                  统一展示 Documents/pdf2zh 目录下的翻译记录，方便重新打开 PDF 和输出目录。
+                  统一展示 Documents/pdf2zh 目录下的翻译记录，方便重新打开 Markdown 和输出目录。
                 </Text>
               </Box>
             </Group>
@@ -150,8 +118,8 @@ export function HistoryWindow() {
                           </Text>
                         ) : null}
                       </Box>
-                      <Text size="sm" c={entry.pdfGenerated ? "appleBlue" : "dimmed"}>
-                        {entry.pdfGenerated ? "PDF 已生成" : entry.translatedMd ? "仅 Markdown" : entry.rawMd ? "仅 raw.md" : "处理中"}
+                      <Text size="sm" c="dimmed">
+                        {entry.translatedMd ? "Markdown 已生成" : entry.rawMd ? "仅 raw.md" : "处理中"}
                       </Text>
                     </Group>
 
@@ -162,23 +130,6 @@ export function HistoryWindow() {
                         onClick={() => void openPath(entry.outputDir)}
                       >
                         打开目录
-                      </Button>
-                      <Button
-                        leftSection={<IconFileTypePdf size={16} />}
-                        variant="default"
-                        disabled={!entry.translatedPdf}
-                        onClick={() => void openPath(entry.translatedPdf)}
-                      >
-                        打开 PDF
-                      </Button>
-                      <Button
-                        leftSection={<IconRefresh size={16} />}
-                        variant="default"
-                        disabled={!entry.translatedMd}
-                        loading={rerenderingEntryId === entry.id}
-                        onClick={() => void handleRerenderPdf(entry)}
-                      >
-                        重新生成 PDF
                       </Button>
                     </Group>
                   </Stack>

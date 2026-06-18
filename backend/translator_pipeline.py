@@ -20,7 +20,6 @@ from typing import Dict, List, Optional, Tuple
 
 
 ROOT_DIR = Path(__file__).resolve().parent
-PANDOC_DEFAULTS = ROOT_DIR / "pandoc" / "defaults.yaml"
 MAX_RETRIES = 2
 SEGMENT_CHAR_LIMIT = 5200
 MINERU_POLL_INTERVAL_SECONDS = 2
@@ -2092,173 +2091,12 @@ def translate_segments_parallel(
     return [segment if segment is not None else "" for segment in translated_segments]
 
 
-def resolve_runtime_binary(env_key: str, fallback_name: str, *, require_bundled: bool = False) -> Optional[str]:
-    explicit = os.environ.get(env_key, "").strip()
-    if explicit and Path(explicit).exists():
-        return explicit
-
-    runtime_root = os.environ.get("PDF2ZH_RUNTIME_ROOT", "").strip()
-    if runtime_root:
-        for candidate in (
-            Path(runtime_root) / "bin" / fallback_name,
-            Path(runtime_root) / "bin" / f"{fallback_name}.exe",
-        ):
-            if candidate.exists():
-                return str(candidate)
-
-    if require_bundled:
-        return None
-
-    return shutil.which(fallback_name)
-
-
-def describe_binary(command: str) -> str:
-    try:
-        result = subprocess.run(
-            [command, "--version"],
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-    except (subprocess.CalledProcessError, FileNotFoundError, OSError):
-        return "unknown version"
-
-    first_line = (result.stdout.strip() or result.stderr.strip() or "").splitlines()
-    return first_line[0] if first_line else "unknown version"
-
-
-def render_pdf(markdown_path: Path, output_pdf: Path) -> Optional[str]:
-    pandoc_bin = resolve_runtime_binary("PDF2ZH_PANDOC", "pandoc", require_bundled=REQUIRE_BUNDLED_RUNTIME)
-    if not pandoc_bin:
-        if REQUIRE_BUNDLED_RUNTIME:
-            return "Bundled pandoc runtime is missing from this release package."
-        return "pandoc is not installed or not available in PATH."
-
-    pdf_engine = resolve_runtime_binary("PDF2ZH_TECTONIC", "tectonic", require_bundled=REQUIRE_BUNDLED_RUNTIME)
-    if not pdf_engine:
-        if REQUIRE_BUNDLED_RUNTIME:
-            return "Bundled tectonic runtime is missing from this release package."
-        pdf_engine = "tectonic"
-    resource_path = os.pathsep.join([str(markdown_path.parent), str(PANDOC_DEFAULTS.parent)])
-    tectonic_cache_dir = os.environ.get("TECTONIC_CACHE_DIR", "").strip()
-    offline_bundle = ""
-    if tectonic_cache_dir:
-        bundle_candidates = [
-            Path(tectonic_cache_dir) / "bundles" / "default_bundle",
-            Path(tectonic_cache_dir) / "bundles" / "default_bundle.tar",
-            Path(tectonic_cache_dir) / "bundles" / "default_bundle.zip",
-            Path(tectonic_cache_dir) / "bundles" / "default_bundle.ttb",
-        ]
-        for candidate in bundle_candidates:
-            if candidate.exists():
-                offline_bundle = candidate.resolve().as_uri()
-                break
-
-    command = [
-        pandoc_bin,
-        str(markdown_path),
-        "--defaults",
-        str(PANDOC_DEFAULTS),
-        f"--resource-path={resource_path}",
-        f"--pdf-engine={pdf_engine}",
-        "--pdf-engine-opt=--keep-logs",
-        "--output",
-        str(output_pdf),
-    ]
-    if offline_bundle:
-        command.append(f"--pdf-engine-opt=--bundle={offline_bundle}")
-    if tectonic_cache_dir:
-        command.append("--pdf-engine-opt=--only-cached")
-
-    try:
-        result = subprocess.run(
-            command,
-            cwd=str(PANDOC_DEFAULTS.parent),
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            env={
-                **os.environ,
-                **({"TECTONIC_CACHE_DIR": tectonic_cache_dir} if tectonic_cache_dir else {}),
-            },
-        )
-    except subprocess.CalledProcessError as error:
-        details = error.stderr.strip() or error.stdout.strip()
-        diagnostics = [
-            f"pandoc: {pandoc_bin} ({describe_binary(pandoc_bin)})",
-            f"tectonic: {pdf_engine} ({describe_binary(pdf_engine)})",
-        ]
-        if tectonic_cache_dir:
-            diagnostics.append(f"tectonic cache: {tectonic_cache_dir}")
-        if offline_bundle:
-            diagnostics.append(f"tectonic bundle: {offline_bundle}")
-        detail_text = details or "Pandoc failed to render PDF."
-        return f"{detail_text}\n\nRuntime diagnostics:\n" + "\n".join(diagnostics)
-
-    if result.stderr.strip():
-        append_mineru_log(f"PDF render stderr: {result.stderr.strip()}")
-
-    return None
-
-
-def rerender_existing_pdf(payload: dict) -> None:
-    task_id = str(payload.get("taskId") or f"task-{int(time.time())}")
-    output_dir = ensure_dir(Path(payload["outputDir"]).expanduser())
-    translated_md_path = output_dir / "translated.md"
-    translated_pdf_path = output_dir / "translated.pdf"
-    report_path = output_dir / "translation_report.json"
-
-    if not translated_md_path.exists():
-        fail(f"Translated markdown does not exist: {translated_md_path}")
-
-    emit("status", "rendering_pdf", 90, "正在检查已翻译的 Markdown。", taskId=task_id, outputDir=str(output_dir))
-    emit("status", "rendering_pdf", 93, "正在调用 Pandoc 和 Tectonic 生成 PDF，这一步首次通常会比较慢。", taskId=task_id, outputDir=str(output_dir))
-    start = time.time()
-    pdf_error = render_pdf(translated_md_path, translated_pdf_path)
-    duration = round(time.time() - start, 2)
-
-    report = {
-        "task_id": task_id,
-        "mode": "rerender_pdf",
-        "output_dir": str(output_dir),
-        "translated_md": str(translated_md_path),
-        "translated_pdf": str(translated_pdf_path),
-        "started_at": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "stages": {"rendering_pdf": duration},
-        "pdf_generated": pdf_error is None and translated_pdf_path.exists(),
-    }
-    if pdf_error:
-        report["pdf_error"] = pdf_error
-
-    write_report(report_path, report)
-
-    if pdf_error:
-        fail(pdf_error, report)
-
-    emit(
-        "result",
-        "completed",
-        100,
-        "PDF 已重新生成完成。",
-        taskId=task_id,
-        outputDir=str(output_dir),
-        translatedMd=str(translated_md_path),
-        translatedPdf=str(translated_pdf_path),
-        reportPath=str(report_path),
-    )
-
-
 def write_report(report_path: Path, report: dict) -> None:
     report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def main() -> None:
     payload = read_payload()
-    if payload.get("mode") == "rerender_pdf":
-        rerender_existing_pdf(payload)
-        return
 
     task_id = payload.get("taskId", f"task-{int(time.time())}")
     enable_translation = bool(payload.get("enableTranslation", True))
@@ -2270,7 +2108,6 @@ def main() -> None:
     work_dir = ensure_dir(output_dir / ".work")
     raw_output_path = output_dir / "raw.md"
     translated_md_path = output_dir / "translated.md"
-    translated_pdf_path = output_dir / "translated.pdf"
     report_path = output_dir / "translation_report.json"
     mineru_log_path = output_dir / "mineru_debug.log"
     glossary_output_path = output_dir / "glossary.tsv"
@@ -2287,7 +2124,6 @@ def main() -> None:
         "stages": {},
         "retries": 0,
         "failed_segments": [],
-        "pdf_generated": False,
         "mineru_log_path": str(mineru_log_path),
     }
 
@@ -2330,7 +2166,6 @@ def main() -> None:
             outputDir=str(output_dir),
             rawMd=str(raw_output_path),
             translatedMd=None,
-            translatedPdf=None,
             reportPath=str(report_path),
             retriedSegments=0,
         )
@@ -2443,15 +2278,6 @@ def main() -> None:
     write_glossary_tsv(glossary_output_path, glossary)
     report["stages"]["rebuilding"] = round(time.time() - start, 2)
 
-    emit("status", "rendering_pdf", 90, "正在准备 PDF 排版资源。", taskId=task_id)
-    emit("status", "rendering_pdf", 93, "正在调用 Pandoc 和 Tectonic 生成 PDF，这一步首次通常会比较慢。", taskId=task_id)
-    start = time.time()
-    pdf_error = render_pdf(translated_md_path, translated_pdf_path)
-    report["stages"]["rendering_pdf"] = round(time.time() - start, 2)
-    report["pdf_generated"] = pdf_error is None and translated_pdf_path.exists()
-    if pdf_error:
-        report["pdf_error"] = pdf_error
-
     write_report(report_path, report)
 
     emit(
@@ -2463,7 +2289,6 @@ def main() -> None:
         outputDir=str(output_dir),
         rawMd=str(raw_output_path),
         translatedMd=str(translated_md_path),
-        translatedPdf=str(translated_pdf_path) if translated_pdf_path.exists() else None,
         reportPath=str(report_path),
         retriedSegments=report["retries"],
     )

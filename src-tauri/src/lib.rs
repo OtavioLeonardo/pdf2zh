@@ -23,8 +23,6 @@ const HISTORY_WINDOW_LABEL: &str = "history";
 const SETTINGS_FILE_NAME: &str = "settings.json";
 const README_FILE_NAME: &str = "README.md";
 const DEFAULT_MINERU_API_URL: &str = "https://mineru.net/api/v4/file-urls/batch";
-const TECTONIC_CACHE_SEED_DIR_NAME: &str = "tectonic-cache";
-const TECTONIC_CACHE_RUNTIME_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 struct AppState {
     running_task: Arc<Mutex<bool>>,
@@ -79,12 +77,6 @@ struct TranslationRequest {
     translation_concurrency: Option<u8>,
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct PdfRerenderRequest {
-    output_dir: String,
-}
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 struct TranslationEvent {
@@ -96,7 +88,6 @@ struct TranslationEvent {
     output_dir: Option<String>,
     raw_md: Option<String>,
     translated_md: Option<String>,
-    translated_pdf: Option<String>,
     report_path: Option<String>,
     retried_segments: Option<u32>,
     started_at: Option<u128>,
@@ -126,7 +117,6 @@ struct TaskSnapshot {
     output_dir: Option<String>,
     raw_md: Option<String>,
     translated_md: Option<String>,
-    translated_pdf: Option<String>,
     report_path: Option<String>,
     retried_segments: Option<u32>,
     started_at: Option<u128>,
@@ -157,7 +147,6 @@ struct HistoryEntry {
     input_file: Option<String>,
     raw_md: Option<String>,
     translated_md: Option<String>,
-    translated_pdf: Option<String>,
     report_path: Option<String>,
     mineru_log_path: Option<String>,
     glossary_path: Option<String>,
@@ -165,7 +154,6 @@ struct HistoryEntry {
     started_at: Option<String>,
     provider: Option<String>,
     model: Option<String>,
-    pdf_generated: bool,
     status_label: String,
 }
 
@@ -195,7 +183,6 @@ impl Default for TaskSnapshot {
             output_dir: None,
             raw_md: None,
             translated_md: None,
-            translated_pdf: None,
             report_path: None,
             retried_segments: None,
             started_at: None,
@@ -285,7 +272,6 @@ fn task_snapshot_from_event(event: &TranslationEvent, previous: Option<&TaskSnap
     let previous_output_dir = previous.and_then(|task| task.output_dir.clone());
     let previous_raw_md = previous.and_then(|task| task.raw_md.clone());
     let previous_translated_md = previous.and_then(|task| task.translated_md.clone());
-    let previous_translated_pdf = previous.and_then(|task| task.translated_pdf.clone());
     let previous_report_path = previous.and_then(|task| task.report_path.clone());
     let previous_retried_segments = previous.and_then(|task| task.retried_segments);
 
@@ -299,7 +285,6 @@ fn task_snapshot_from_event(event: &TranslationEvent, previous: Option<&TaskSnap
         output_dir: event.output_dir.clone().or(previous_output_dir),
         raw_md: event.raw_md.clone().or(previous_raw_md),
         translated_md: event.translated_md.clone().or(previous_translated_md),
-        translated_pdf: event.translated_pdf.clone().or(previous_translated_pdf),
         report_path: event.report_path.clone().or(previous_report_path),
         retried_segments: event.retried_segments.or(previous_retried_segments),
         started_at,
@@ -760,8 +745,6 @@ fn configure_python_command(command: &mut Command, runtime_root: Option<&Path>, 
     if let Some(root) = runtime_root {
         command
             .env("PDF2ZH_RUNTIME_ROOT", root)
-            .env("PDF2ZH_PANDOC", root.join("bin").join(binary_name("pandoc")))
-            .env("PDF2ZH_TECTONIC", root.join("bin").join(binary_name("tectonic")))
             .env("PDF2ZH_RUNTIME_SITE_PACKAGES", root.join("site-packages"))
             .env("PYTHONPATH", root.join("site-packages"));
 
@@ -774,85 +757,6 @@ fn configure_python_command(command: &mut Command, runtime_root: Option<&Path>, 
     if release_runtime_required() {
         command.env("PDF2ZH_REQUIRE_BUNDLED_RUNTIME", "1");
     }
-}
-
-fn copy_dir_recursive(source: &Path, destination: &Path) -> Result<(), String> {
-    fs::create_dir_all(destination)
-        .map_err(|error| format!("Failed to create directory {}: {error}", destination.display()))?;
-
-    let entries = fs::read_dir(source)
-        .map_err(|error| format!("Failed to read directory {}: {error}", source.display()))?;
-
-    for entry in entries {
-        let entry = entry.map_err(|error| format!("Failed to read directory entry: {error}"))?;
-        let source_path = entry.path();
-        let destination_path = destination.join(entry.file_name());
-
-        if source_path.is_dir() {
-            copy_dir_recursive(&source_path, &destination_path)?;
-        } else {
-            if let Some(parent) = destination_path.parent() {
-                fs::create_dir_all(parent).map_err(|error| {
-                    format!("Failed to create directory {}: {error}", parent.display())
-                })?;
-            }
-            fs::copy(&source_path, &destination_path).map_err(|error| {
-                format!(
-                    "Failed to copy {} to {}: {error}",
-                    source_path.display(),
-                    destination_path.display()
-                )
-            })?;
-        }
-    }
-
-    Ok(())
-}
-
-fn ensure_tectonic_cache_dir(app: &AppHandle, runtime_root: Option<&Path>) -> Result<Option<PathBuf>, String> {
-    let Some(root) = runtime_root else {
-        return Ok(None);
-    };
-
-    let seed_dir = root.join(TECTONIC_CACHE_SEED_DIR_NAME);
-    if !seed_dir.exists() {
-        if release_runtime_required() {
-            return Err("Bundled Tectonic cache is missing from this release package.".to_string());
-        }
-        return Ok(None);
-    }
-
-    let app_cache_root = app
-        .path()
-        .app_cache_dir()
-        .map_err(|error| format!("Failed to resolve app cache directory: {error}"))?;
-    let cache_dir = app_cache_root
-        .join("tectonic")
-        .join(TECTONIC_CACHE_RUNTIME_VERSION);
-    let marker_path = cache_dir.join(".seed-version");
-    let marker_matches = fs::read_to_string(&marker_path)
-        .map(|value| value.trim() == TECTONIC_CACHE_RUNTIME_VERSION)
-        .unwrap_or(false);
-
-    if !marker_matches {
-        if cache_dir.exists() {
-            fs::remove_dir_all(&cache_dir).map_err(|error| {
-                format!(
-                    "Failed to refresh Tectonic cache directory {}: {error}",
-                    cache_dir.display()
-                )
-            })?;
-        }
-        copy_dir_recursive(&seed_dir, &cache_dir)?;
-        fs::write(&marker_path, TECTONIC_CACHE_RUNTIME_VERSION).map_err(|error| {
-            format!(
-                "Failed to write Tectonic cache marker {}: {error}",
-                marker_path.display()
-            )
-        })?;
-    }
-
-    Ok(Some(cache_dir))
 }
 
 fn read_lossy_line(reader: &mut BufReader<impl io::Read>) -> io::Result<Option<String>> {
@@ -932,14 +836,10 @@ fn run_python_service_test(
     let script_path = resolve_backend_script(app)?;
     let runtime_root = resolve_runtime_root(app);
     let python_bin = resolve_python_binary(runtime_root.as_deref())?;
-    let tectonic_cache_dir = ensure_tectonic_cache_dir(app, runtime_root.as_deref())?;
 
     let mut command = Command::new(&python_bin);
     command.arg(&script_path);
     configure_python_command(&mut command, runtime_root.as_deref(), &python_bin);
-    if let Some(cache_dir) = tectonic_cache_dir {
-        command.env("TECTONIC_CACHE_DIR", cache_dir);
-    }
 
     let mut child = command
         .env("PDF2ZH_SERVICE_TEST", test_kind)
@@ -1053,7 +953,6 @@ fn test_mineru_connection(app: AppHandle, request: ServiceTestRequest) -> Result
 fn inspect_glossary_runtime(app: AppHandle) -> Result<GlossaryRuntimeStatus, String> {
     let runtime_root = resolve_runtime_root(&app);
     let python_bin = resolve_python_binary(runtime_root.as_deref())?;
-    let tectonic_cache_dir = ensure_tectonic_cache_dir(&app, runtime_root.as_deref())?;
     let script = r#"
 import importlib.util
 import json
@@ -1097,9 +996,6 @@ print(json.dumps({
     let mut command = Command::new(&python_bin);
     command.arg("-c").arg(script);
     configure_python_command(&mut command, runtime_root.as_deref(), &python_bin);
-    if let Some(cache_dir) = tectonic_cache_dir {
-        command.env("TECTONIC_CACHE_DIR", cache_dir);
-    }
 
     let output = command
         .output()
@@ -1180,7 +1076,6 @@ fn get_translation_history(app: AppHandle) -> Result<Vec<HistoryEntry>, String> 
         let report_path = path.join("translation_report.json");
         let raw_md = path.join("raw.md");
         let translated_md = path.join("translated.md");
-        let translated_pdf = path.join("translated.pdf");
         let glossary_path = path.join("glossary.tsv");
         let mineru_log_path = path.join("mineru_debug.log");
 
@@ -1223,15 +1118,7 @@ fn get_translation_history(app: AppHandle) -> Result<Vec<HistoryEntry>, String> 
             .and_then(|report| report.get("model"))
             .and_then(Value::as_str)
             .map(str::to_string);
-        let pdf_generated = report_json
-            .as_ref()
-            .and_then(|report| report.get("pdf_generated"))
-            .and_then(Value::as_bool)
-            .unwrap_or(translated_pdf.exists());
-
-        let status_label = if translated_pdf.exists() {
-            "已完成".to_string()
-        } else if translated_md.exists() {
+        let status_label = if translated_md.exists() {
             "已翻译，待导出 PDF".to_string()
         } else if raw_md.exists() {
             "已提取 raw.md".to_string()
@@ -1246,7 +1133,6 @@ fn get_translation_history(app: AppHandle) -> Result<Vec<HistoryEntry>, String> 
             input_file,
             raw_md: raw_md.exists().then(|| raw_md.to_string_lossy().to_string()),
             translated_md: translated_md.exists().then(|| translated_md.to_string_lossy().to_string()),
-            translated_pdf: translated_pdf.exists().then(|| translated_pdf.to_string_lossy().to_string()),
             report_path: report_path.exists().then(|| report_path.to_string_lossy().to_string()),
             mineru_log_path: mineru_log_path.exists().then(|| mineru_log_path.to_string_lossy().to_string()),
             glossary_path: glossary_path.exists().then(|| glossary_path.to_string_lossy().to_string()),
@@ -1254,7 +1140,6 @@ fn get_translation_history(app: AppHandle) -> Result<Vec<HistoryEntry>, String> 
             started_at,
             provider,
             model,
-            pdf_generated,
             status_label,
         });
     }
@@ -1292,7 +1177,6 @@ fn start_translation(
         output_dir: Some(normalize_output_dir(&request.output_dir)),
         raw_md: None,
         translated_md: None,
-        translated_pdf: None,
         report_path: None,
         retried_segments: None,
         started_at: Some(started_at),
@@ -1319,7 +1203,6 @@ fn start_translation(
     let script_path = resolve_backend_script(&app)?;
     let runtime_root = resolve_runtime_root(&app);
     let python_bin = resolve_python_binary(runtime_root.as_deref())?;
-    let tectonic_cache_dir = ensure_tectonic_cache_dir(&app, runtime_root.as_deref())?;
     let task_id_for_thread = task_id.clone();
     let app_handle = app.clone();
     let state_handle = app.state::<AppState>();
@@ -1335,7 +1218,6 @@ fn start_translation(
             &python_bin,
             &script_path,
             runtime_root.clone(),
-            tectonic_cache_dir.clone(),
             payload_json,
         );
 
@@ -1351,101 +1233,6 @@ fn start_translation(
                     output_dir: None,
                     raw_md: None,
                     translated_md: None,
-                    translated_pdf: None,
-                    report_path: None,
-                    retried_segments: None,
-                    started_at: Some(started_at),
-                },
-            );
-
-            if let Ok(mut running) = running_task_arc.lock() {
-                *running = false;
-            }
-        }
-    });
-
-    Ok(task_id)
-}
-
-#[tauri::command]
-fn rerender_pdf(
-    app: AppHandle,
-    state: State<'_, AppState>,
-    request: PdfRerenderRequest,
-) -> Result<String, String> {
-    let mut running = state
-        .running_task
-        .lock()
-        .map_err(|_| "Failed to acquire task lock".to_string())?;
-
-    if *running {
-        return Err("A task is already running.".to_string());
-    }
-
-    *running = true;
-    drop(running);
-
-    let task_id = build_task_id();
-    let normalized_output_dir = normalize_output_dir(&request.output_dir);
-    let started_at = timestamp_millis();
-    let initial_event = TranslationEvent {
-        task_id: task_id.clone(),
-        r#type: "status".to_string(),
-        stage: "rendering_pdf".to_string(),
-        progress: 88,
-        message: "正在准备重新生成 PDF。".to_string(),
-        output_dir: Some(normalized_output_dir.clone()),
-        raw_md: None,
-        translated_md: Some(format!("{normalized_output_dir}/translated.md")),
-        translated_pdf: None,
-        report_path: None,
-        retried_segments: None,
-        started_at: Some(started_at),
-    };
-    emit_translation_event(&app, &initial_event);
-
-    let payload_json = serde_json::json!({
-        "taskId": task_id,
-        "mode": "rerender_pdf",
-        "outputDir": request.output_dir,
-    });
-
-    let script_path = resolve_backend_script(&app)?;
-    let runtime_root = resolve_runtime_root(&app);
-    let python_bin = resolve_python_binary(runtime_root.as_deref())?;
-    let tectonic_cache_dir = ensure_tectonic_cache_dir(&app, runtime_root.as_deref())?;
-    let task_id_for_thread = task_id.clone();
-    let app_handle = app.clone();
-    let state_handle = app.state::<AppState>();
-    let running_task_arc = Arc::clone(&state_handle.inner().running_task);
-    let task_process_arc = Arc::clone(&state_handle.inner().task_process);
-
-    std::thread::spawn(move || {
-        let result = run_translation_process(
-            app_handle.clone(),
-            running_task_arc.clone(),
-            task_process_arc.clone(),
-            &task_id_for_thread,
-            &python_bin,
-            &script_path,
-            runtime_root.clone(),
-            tectonic_cache_dir.clone(),
-            payload_json,
-        );
-
-        if let Err(message) = result {
-            emit_translation_event(
-                &app_handle,
-                &TranslationEvent {
-                    task_id: task_id_for_thread.clone(),
-                    r#type: "error".to_string(),
-                    stage: "failed".to_string(),
-                    progress: 0,
-                    message,
-                    output_dir: Some(normalized_output_dir),
-                    raw_md: None,
-                    translated_md: None,
-                    translated_pdf: None,
                     report_path: None,
                     retried_segments: None,
                     started_at: Some(started_at),
@@ -1515,7 +1302,6 @@ fn cancel_translation(app: AppHandle, state: State<'_, AppState>) -> Result<(), 
             output_dir: snapshot.output_dir,
             raw_md: snapshot.raw_md,
             translated_md: snapshot.translated_md,
-            translated_pdf: snapshot.translated_pdf,
             report_path: snapshot.report_path,
             retried_segments: snapshot.retried_segments,
             started_at: snapshot.started_at,
@@ -1533,15 +1319,11 @@ fn run_translation_process(
     python_bin: &str,
     script_path: &Path,
     runtime_root: Option<PathBuf>,
-    tectonic_cache_dir: Option<PathBuf>,
     payload_json: Value,
 ) -> Result<(), String> {
     let mut command = Command::new(python_bin);
     command.arg(script_path);
     configure_python_command(&mut command, runtime_root.as_deref(), python_bin);
-    if let Some(cache_dir) = tectonic_cache_dir {
-        command.env("TECTONIC_CACHE_DIR", cache_dir);
-    }
 
     let mut child = command
         .stdin(Stdio::piped())
@@ -1697,7 +1479,6 @@ pub fn run() {
             get_translation_history,
             start_translation,
             cancel_translation,
-            rerender_pdf
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

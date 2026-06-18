@@ -6,7 +6,6 @@ export type Stage =
   | "preprocessing"
   | "translating"
   | "rebuilding"
-  | "rendering_pdf"
   | "completed"
   | "cancelled"
   | "failed";
@@ -36,7 +35,6 @@ export type TranslationEvent = {
   outputDir?: string;
   rawMd?: string | null;
   translatedMd?: string;
-  translatedPdf?: string | null;
   glossaryPath?: string | null;
   reportPath?: string;
   retriedSegments?: number;
@@ -83,7 +81,6 @@ export type HistoryEntry = {
   inputFile: string | null;
   rawMd: string | null;
   translatedMd: string | null;
-  translatedPdf: string | null;
   reportPath: string | null;
   mineruLogPath: string | null;
   glossaryPath: string | null;
@@ -91,7 +88,6 @@ export type HistoryEntry = {
   startedAt: string | null;
   provider: string | null;
   model: string | null;
-  pdfGenerated: boolean;
   statusLabel: string;
 };
 
@@ -105,7 +101,6 @@ export type TaskSnapshot = {
   outputDir: string | null;
   rawMd: string | null;
   translatedMd: string | null;
-  translatedPdf: string | null;
   reportPath: string | null;
   retriedSegments: number | null;
   startedAt: number | null;
@@ -149,7 +144,6 @@ export const DEFAULT_TASK: TaskSnapshot = {
   outputDir: null,
   rawMd: null,
   translatedMd: null,
-  translatedPdf: null,
   reportPath: null,
   retriedSegments: null,
   startedAt: null,
@@ -187,7 +181,6 @@ export const STAGE_ORDER: Stage[] = [
   "preprocessing",
   "translating",
   "rebuilding",
-  "rendering_pdf",
   "completed",
 ];
 
@@ -197,7 +190,6 @@ export const STAGE_LABELS: Record<Stage, string> = {
   preprocessing: "保护结构",
   translating: "翻译正文",
   rebuilding: "回填结构",
-  rendering_pdf: "生成 PDF",
   completed: "完成",
   cancelled: "已取消",
   failed: "失败",
@@ -237,7 +229,6 @@ export function taskSnapshotFromEvent(event: TranslationEvent, previousTask?: Ta
     outputDir: event.outputDir ?? (isSameTask ? previousTask?.outputDir ?? null : null),
     rawMd: event.rawMd ?? (isSameTask ? previousTask?.rawMd ?? null : null),
     translatedMd: event.translatedMd ?? (isSameTask ? previousTask?.translatedMd ?? null : null),
-    translatedPdf: event.translatedPdf ?? (isSameTask ? previousTask?.translatedPdf ?? null : null),
     reportPath: event.reportPath ?? (isSameTask ? previousTask?.reportPath ?? null : null),
     retriedSegments: event.retriedSegments ?? (isSameTask ? previousTask?.retriedSegments ?? null : null),
     startedAt,

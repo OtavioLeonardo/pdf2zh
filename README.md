@@ -1,6 +1,6 @@
 # PDF2ZH
 
-`PDF2ZH` 是一个基于 `Tauri v2 + React + Mantine` 的桌面应用，用来把英文论文 `PDF` 一键转成中文 `Markdown + PDF`。
+`PDF2ZH` 是一个基于 `Tauri v2 + React + Mantine` 的桌面应用，用来把英文论文 `PDF` 一键转成中文 `Markdown`。
 
 应用内现在提供独立的“使用教程”窗口，主页面只保留功能操作，不再承载说明文案。
 你可以从这些入口打开教程：
@@ -17,10 +17,8 @@
 - 自动预处理术语表，优先抽取标题、摘要和前文里的高价值学术术语
 - 按章节/段落分段翻译
 - 维护术语表并回填结构
-- 用 `Pandoc + Tectonic` 生成统一模板的中文 PDF
 - 导出：
   - `translated.md`
-  - `translated.pdf`
   - `assets/`
   - `glossary.tsv`
   - `translation_report.json`
@@ -40,16 +38,12 @@ npm run tauri dev
 
 支持的内置依赖：
 
-- `pandoc`
-- `tectonic`
 - `python` 运行时目录或 Python 可执行文件
 - `site-packages` 里的 Python 依赖，例如 `keybert`、`pyate`、`spacy`
 
 准备方式：
 
 ```bash
-export PDF2ZH_BUNDLE_PANDOC=/absolute/path/to/pandoc
-export PDF2ZH_BUNDLE_TECTONIC=/absolute/path/to/tectonic
 export PDF2ZH_BUNDLE_PYTHON_HOME=/absolute/path/to/python/home
 # 或者只提供 Python 可执行文件
 export PDF2ZH_BUNDLE_PYTHON_BIN=/absolute/path/to/python3
@@ -112,8 +106,7 @@ export PDF2ZH_PYTHON=/path/to/python3
 - 术语表阶段可以单独指定模型，不必和正文翻译模型完全一致；当前默认沿用同一提供方和 API Key。
 - 如果你执行了 `npm run runtime:python-deps`，这些术语预处理依赖也会被一起打进安装包，默认混合方案会更完整可用。
 - 如果 `MinerU API` 响应里包含 `assets` 或 `images` 字段，脚本会尝试把图片资源写到导出目录的 `assets/` 中。
-- PDF 生成时会优先使用内置打包的 `pandoc / tectonic / python`，找不到才回退系统环境。
-- PDF 生成失败时，仍会保留 `translated.md` 和 `translation_report.json`。
+- 当前仓库会稳定导出 `translated.md`、`glossary.tsv` 和 `translation_report.json`，后续再接入新的 PDF 生成链路。
 
 ## 术语表预处理策略
 
