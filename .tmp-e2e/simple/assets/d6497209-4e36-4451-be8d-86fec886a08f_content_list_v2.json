@@ -1,0 +1,4106 @@
+[
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "“A Man Is Practically the General Norm” : A Case Study of Gender Inequality and Whiteness in the Classical Music Scene in Finland"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                92,
+                199,
+                895,
+                274
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Ramstedt, Anna M W"
+                    }
+                ]
+            },
+            "bbox": [
+                90,
+                280,
+                312,
+                297
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "2022-06-28"
+                    }
+                ]
+            },
+            "bbox": [
+                90,
+                307,
+                206,
+                324
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Routledge"
+                    }
+                ]
+            },
+            "bbox": [
+                90,
+                326,
+                188,
+                343
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "http://hdl.handle.net/10138/356015"
+                    }
+                ]
+            },
+            "bbox": [
+                90,
+                343,
+                406,
+                357
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Ramstedt, A M W 2022, '“A Man Is Practically the General Norm” : A Case Study of Gender Inequality and Whiteness in the Classical Music Scene in Finland', NORA - Nordic Journal of Feminist and Gender Research, vol. 31, no. 1, pp. 91-107. https://doi.org /10.1080/08038740.2022.2088611"
+                    }
+                ]
+            },
+            "bbox": [
+                90,
+                357,
+                902,
+                424
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Downloaded from Helda, University of Helsinki institutional repository. https://helda.helsinki.fi"
+                    }
+                ]
+            },
+            "bbox": [
+                65,
+                789,
+                895,
+                804
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "This is an electronic reprint of the original article."
+                    }
+                ]
+            },
+            "bbox": [
+                67,
+                807,
+                502,
+                822
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "This reprint may differ from the original in pagination and typographic detail."
+                    }
+                ]
+            },
+            "bbox": [
+                67,
+                824,
+                742,
+                839
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Please cite the original version."
+                    }
+                ]
+            },
+            "bbox": [
+                68,
+                840,
+                349,
+                856
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                75,
+                52,
+                176,
+                121
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "UNIVERSITY OF HELSINKI"
+                    }
+                ]
+            },
+            "bbox": [
+                179,
+                80,
+                322,
+                93
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "https://helda.helsinki.fi"
+                    }
+                ]
+            },
+            "bbox": [
+                65,
+                129,
+                270,
+                145
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "“A Man Is Practically the General Norm” – A Case Study of Gender Inequality and Whiteness in the Classical Music Scene in Finland"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                148,
+                202,
+                818,
+                278
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Anna Ramstedt"
+                    }
+                ]
+            },
+            "bbox": [
+                146,
+                310,
+                294,
+                327
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "To cite this article: Anna Ramstedt (2022): “A Man Is Practically the General Norm” – A Case Study of Gender Inequality and Whiteness in the Classical Music Scene in Finland, NORA - Nordic Journal of Feminist and Gender Research, DOI: 10.1080/08038740.2022.2088611"
+                    }
+                ]
+            },
+            "bbox": [
+                146,
+                354,
+                842,
+                399
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "To link to this article: https://doi.org/10.1080/08038740.2022.2088611"
+                    }
+                ]
+            },
+            "bbox": [
+                146,
+                406,
+                675,
+                423
+            ]
+        },
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/421aee8f36aa8712d31856df2fa6f5cd9973fcc674a8d475f218fa59b9c4ab16.jpg"
+                },
+                "content": "",
+                "image_caption": [],
+                "image_footnote": []
+            },
+            "bbox": [
+                164,
+                468,
+                187,
+                494
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "© 2022 The Author(s). Published by Informa UK Limited, trading as Taylor & Francis Group."
+                    }
+                ]
+            },
+            "bbox": [
+                203,
+                472,
+                498,
+                513
+            ]
+        },
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/1a79dd2f1f649d141e00cb1cc1587d463bc7adead0347700270137516df4c676.jpg"
+                },
+                "content": "",
+                "image_caption": [],
+                "image_footnote": []
+            },
+            "bbox": [
+                164,
+                519,
+                195,
+                546
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Published online: 28 Jun 2022."
+                    }
+                ]
+            },
+            "bbox": [
+                203,
+                524,
+                406,
+                540
+            ]
+        },
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/152cc74c1ab1425e61608dcf29740d32fc68bfd063f88f577d830ffa22627e37.jpg"
+                },
+                "content": "",
+                "image_caption": [],
+                "image_footnote": []
+            },
+            "bbox": [
+                165,
+                571,
+                197,
+                591
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Submit your article to this journal"
+                    }
+                ]
+            },
+            "bbox": [
+                203,
+                577,
+                451,
+                594
+            ]
+        },
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/e0d545da8d10479c4da6069d6346f0a4e7f1cd3d3005250f3767f270777ee2ea.jpg"
+                },
+                "content": "",
+                "image_caption": [],
+                "image_footnote": []
+            },
+            "bbox": [
+                165,
+                623,
+                201,
+                645
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Article views: 262"
+                    }
+                ]
+            },
+            "bbox": [
+                203,
+                627,
+                321,
+                642
+            ]
+        },
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/373e7a11b6ab7a448f5b9d621073916f03ff2869c33feab35907ef4df488b1e9.jpg"
+                },
+                "content": "",
+                "image_caption": [],
+                "image_footnote": []
+            },
+            "bbox": [
+                165,
+                674,
+                195,
+                701
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "View related articles"
+                    }
+                ]
+            },
+            "bbox": [
+                203,
+                680,
+                362,
+                695
+            ]
+        },
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/f538879cdbde2b4b04e62c8bc128c2ee8e7c33df7ae13f91aa6965a34afb4bc3.jpg"
+                },
+                "content": "",
+                "image_caption": [],
+                "image_footnote": []
+            },
+            "bbox": [
+                165,
+                727,
+                198,
+                753
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "View Crossmark data"
+                    }
+                ]
+            },
+            "bbox": [
+                203,
+                732,
+                365,
+                747
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "TSSN C403 474 Valume 30 Nube 22022 Nordic Journal of Feminist NORA and Gender Research RRouedge"
+                    }
+                ]
+            },
+            "bbox": [
+                31,
+                20,
+                181,
+                172
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "NORA - Nordic Journal of Feminist and Gender Research"
+                    }
+                ]
+            },
+            "bbox": [
+                198,
+                49,
+                837,
+                70
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "ISSN: (Print) (Online) Journal homepage: https://www.tandfonline.com/loi/swom20"
+                    }
+                ]
+            },
+            "bbox": [
+                197,
+                159,
+                703,
+                174
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "ROUTLEDGE Routledge Taylor & Francis Group"
+                    }
+                ]
+            },
+            "bbox": [
+                847,
+                19,
+                966,
+                48
+            ]
+        },
+        {
+            "type": "page_footer",
+            "content": {
+                "page_footer_content": [
+                    {
+                        "type": "text",
+                        "content": "Full Terms & Conditions of access and use can be found at https://www.tandfonline.com/action/journalInformation?journalCode=swom20"
+                    }
+                ]
+            },
+            "bbox": [
+                235,
+                920,
+                761,
+                949
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "a OPEN ACCESS"
+                    }
+                ]
+            },
+            "bbox": [
+                624,
+                109,
+                768,
+                129
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Check for updates"
+                    }
+                ]
+            },
+            "bbox": [
+                776,
+                108,
+                902,
+                128
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "“A Man Is Practically the General Norm” – A Case Study of Gender Inequality and Whiteness in the Classical Music Scene in Finland"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                93,
+                143,
+                904,
+                189
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Anna Ramstedt"
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                196,
+                259,
+                215
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Doctoral Programme in Philosophy, Arts, and Society, University of Helsinki, Helsinki, Finland"
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                223,
+                760,
+                240
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "ABSTRACT"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                117,
+                267,
+                196,
+                279
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "In this article I show how generally accepted forms of performance practice and performances by generally idealized performance figures reveal gendered and racialized imaginaries that prevail in the Finnish classical music culture. The research material for this article was gathered through thematic in-depth interviews with fourteen white cis women professional Finnish classical pianists, violinists, violists, and cellists between the ages of 25 and 45. I ask how gendered and racialized constructions are conveyed in performance ideals maintained by widely acclaimed performers and traditionally accepted ways of performing musical works. Further, I ask how gendered and racialized constructions associated with idealized performers and performance ideals shape, intertwine in, and influence the embodied experience of Finnish women musicians. I argue that the performers that are widely seen as quintessential form a canon of performers, that have a crucial role in maintaining the oppressive status quo of classical music by reaffirming and maintaining the idealized aesthetics through the very fleshy act of performing Eurocentric, gendered and racialized social imaginaries. These social imaginaries partly shape musicians’ embodied subjectivity and affect their self-esteem as well as their understanding of gendered and racialized bodies, and their social value."
+                    }
+                ]
+            },
+            "bbox": [
+                115,
+                280,
+                687,
+                552
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "ARTICLE HISTORY"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                716,
+                267,
+                845,
+                279
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Received 21 October 2021"
+                    }
+                ]
+            },
+            "bbox": [
+                716,
+                280,
+                884,
+                293
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Accepted 6 June 2022"
+                    }
+                ]
+            },
+            "bbox": [
+                716,
+                294,
+                860,
+                307
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "KEYWORDS"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                716,
+                317,
+                801,
+                327
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Western classical music; whiteness; gender inequality; performance practice; feminist music research; social imaginaries"
+                    }
+                ]
+            },
+            "bbox": [
+                716,
+                329,
+                894,
+                394
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Introduction"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                91,
+                598,
+                217,
+                613
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Finland is often portrayed as “one of the world’s leading countries in fostering gender equality” (Ministry of Social Affairs and Health, Finland n.d.). Social equality is seen as a cornerstone of the Finnish welfare state, and Finland has ranked fourth in the European Union’s index of gender equality for several consecutive years (Finnish Government 2021; European Institute for Gender Equality 2020). The goal of social equality is also seen as manifested in how teaching is provided in the Finnish music education system (Aarnio, 2017). The music education system has the reputation as “one of the best music education systems in the world” that encompasses a large net of publicly supported music institutes aiming to “give children of all social classes and background the opportunity to learn music” (Aarnio, 2017; Kubik, 2017; Mollet, 2020). The music education system, and especially education in the field of Western classical music, enjoys the reputation of having the “recipe for excellence” (Kubik, 2017). This system is also considered to be a main reason behind the large number of internationally renowned Finnish classical music composers, conductors, and instrumentalists (Aarnio, 2017; Kubik, 2017; Mollet, 2020). While the successful Finnish music education is seen as an emblem of equality, the statistics concerning classical music culture in Finland show worrying gendered and racialized inequality (Kvist, 2020; Sirén, 2019). In this article I discuss gendered and racialized norms embedded in the social constructions of classical music culture and education in Finland. In particular I show how gendered and racialized beliefs and representations learned in music educational institutions shape professional Finnish women musicians’ experience of themselves, and others."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                623,
+                906,
+                898
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "NORA—NORDIC JOURNAL OF FEMINIST AND GENDER RESEARCH"
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                69,
+                480,
+                82
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "https://doi.org/10.1080/08038740.2022.2088611"
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                82,
+                381,
+                96
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                722,
+                56,
+                760,
+                94
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "Routledge"
+                    }
+                ]
+            },
+            "bbox": [
+                766,
+                59,
+                888,
+                79
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "Taylor & Francis Group"
+                    }
+                ]
+            },
+            "bbox": [
+                766,
+                79,
+                902,
+                92
+            ]
+        },
+        {
+            "type": "page_footer",
+            "content": {
+                "page_footer_content": [
+                    {
+                        "type": "text",
+                        "content": "CONTACT Anna Ramstedt anna ramstedt@helsinki f"
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                920,
+                464,
+                935
+            ]
+        },
+        {
+            "type": "page_footer",
+            "content": {
+                "page_footer_content": [
+                    {
+                        "type": "text",
+                        "content": "© 2022 The Author(s). Published by Informa UK Limited, trading as Taylor & Francis Group."
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                937,
+                602,
+                950
+            ]
+        },
+        {
+            "type": "page_footer",
+            "content": {
+                "page_footer_content": [
+                    {
+                        "type": "text",
+                        "content": "This is an Open Access article distributed under the terms of the Creative Commons Attribution License (http://creativecommons.org/licenses/by/4.0/), which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited."
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                950,
+                902,
+                974
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                89,
+                71,
+                902,
+                121
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Between the years 2010 and 2019, 94% of the orchestral concerts of classical music in Finland were conducted by men (Kvist, 2020). Further, a staggering 94% of the music performed by Finnish orchestras in 2019 was composed by predominantly white men (Sirén, 2019). The different positions of authority in the professional sphere of classical music in Finland are undeniably held by white men even though 70% of the students that pursue studies at an advanced level in Finnish music institutions are girls (Society of Finnish Music Institutions, 2019). Also, the absence of musicians and composers racialized as non-white in contradistinction to white normativity is striking in the statistics. The statistics concerning classical music culture in Finland show how Nordic equality as an all-embracing phenomenon is a myth."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                122,
+                906,
+                276
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "White normativity (see Ahmed, 2007; Dyer, [1997], 2002; Seikkula, 2019) connects more broadly with the myth of Nordic political and historical exceptionality. In Finland, as well as in other Nordic countries, discussion about racism and privilege has been seen as irrelevant due to these countries peripheral status in relation to European imperialism (Lofstdóttir & Jensen, 2012, p. 2; Rastas, 2012, p. 90; Keskinen 2021, pp. 69–70; see also Keskinen, Tuori, Irni, & Diana, 2009; Seikkula, 2019). Yet, as critical race researcher Keskinen, 2021, p. 71) points out, colonialism is neither time nor place specific. For example, music researcher Taru Leppänen (2015, p. 20) argues that while race, ethnicity, and racism in Finland have traditionally been studied mainly according to existing and commonly recognized socio-cultural norms, values, and structures, such as contexts related to minorities, discrimination, and immigration, race and whiteness can be significant also in less self evident contexts. such as in Western classical music."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                277,
+                904,
+                464
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Indeed, the statistics about Finnish classical music repertoire, performers, and conductors, affirm the normative practices of classical music which rely mainly on the Romantic myth of “genius” European white male composers (see Battersby, 1989; Dahlhaus, [1989], 1990; McClary, [1991], 2002; Goehr, 1992; Tiainen, 2005; Moisala 2006; Bonds, 2014; Torvinen, 2019; Jean-Francois, 2020). As music historian and gender studies scholar Citron, [1993], 2000, p. 213; see also Griffiths, 2019) points out, classical music practices continue to emphasize “the centrality of the middle- to upper-class white male and the subordination of women,” along with Black, indigenous, and people of colour, although research documents an abundance of women, and persons racialized as non-white composers and musicians (see Neuls-Bates, 1982; Bowers & Tick, 1987; De Lerma, 1990; Pendle [1991], 2001; Ellis, 1997; Floyd, 1999; Herbert, 2000; Yoshihara, 2007; André, Bryan, & Saylor, 2012; Lim, 2012; Cirio, 2015; Thurman, 2012, 2019, 2021; Smith, 2016; André, 2018; Koivisto, 2019; Välimäki & Koivisto-Kaasik, 2019; Ledford, 2020; BBC, 2020). Echoing this thought, gender, media, and culture researcher Scharff (2018a, p. 2) points out that “we know comparatively little” about women classical musicians."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                464,
+                904,
+                685
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Recently more and more attention has been paid to the effects of the prevailing social hierarchies in Western classical music culture on marginalized and minority musicians (Yang, 2007; Yoshihara, 2007; Hung, 2009; Tan, 2013; Leppänen, 2015; Scharff, 2018a, 2018b; Bull, 2018, 2019; Kowalcyk, 2019; Thurman, 2021). This qualitative research contributes to this existing research by bringing attention to the experiences of Finnish women professional musicians of classical music, who are still, as the statistics discussed above show, a minority in the classical music scene that is mainly dominated by white men. The research material for this article was gathered through thematic indepth interviews with fourteen professional Finnish classical pianists, violinists, violists, and cellists between ages 25 and 45 that identify themselves as women. In light of the statistics, race and white normativity are intertwined closely with gender hierarchies, indicating that gendered and racialized constructions are interwoven, and should therefore be analysed as intersecting. These statistics that reveal gendered and racialized inequality are based on information about classical music performances, that through the fleshy act of performance set the standards and ideals of classical music culture. Therefore, studying how professional musicians understand and experience ideals related to classical music performance, can help to understand underlying inequality within the Finnish classical music culture, and to comprehend the impact that this inequality has on professional women musicians and their work. Thus, I ask how gendered and racialized constructions are conveyed in performance ideals maintained by widely acclaimed performers and traditionally accepted ways of performing musical works. Further I ask how gendered and racialized constructions associated with idealized performers and performance ideals shape, intertwine in, and influence the interrelation of body and mind—the embodied subjective experience of Finnish women musicians (Huneman & Wolfe, 2017, p. 242)."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                686,
+                904,
+                941
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "2"
+                    }
+                ]
+            },
+            "bbox": [
+                93,
+                37,
+                105,
+                47
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                115,
+                32,
+                141,
+                49
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "A. RAMSTEDT"
+                    }
+                ]
+            },
+            "bbox": [
+                154,
+                35,
+                247,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                89,
+                71,
+                902,
+                190
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Understanding gendered and racialized constructions through social imaginaries"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                91,
+                216,
+                876,
+                236
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "To understand how classical music performance ideals and idealized performer figures recognized by the interviewees of this study, reflect and contribute to racialized gendered social constructions, I turn to the work of feminist philosopher Moira Gatens, ([1996], 2003; 2004; Churcher & Gatens, 2019) and feminist writer, researcher, and activist Sara Ahmed (2007). In the book Imaginary Bodies: Ethics, Power and Corporeality [1996], 2003, Gatens discusses how gendered bodies occupy social and political spaces, and how human bodies are represented in culture, and suggests the notion of social imaginary. Gatens ([1996], 2003, p. viii) states that she does not offer a theory of “the imaginary,” nor understand imaginary body as “simply a product of subjective imagination, fantasy or folklore.” Instead, she ([1996], 2003, p. viii) uses the notion of “social imaginary” in a loose but technical sense to refer to those “images, symbols, metaphors and representations that help construct various forms of subjectivity.” Even though Gatens (2004, p. 282) maintains that the plural social imaginaries include “religious, political, economic, sexual, racial, ethnic, moral, national and international imaginaries,” she has in her works focused less on race hierarchies."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                242,
+                904,
+                464
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "To understand racialized imaginaries, I therefore turn to Ahmed’s (2007, p. 154) understanding of race as “a question of what is within reach, what is available to perceive and to do ‘things’ with” to discuss the ways idealized and expected social imaginaries of the performance of classical music reveal racialized underpinnings. In the same way as Ahmed (2007, p. 150) explores how whiteness is “’real’, material, and lived,” I ask how social imaginaries have been, and are, lived and embodied by my research participants. Ahmed (2007, p. 153) states that “race does not just interrupt [a corporeal schema or space] but structures its mode of operation,” making it more than just the meanings attached to bodies, and those privileges and spaces that are seen as accessible to certain bodies while being denied from others (Keskinen, Seikkula, Mkwesha 2021, p. 60). Gatens ([1996], 2003, p. x) discusses social imaginaries as “the background” of consciousness, as “akin to habitus”, in a similar way that Ahmed (2007, p. 149) writes about how “whiteness functions as a habit, even a bad habit, which becomes a background to social action.” In other words, both researchers then ask about the “what” that is “around” (Ahmed, 2007, p. 151)."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                465,
+                904,
+                686
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Although the normative and dominant social imaginaries of classical music culture may come across as fixed and permanent, in some parts of this article I also show how these imaginaries are actually unstable and fragile: in a constant state of emergence. I do this by occasionally applying the concept of “the middle” proposed by feminist researchers Tiainen, Leppänen, Kontturi, and Mehrabi (2020). Their approach aims to reach beyond theories of intersectionality and new materialisms as mutually oppositional. Tiainen et al. (2020, p. 1) write that feminist scholars who are orientated to process ontology and the roles of matter in the constitution of reality have criticized intersectional approaches for reiterating identity categories as static positions and for overemphasizing the discursive positioning of subjects while overlooking material conditions, wider-than-human relations, and the situatedness of identity categories. In turn, new materialism has according to Tiainen et al. (2020, pp. 1–2) been criticized by feminist theorists for overstating the ontological priority of matter, as well as for presupposing general “human existence that eventually remains modelled on the white, colonial man” (see also Sullivan, 2012; Tompkins, 2016). Tiainen et al. (2020) propose the concept of “the middle” to “examine intersectional differences not only as a matter of structures, systems and already-existing possibilities for being, but also as open-ended relationalities happening across social, material, discursive, human, and more-than-human areas of activity” (Tiainen et al., 2020, p. 9). By applying this concept, I point out how also the inequality, differences and hierarchies of classical music culture ultimately emerge in a situation-bound manner, dependent on many social, subjective, and material components."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                686,
+                904,
+                944
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "NORA—NORDIC JOURNAL OF FEMINIST AND GENDER RESEARCH"
+                    }
+                ]
+            },
+            "bbox": [
+                405,
+                35,
+                841,
+                48
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                853,
+                32,
+                880,
+                49
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "3"
+                    }
+                ]
+            },
+            "bbox": [
+                890,
+                35,
+                904,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                89,
+                71,
+                904,
+                139
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Ideals in classical music"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                91,
+                165,
+                324,
+                180
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "In this section I discuss existing music research relevant to themes discussed in this article and outline the ways this article builds upon previous studies. Sociologist Anna Bull (2019, p. 174) states in her research on class and gender inequalities in classical music culture in the United Kingdom that while the cultural and institutional framework of classical music enables musicians to express themselves and experience a strong sense of identity and support, it also upholds “hegemonic structures in the form of Eurocentric, Enlightenment hierarchies that legitimized the value of some and confirmed the lack of value of others.” Bull recognizes this to happen in four ways; through the ways classical music institutions establish authority and hierarchy, the ways performance practice ideals are embodied by musicians, the ways classical music idealizes order and control, and lastly through the aesthetic of “getting it right” which links all the aforementioned modes together by setting the ideals for “good quality performances.” To this last of the four ways Bull associates fidelity towards composers and attention to detail, along with the instrumental expertise required to play the canonical repertoire. (Bull, 2019, pp. 175–178). But what are these “good quality performances,” and how do racialized and gendered constructions orientate idealized performance practices and ideal performance figures?"
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                190,
+                906,
+                447
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "A growing body of research shows how “ideal” classical musicians are associated with gendered, racialized, and classed constructions, which impacts on musicians’ experiences of inequality in classical music (Green, 1997; Yang, 2007, 2014; Yoshihara, 2007; Julia, 2008; Hung, 2009; Tan, 2013; Leppänen, 2015; Scharff, 2018a, 2018b; Bull, 2018, 2019; Kowalcyk, 2019; Ewell, 2020; Thurman, 2021). For example, in her research on how East Asian musicians were portrayed in the media coverage of the 1995 International Jean Sibelius Competition in Finland, Leppänen (2015, p. 30) points out that “racial, national and ethnic differences were constitutive in the formation of the violinists’ identities.” Music historian Thurman’s (2019, pp. 833–834; see also Thurman 2021) research on African American concert singers’ performances in the 1920ʹs Germany shows, in turn, that whiteness was built into the classical music canon of the time in contradistinction to Black bodies. Relatedly, the concert audiences’ practices of racialized listening revealed that the assumed “universality” of Western art music could not escape politics of race and nation (Thurman, 2019, p. 834). Rather, “it had become complicit in them” (Thurman, 2019, p. 834)."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                447,
+                904,
+                669
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Indeed, whiteness is often understood as a norm and may escape naming as an unmarked category (Seikkula, 2019, p. 1008), and white universality and innocence can be produced through and along with the “absence and disappearance of the racialized relations that constitute it,” as researchers Hvenegård-Lassen, Staunæs, and Lund (2020, p. 226) point out in their article on Nordic intersectionality. Further, whiteness has also been a problematic issue to discuss in relation to Finland, as Finnishness has not self-evidently been historically associated with white Western culture (Leppänen, 2015, p. 24). However, it is precisely the “invisibility,” the non-strangeness of white normativity, and the articulations behind the social imaginaries of classical music performance that I wish to confront by exploring how whiteness intertwines with gendered inequality in the Finnish classical music culture."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                670,
+                904,
+                839
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Understanding social imaginaries through interviews"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                91,
+                864,
+                608,
+                881
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "The primary research material for this article was gathered through fourteen thematically sectioned in-depth interviews,1 ,2 out of which one interview was conducted in writing,3 which allowed the gathering of in-depth information and intrinsic knowledge (Johnson & Rowlands, 2012, p. 100)."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                891,
+                904,
+                944
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "4"
+                    }
+                ]
+            },
+            "bbox": [
+                93,
+                37,
+                105,
+                47
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                115,
+                32,
+                141,
+                49
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "A. RAMSTEDT"
+                    }
+                ]
+            },
+            "bbox": [
+                154,
+                35,
+                247,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Two of the interviewees were invited to participate in the research by the author, while the remaining twelve interviewees responded to online invitations to participate in the research. In February 2020 an invitation was posted on the Facebook page of the Finnish music university Sibelius Academy and in the webpage of the Research Association Suoni4 for violinists, violists, cellists, and pianists that identify themselves as women to participate in the research. Pianists, violinists, and cellists are still the most common instrumentalists to perform with orchestras as soloists. These instruments have a vast solo repertoire, and with viola, form a common chamber music ensemble of the romantic period. The repertoire composed in the romantic period for these instruments is still considered as the core repertoire in classical music and is widely played in classical music culture. In this sense, these instrumentalists form a coherent group that was chosen for this study."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                71,
+                902,
+                257
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Two of the interviews were conducted in late 2019, and the remaining interviews were conducted throughout spring 2020. The participants were fourteen ciswomen Finnish musicians between the ages of 25 and 45. Out of them six were pianists, three were cellists and the remaining five participants were violin and viola players. To ensure the interviewees’ anonymity within the small community of classical musicians in Finland, the participants are referred to with pseudonyms in this article. Most of the participants asked for their interviews (audio and transcription) to be destroyed after the research. This also spells out the sensitivity of the studied subject. In quotes about particularly sensitive topics, I refrain from even using pseudonyms. I have translated the interview quotes from Finnish or Swedish (both official languages in Finland) into English, thereby also fading away accents or colloquialisms that might lead to identification. Before the completion of this article, the participants whose interviews were used as research material for this study were asked to read through the quotations. By doing so the interviewees were asked to confirm that the quotes were firstly, correctly translated, and secondly that they did not experience themselves as recognizable in the quotes. The interviewees were asked about the role models and ideals related to musical performing that they remember from the music education they received, and further, how they relate themselves to these ideals."
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                259,
+                904,
+                531
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Through the concepts and understandings of Gatens ([1996], 2003) and Ahmed (2007) introduced above, I analyse what kind of gendered and racialized bodily imaginaries can be dissected from the representations, symbols, and metaphors associated with idealized performance figures, and idealized performance practices in classical music, as recognized by women Finnish professional classical musicians. Further, I discuss how these social imaginaries shape musicians’ embodied subjectivity and affect their self-esteem as well as their understanding of gendered and racialized bodies, and their social value. I did not inquire about the interviewees’ socio-economic statuses. Therefore, class will only be scrutinized when relevant in connection with the emerging social imaginaries under analysis. I argue in this article that certain performer bodies are associated with an accepted and expected corporeality, and their performances can evoke social imaginaries that are seen as ideals and reference points in performance practice—forming a “canon of performers.” On this point this article also expands on Citron’s ([1993], 2000) research about musical canons. While Citron ([1993], 2000, p. 195) recognizes that soloists can wield “enormous power” related to repertoire selection, I further elaborate that through habitually embodying certain idealized social imaginaries canonized performers become idealized figures who maintain and repeat norms. In some places of the text I also discuss the situatedness of intersectional social imaginaries by showing how they are shaped by lived, situational circumstances and also by the material realities and conditions related to the involved performers and musical instruments. Further, I discuss the fragility of social imaginaries by showing how they were at times opposed by the informants of this research."
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                532,
+                904,
+                871
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Lastly, similarly to the participants of this research, I am myself a classically trained pianist with a long background as a student at music schools and music universities, and later as a piano teacher and pianist. However, “[holding] membership in a group does not denote complete sameness within that group”, as Corbin Dwyer and Buckle (2009, p. 60) point out. Moreover, my insider/outsider status is contested and blurred through the many ways in which I position myself as self/other in relation to gender, ethnicity, race, language, and professional status among other social positions (Savvides, Al-Youssef, Colin, & Garrido, 2014, p. 413). Such a place between insider/outsider and self/ other positions in relation to different social categories has been referred to as the space between (Corbin Dwyer & Buckle, 2009; Hellawell, 2006; Merriam et al., 2001). Corbin Dwyer and Buckle (2018, p. 1) actually propose that researchers cannot occupy anything else than the space between. My position as a Finnish white woman pianist has allowed me to partly understand the cultural underpinnings and challenges that women musicians face in the studied field, which ultimately impacted the choice of theoretical and methodological approaches for this study. For example, my own deep knowledge about playing an instrument on a professional level helped me to also understand nondiscursive or not easily articulable levels of playing experience during and through the interviews. However, my social positioning as a white Finnish cis woman most probably played a role in that all of the participants of this research were similarly white cis women. As a white woman doing research on classical music, which is still often constructed as an inherently white space (Thurman, 2021), this research thus offers only a limited understanding of inequality within the classical music field.5"
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                874,
+                904,
+                944
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "NORA—NORDIC JOURNAL OF FEMINIST AND GENDER RESEARCH"
+                    }
+                ]
+            },
+            "bbox": [
+                405,
+                35,
+                841,
+                48
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                853,
+                32,
+                880,
+                49
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "5"
+                    }
+                ]
+            },
+            "bbox": [
+                890,
+                35,
+                904,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                89,
+                71,
+                902,
+                326
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Further, I position myself also as an activist researcher and a member of the Finnish research society Suoni (n.d.).6 My close relationship to the issues explored in this article, motivates me to engage in “slow activism” (Page, Bull, & Chapman, 2019, p. 1311) by means of doing research. While inequality calls for fast solutions and “fixes,” (slow) academic research can engage in activism by addressing the complexity of the problem of inequality. By associating my article with this kind of slow activism, I aim to show the current inequality problems of gender and race in the status quo of the Finnish classical music culture, while producing new intrinsic information that can be used to address and repair issues of inequality within this culture."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                327,
+                902,
+                464
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "“Beautiful, petite and thin”—revealing the racialized imaginaries behind idealized femininity"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                89,
+                488,
+                888,
+                524
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Contrary to the other instrumentalists of this study, the interviewed violinists reported several white women violinists as idealized performers. Many interviewees had listened to internationally acclaimed women violinists’ recordings in their youth, such as Victoria Mullova, Ann-Sophie Mutter, and Ida Haendel, in addition to male violinist Itzhak Perlman. While opportunities to become soloists were described as somewhat equal for men and women, the violinist Sandra interviewed for this research pointed out that “there has of course been a discussion on whether women violinists need to invest in their looks in order to get gigs.” Another violinist, Lea, also told me that she had realized that the successful women musicians need “something other than playing [skills]” and explained that “[a]ll violin culture is just for girls with certain looks. But, of course, every smart person knows that it is not true.” Lea’s comment reveals that there were certain prejudices associated with female violinists even if “smart persons” would know that they are only social constructions. In fact, throughout the research material women violinists were described as expected to be tall, fit, and discreetly and smartly dressed. The interviewed violinists Susan and Lea explained in their respective interviews that they had been told in their years of study that they do not look like typical women violinists, whom either their teachers, or peers, had described as beautiful and thin girls with fragile bones that always looked “tidy.”"
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                532,
+                902,
+                804
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "The gendered expectations that the women violinists faced are reflected also in the results of Bull’s findings in her research on classical music culture conducted in the United Kingdom. According to Bull (2019, p. 9) one of the most “important ways in which classical music is associated with middle classes” in the UK is through “respectable femininity” that “is both required for classical music and also performed by "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\mathrm { i t } ^ { \\dag }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "(Skeggs, 1997; see also Green, 1997; Citron, 2004). As mentioned earlier, the interviewees of this study were not asked about their socio-economic status, and class was not explicitly mentioned by any of the interviewees. However, as feminist urban social geographer Alison Bain (2005, p. 33) points out, even if artists are not economically affluent, they can possess the symbolic capital and prestige of “cultural capital” and “the credibility that the title ‘professional’ provides” (see also Bourdieu, 1993, p. 165). Kristina Kolbe (2021, p. 2) maintains, in turn, that classical music has been “framed as the utmost expression of cultural value,” and links it with the “power of social elites as embodied by white Western upper- and middle-classes” (see also Bull & Scharff, 2017; Bull, 2018, Scharff, 2018a, 2018b). Bull (2018, 5th subchapter, 2nd paragraph) writes that “classical music scene is revealing the normative gender identities of the established middle class.” Gatens’ insights ([1996], 2003) can be considered as supporting these claims. She ([1996], 2003, p. viii) understands social imaginaries as “ready-made images” and symbols that are the “(often unconscious) imaginaries” through which we make sense of bodies, and partly determine their value. What emerges in my interview material is that the interviewed violinists were expected to affirm restrictive Western body norms, suggesting that their social value depended on how they affirmed these beauty ideals. Unlike cello and piano, the solo violin is played standing, with the performer’s body facing the audience. The violin is held on the left collarbone, leaving most of the body to be seen by the audience. Thus, the material conditions (Tiainen et al., 2020, p. 7) of playing the violin shape the performer’s body so that it is on full display for the public eye. These material circumstances might, on a situational basis, make violinists more likely to be judged by their physical appearance than pianists and cellists. However, contrary to Bull’s study (2019, p. 177) the majority of my interviewees did not seem to inhabit female respectability in a way that they experienced as empowering for themselves, but instead they remained critical towards the gendered expectations."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                806,
+                904,
+                944
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "6"
+                    }
+                ]
+            },
+            "bbox": [
+                93,
+                37,
+                105,
+                47
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                115,
+                32,
+                141,
+                49
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "A. RAMSTEDT"
+                    }
+                ]
+            },
+            "bbox": [
+                152,
+                35,
+                247,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                93,
+                71,
+                902,
+                411
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "While other instrumentalists of the research mentioned appearance ideals to a lesser extent, the pianist Mary interviewed for this research, pointed out that she had not seen any fat women pianists stay famous despite musical achievement. Moreover, Mary pointed out that while male pianists who look untidy would be deemed as “genius,” untidy looking women would be deemed “crazy.” Associating a male Bohemian appearance with signs of artistic genius builds upon the historical ideology of genius (Bain, 2005, p. 29). Several researchers (see Parker & Pollock, 1981; Battersby 1989; Koskinen, 2006) have argued that the concept of “genius” relies in many ways on masculinized categories. Bain (2005, p. 29) states further that “professional status comes largely from drawing on a repertoire of shared myths and stereotypes to help create an artistic identity and project it to others.” Yet, my interviewees did not seem to rely heavily on stereotypical ideals of appearances, but instead experienced such ideals as oppressive and hurtful. However, these social imaginaries were also partly embodied. This is illustrated in the following examples."
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                413,
+                902,
+                618
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "One violinist had the experience that “I have always wanted to think that it hasn’t affected me but yes it has. I remember that [when studying on a professional level] I was constantly dieting.” She also implied that dieting and eating disorders might be a common thing among students playing the violin and remained very critical to the thinness ideal. Her experience seems opposite to a pianist’s, who explained that her teacher had constantly told her to “hit the gym,” “eat more,” and “man up.” She explained that she felt as if “[t]he first problem was that I was a girl.” Whether by conforming to the thinness ideal, or by striving towards “masculinity,” the gendered body was, according to my interview material, expected to be disciplined. Idealizing thinness and control over the body have also been associated by many researchers with racial constructions and whiteness (Davidauskis, 2015; Dyer, [1997], 2002; Strings, 2019, 2020)."
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                618,
+                902,
+                787
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Sociologist and fat studies researcher Sabrina Strings (2019, pp. 211–212) argues that instead of focusing the “thin ideal” on middle- and upper-class white women, the focus should be the underlying racial discourse, that has its roots in history, in “[t]he image of fat black women as ‘savage’ and ‘barbarious’ in art, philosophy, and science, and as ‘diseased’ in medicine has been used both to degrade black women and discipline white women.” Fatness as “Other” has served as a creation of slenderness as the “proper form of embodiment for elite white Christian women” (Strings, 2019, p. 212), and as this research material suggests, for Finnish professional musicians. I argue that by exclusively idealizing only Western white standards of beauty, such as being fit, thin, tall, and discreetly dressed, as well as by idealizing only white women who affirm these norms, whiteness can be read as forming the background of the gendered social imaginaries. Further, violinist Lea stated that all idealized women musicians are also able bodied. She pointed out that while the male violinist Itzhak Perlman is celebrated despite of being partly disabled by polio, she could not imagine that a partly disabled woman violinist could be as famous and appreciated. This comment sheds some further light on the many ways that the dominant ideals and norms recognized by the violinists of this study are produced through exclusion (van Amsterdam, 2013)."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                789,
+                904,
+                941
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "NORA—NORDIC JOURNAL OF FEMINIST AND GENDER RESEARCH"
+                    }
+                ]
+            },
+            "bbox": [
+                405,
+                35,
+                841,
+                48
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                853,
+                32,
+                880,
+                49
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "7"
+                    }
+                ]
+            },
+            "bbox": [
+                890,
+                35,
+                904,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                89,
+                71,
+                902,
+                173
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "In addition to anxieties on meeting appearance ideals, worry of displaying other than heterosexuality was also prevalent in the interviews. One interviewee explained that she had experienced general insecurity among musicians who display non-conformity by not dressing in clothes that suggest binary gender roles and thus assumed heterosexuality. Another violinist told me, in turn, that the restrictive culture “has affected [me] in the sense that I think about these things and for example my own sexuality and how others perceive it. It makes me cautious.” These comments reveal an idealization of heterosexuality and the racial discourses that underlie such social imaginaries. Dyer, [1997], 2002, p. 20) writes that “[r]ace is a means of categorising different types of human body which reproduce themselves.” Further, “[h]eterosexuality is the means of ensuring, but also the site of endangering, the reproduction” of differences that race seeks to systematize (Dyer [1997], 2002, p. 20). As whiteness, queer and sexuality researcher Mason Stokes (2005, p. 132) puts it “[w]hiteness needs heterosexuality in order to reproduce itself, in order to guarantee the pristine white future it depends upon; heterosexuality, on the other hand, needs whiteness- with its claim to an unblemished morality—as a safeguard against the moral taint of the sex in heterosexuality, the taint that accompanies the messier aspects of bodies that go bump in the night.” Further, Stokes (2005, p. 145, 148), maintains that by simultaneously producing the heterosexuality’s necessary corollary—homosexuality, heterosexuality also “exposes the kinks that make up the allegedly straight, the weirdness that defines the normal.” Indeed, restraining one’s sexuality has also been theorized as an important marker for “respectable femininity” (Nead, 1988; Skeggs, 1997; Bull 2020). As art historian Lynda Nead (1988, p. 5) stipulates, women’s expression of sexuality “determined whether or not she was seen as a respectable and responsible member of society.” Bearing these views in mind, the restrictive appearance expectations for white women violinists can consequently be understood as mediating also white female heterosexuality because of the potential threat that sex and sexuality pose for whiteness and for the supposed normativity and conformity it governs."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                175,
+                904,
+                599
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Ahmed (2007, pp. 156–157) maintains that the contours of space are mediated through the habitual actions of bodies, and spaces then acquire “the shape of the bodies that ‘inhabit’ them” by orienting around some specific bodies. “When we describe institutions as ‘being’ white (i.e. institutional whiteness), we are pointing to how institutional spaces are shaped by the proximity of some bodies and not others: white bodies gather, and cohere to form the edges of such space” (Ahmed 2007, p. 157). All the idealized female and male violinist performers mentioned in my research material were white, but despite of this, the category of whiteness was not, as such, mentioned by the interviewees in association with gendered requirements. This demonstrates the “invisibility” of whiteness. Moreover, Ahmed (2007, p. 158) maintains that the space that is inscribed by whiteness determines the ways bodies need to inhabit whiteness “if they are to get ‘in’” to the space. The symbols, representations and images surrounding the appearance ideals recognized by my interviewees can be summed up as a social imaginary that idealized restrictive Western beauty standards, thinness, able-bodiedness, and heterosexuality. By analysing these imaginaries in parallel with the way they construct racial constructions, whiteness is exposed as an underlying social imaginary that governs gendered appearance ideals of the white Finnish women musicians. Even if pianists and cellists also mentioned restrictive appearance ideals, such oppressive norms were most strongly associated with violin playing. This shows that social imaginaries are situation-bound and shaped by varying material conditions, such as the involved instruments and the bodily, cultural practices of playing them (Tiainen et al., 2020). The complex situatedness of these social imaginaries is further supported when we bear in mind that in contradistinction to white women, “the image of exotic, seductive, available sexuality has been a staple of features of the representations of Asian women in American culture for more than a century and is very much alive in popular culture today.” (Yoshihara, 2007, p. 119). When interviewees had been young, the discussed social imaginaries had had an impact on their embodied mind by resulting in eating disorder behaviour, and overly strict control of the body. However, at the time of the interviews most of the participants of this study expressed exhaustion and criticism towards the oppressive ideals and wished to subvert them."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                601,
+                904,
+                941
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "8"
+                    }
+                ]
+            },
+            "bbox": [
+                93,
+                37,
+                105,
+                47
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                115,
+                32,
+                141,
+                49
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "A. RAMSTEDT"
+                    }
+                ]
+            },
+            "bbox": [
+                152,
+                35,
+                247,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                89,
+                71,
+                902,
+                190
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "“Everyone famous. But no women.”—Authority figures embodying racialized and gendered social imaginaries"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                91,
+                216,
+                880,
+                252
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "The pianists and cellists of this research reported primarily white men of European descent as acclaimed and noteworthy cellists and pianists. The pianists of this study were encouraged by their teachers to listen to recordings or watch videos of pianists such as Emil Gilels, Krystian Zimmerman, Ivo Pogorelich, Sviatoslav Richter, Arturo Benedetti Michelangeli, Murray Perahia and Claudio Arrau. The gendered domination did not go unnoticed by the interviewed musicians. One of the pianists, Lucy, stated that “every pianist that [the teacher] asked me to listen to . . . they were all men. And all the composers were men.” Just like most of the pianists interviewed for the study, Fiona explained that “[e]veryone [among the pianists that her teacher admired] were old men, maybe there was one woman.” Also, cellists interviewed for the research recounted that the generally acclaimed cellists were mainly men, such as Yo-yo Ma, Daniil Shafran and Truls Mørk. One of the cellists, Sarah, explained that the admired cellists were “everyone famous. But no women.” Both Sarah and another interviewee, Mia, also mention a few Finnish male cellists as generally acclaimed instrumentalists. Moreover, Mia said that “[i]n any case all of the ones who one was supposed to admire were men.”"
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                259,
+                904,
+                498
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "The different attitude towards women musicians was also apparent in the participants’ experiences. Only a few women pianists were mentioned, and most of them were the teachers’ own teachers or colleagues. The appreciation towards women was even more scant among cellists. Mia stated that she was happy that there was “at least” Jacqueline du Pré whom she admired. However, in the early stages of her professional cello studies she learned that “Jacqueline du Pré is definitely not someone who you should admire.” Mia recounted that women cellists had repeatedly been deemed as “not really” good by teachers, except those women cellists that played in a “Natalia Gutman’s style of masculine playing.” This reveals not only the lack of social value granted to women, but also how features associated with masculinity are understood as valuable. The cellists also pointed out that in the last 20 years there has been no women teachers, lecturers, nor professors in cello in the only music university of Finland, the Sibelius Academy."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                500,
+                902,
+                686
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Despite the fact that most of the idealized pianists and cellists had recorded around the midtwentieth century they were the most authoritative performers even in the 2020s for the musicians interviewed in this research. This implies how strongly social imaginaries of professionalism and skills were associated especially with performers that have long ago been established as generally acclaimed performers. Contrary to what this research material shows, there was a substantial number of professional women pianists and cellists in the mid twentieth century (Ramstedt, 2020, 2021, forthcoming). Despite the fact that numerous historical woman pianists and cellists gained fame and made quality recordings, most of them, along with their recordings, have later been forgotten in the past. Contrary to their male counterparts, women instrumentals often faced sexism and gendered prejudices in concert reviews. By contrast, historical white male instrumentalists could in concert reviews be referred to as “maestros,” “masters,” and “legends.” (Ramstedt, 2020, 2021, forthcoming). I argue elsewhere (Ramstedt, forthcoming) that because these male performers were already in their own time associated with notions that express continuity, they, and their recordings, have remained as legends until today. Citron, [1993], 2000, p. 195) discusses the power of recordings related to compositions and composers and states that “[r]ecordings preserve aural renditions that are repeatable and can themselves become canonic.” I suggest that when only certain artists and recordings are repeatedly established as legendary and ideal, this gives rise to a “canon of performers” comprised of these select celebrated musicians."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                686,
+                904,
+                944
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "NORA—NORDIC JOURNAL OF FEMINIST AND GENDER RESEARCH"
+                    }
+                ]
+            },
+            "bbox": [
+                405,
+                35,
+                841,
+                48
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                853,
+                32,
+                880,
+                49
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "9"
+                    }
+                ]
+            },
+            "bbox": [
+                890,
+                35,
+                904,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                89,
+                71,
+                902,
+                122
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "The nearly complete ignorance of recordings by women and Black, indigenous and people of colour pianists and cellists in the interviews speaks not only of misogyny but also of racism. Ahmed (2007, p. 156) argues that “[p]ublic spaces take shape through the habitual actions of bodies, such as the contours of space could be described as habitual.” Similarly as the repetition of norms establishes a canon of performers, over-representation of white male bodies also starts to indicate habituality of these bodies. Further, when the body becomes habitual in ways that are repeated “it does not command attention”; instead, it shapes the idea of “what bodies can do” (Ahmed, 2007, p. 156). While the gendered domination was criticized by the informants of this research, the racialized dominance went completely unnoticed. Reflecting white normativity or whiteness as ordinariness (or “ordinary whiteness”) this lack of attention denotes silent assumption through racially divided categorization (Seikkula, 2019, p. 1005; see also; Dyer, [1997], 2002). As I will explore below, these idealized performers were elevated to authority figures also through specific corporeal dispositions and playing movements that are further associated with social imaginaries of whiteness and masculinity."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                123,
+                906,
+                363
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Heroes and invisible bodies—coping with social imaginaries"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                91,
+                390,
+                675,
+                408
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Authority and professionalism were in different ways associated with ideal performance practices through bodily dispositions and specific movements of playing the instrument. Idealized perfection of playing was also associated with sound, as violinists described sonic ideals as “clean,” “healthy,” “quite straightforward,” and “balanced.” Violinist Susan also explained that the aesthetic ideals are extremely narrow and that playing everything without making mistakes is “unrealistic.” These narratives emphasize intellectualism and bodily control. These connotations resemble Bull’s (2019) notion of “controlled excitement,” that she describes to occur when playing difficult pieces requiring high technical skills, also evoke passion and excitement in the player that also needs to be controlled. Bull (2019, p. 23) draws further attention to the historical similarities between religious and musical practices. She (2019, p. 23) finds the Christian religious idea of sublime and sacred as something outside of the body in a transcendent realm, as “crucial” in her own “theorization of the body in classical music practice; the body must be both disciplined and at the same time effaced or transcended” (see also Eagleton, 1988, 2015; Goehr, 1992; McClary, [1991], 2002). By drawing also on Dyer ([1997], 2002, pp. 15, 17, 30) theorization about whiteness and transcendence, Bull (2019, p. 104) states that the “problem of the body in performing classical music” is that “it needs to be present in order to make sound, but it needs to be transcended in order to allow the spirit of musical work to shine through”—reflecting the “paradox of whiteness.” Dyer, [1997], 2002, p. 14) traces such thought back to Christianity and the infliction it has given to Western dualist thought: the spirit that is out of the body is still somehow in the body."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                415,
+                904,
+                740
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "This was further reflected in the following comments. The pianist, Mary, recounted that when older male pianists perform, the focus is only on the music. Mary stated that it is the “privilege” of over 60-year-old men, dressed in white tie, to:"
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                740,
+                904,
+                792
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "come and sit, play and leave. Because they are really expressionless . . . They are that kind of old gentlemen whose know-how is absolute, and no one can question whether they are true professionals or not."
+                    }
+                ]
+            },
+            "bbox": [
+                113,
+                801,
+                878,
+                831
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Mary’s comment implies that older white men do not have to prove their skills, as professionalism and know-how are already assumed. Canonized white male performers were further associated with minimal bodily movements that were described as “architectonical playing,” in which the body was ideally not showing reactions to emotions. The sitting position of playing piano also endorses minimal movement. Because the pedals need to be used frequently, legs must usually be kept together and in place. One pianist, Fiona said that “the only thing you need is ten fingers and a head” , suggesting that the rest of the body is invisible. These comments echo what feminist music researcher Lucy Green (1997, pp. 81–82) has also observed: “history has dictated [male instrumentalists’] normality, and they are relatively transparent: we do not have to listen to a man playing the drums; we can listen to the music played on the drums . . . we do not hear masculinity in the music; we assume it.” However, Mary, who would have wanted to play with minimal movements and controlled excitement, explained that it was often misunderstood in her case as indicating shyness and reservation. This illustrates the ways that values and meanings associated with specific bodies “affect our perception of inherent meanings” (Green, 1997, p. 56)."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                839,
+                904,
+                944
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "10"
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                37,
+                115,
+                47
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                125,
+                32,
+                150,
+                49
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "A. RAMSTEDT"
+                    }
+                ]
+            },
+            "bbox": [
+                160,
+                35,
+                253,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                89,
+                69,
+                902,
+                207
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Mary’s comment also points to the situatedness of minimal corporeal playing movements. While minimal playing movements signified bodily invisibility and transcendence especially when performed by canonized male performers, when enacted by young white women pianists of this study they signified something else, such as shyness. As Tiainen et al. (2020, p. 2) suggest, social differences always come into being through and in particular situations. Affirming this, music researchers Yang (2007), Yoshihara (2007) and Leppänen (2015) show how Asian classical musicians who play with minimal corporeal movements are associated with quite different connotations than the movements of their white male peers. Mina Yang (2007, p. 14) states that “[t]he image of Asian as automatons, robots without souls, appears frequently in the Western imagination.” Further, Leppänen (2015, p. 30) shows how performances by Asian competitors of the Jean Sibelius Violin Competition in 1995 were described in the Finnish media as “lacking in interpretative ability” despite being “technically brilliant.” Asian musicians’ performances could according to the Finnish media “not meet the standard of ‘true’ art” (Leppänen, 2015, p. 30). Also some of the interviewees of this research did not experience their own musical interpretations as credible. A case in point would be when the pianist Lucy explained that “sure, I can play [Beethoven’s piano music] here and experience it as [my interpretation]—but it is no [real] Beethoven.” While Lucy could inhabit the concert space with her white body and find her own interpretation of the music, her comment confirms that “only playing” was not enough in her case to elevate the musical work to the level of the social imaginaries that signify credibility."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                207,
+                904,
+                532
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "The only performance ideal that emphasized expansive bodily movements of playing came up in the cellists’ interviews, where it was strongly associated with the male body and connotations of masculinity. A cellist interviewed for the study, Emily, told me that in Finland “[y]ou need to be such a dude” to play the cello. “Feminine” playing is depicted as less valuable, whereas rough and macho—bodily expansive ways of playing with “testosterone flowing”—was portrayed as ideal. The cellist, Mia, explained that “[t]he culture that has been created around [the Finnish cello scene] is weird. Very masculine and very heroic.” “Dudeness” is here associated mostly with white Finnish cellists whose performances are described with masculine connotations that suggest heterosexuality. Because the acceptable form of corporeality can be read as affirming heteronormative white masculinity and sexuality, the ideals reveal again racialized imaginaries. Researcher Arto Jokinen (2000) has studied men, masculinities, and violence in the Finnish context. Jokinen (2000, p. 211) states that while “cultural masculinity” (hegemonic masculinity) is assumed as natural, it is also constantly proven and constructed through a series of “manhood trials.” In the context of the present research Finnish white masculinity is proven and performed through sonic and corporeal means, which the cello’s material conditions support (Tiainen et al., 2020). The cello’s low timbre allows for loud, rough, and macho ways of playing. Contrariwise, a cellist maintained that"
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                532,
+                904,
+                821
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "[s]ometimes it feels that for myself the goal has been to be genderless. Men usually appear genderless; a man is practically the general norm. In a way a woman stands out anyway because of her womanhood and then sometimes gender unintentionally takes the attention away from other things."
+                    }
+                ]
+            },
+            "bbox": [
+                115,
+                834,
+                878,
+                880
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "As Ahmed (2007, p. 158) stipulates, whiteness orientates around institutions and “spaces extend bodies and bodies extend spaces.” Because white men are the norm in classical music culture and its performance practices, white male bodies can extend the spaces by realizing imaginaries of transcendence, or white hegemonic masculinity, and thus quintessential ideals forming the canon of performers. However, women’s bodies unintentionally attracted attention, even when playing the cello which conceals most of the performer’s body that plays it. This again confirms the situatedness (Tiainen et al., 2020) of social imaginaries: while the white woman body, through related imaginaries, could be associated with authoritative violin playing, the white woman body did not succeed to do so when being associated with cello playing."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                891,
+                904,
+                944
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "NORA—NORDIC JOURNAL OF FEMINIST AND GENDER RESEARCH"
+                    }
+                ]
+            },
+            "bbox": [
+                397,
+                35,
+                833,
+                48
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                845,
+                32,
+                870,
+                49
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "11"
+                    }
+                ]
+            },
+            "bbox": [
+                884,
+                35,
+                902,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                89,
+                71,
+                906,
+                173
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Gatens ([1996], 2003, p. 35) argues that “[t]he privileged relation which each individual has to [their] own body does not include a privilege over its construction.” Put differently, when building our own consciousness and self-image we do it constantly through our interaction with the world outside of ourselves. While the musicians who participated in this study could inhabit the spaces of classical music as white bodies, many of the participants of this study had trouble seeing themselves as credible, or successful musicians. Further, by embodying the presented ideals they experienced themselves in relation to them. This was associated with feeling insufficient, lack of self-esteem, anxiety, playing related injuries, and stage fright. One of the research participants told me that the narrow ideals have “locked me corporeally. And given a feeling that I cannot do this. I cannot do it in a certain desirable way. And that I cannot change into something that would be accepted.” Another pianist maintained that as a teenager she experienced her “growing breasts”—her gendered body to be the reasons she could not be a credible pianist. This, she maintained, was related to those “great pianists with white ties.” Her comment shows the impact that the representation of performing bodies have. The lack of reference points posed a problem for her when, against her own expectations, she succeeded in competitions and was awarded prizes. The success did not fit the role she had acquired from a young age. The implication is that her inherent understanding of what she could do with her white woman body clashed with her success. The pianist stated in the interview that “[m]y hands broke and I sort of broke down mentally”—as if becoming and embodying the role of a successful pianist clashed with the image that she had had of herself, or rather, the social value of her body. Bull (2019, p. 131) describes similarly in her research that while young men could see themselves as becoming conductors, “aspiring to inhabit authority”, young women were more likely to see themselves as merely subjects to authority. Out of the participants of this study, Mia similarly stated that if young musicians do not have other role models than “always some men”, it becomes a “prophecy” that keeps fulfiling itself."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                175,
+                906,
+                585
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Concluding remarks"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                91,
+                609,
+                290,
+                626
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "In this article, I have attempted to demonstrate how generally accepted forms of performance practice and performances by idealized performance figures reveal gendered and racialized social imaginaries that still prevail in Finnish classical music culture. While the gendered inequality manifests itself in the over-representation of male performers, especially in piano and cello performance, the underlying social imaginaries that formulate the “good quality performances” (Bull, 2019, pp. 175–178) are rooted in whiteness. According to my findings from the interview material of the present study, idealized corporeality in performances includes minimal bodily movements in piano playing that symbolizes the effacement of the body in favour of transcendence, intellectuality and “honest expression,” or expansive movement in cello playing that denotes heteronormative masculinity and heroism. Also, the instruments of the studied women musicians took part in shaping intersectional differences related to performance ideals (Tiainen et al., 2020, p. 7); the low timbre of the cello supported the performance of macho masculinity, whereas the static playing position of the piano displayed bodily control that emphasized intellectuality. That an interviewee’s minimal corporeal movements were interpreted as shyness confirmed the situatedness of the social imaginaries. The performers that are associated with these idealized social imaginaries were predominantly white male performers, which I have argued form a “canon of performers.” While it is arguable whether naming yet another canon is helpful for understanding the consequences of restrictive ideals, or merely affirms such social imaginaries, I believe that naming and noticing such hierarchies is needed in order to deconstruct their power and notice the socio-cultural background and conditions behind them. As Ahmed (2007, p. 165) states, “[i]t is by showing how we are stuck, by attending to what is habitual and routine in ‘the what’ of the world, that we can keep open the possibility of habit changes.” My use of the word canon by no means implies that canons are something positive and static. Instead, my usage of this term should be understood as an invitation to scrutinize and deconstruct it further—as all other hegemonic canons."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                635,
+                906,
+                944
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "12"
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                37,
+                113,
+                47
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                125,
+                32,
+                150,
+                49
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "A. RAMSTEDT"
+                    }
+                ]
+            },
+            "bbox": [
+                160,
+                35,
+                253,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                89,
+                71,
+                902,
+                173
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Even though women violinists reported a considerable number of women as idealized violi nists, they also experienced a remarkably strong need to conform to heteronormative European white beauty ideals that promoted middle-class “respectable femininity.” The playing position of the violin also took part in arranging the performer’s body (Tiainen et al., 2020, p. 7), thus allowing the audience to have a full display of the front of their body. These ideals were partly embodied by the informants of the study, thus shaping the way they experienced themselves by imposing control on the interrelation of body and mind. Moreover, most of the women musicians had occasionally experienced insufficiency and lack of self-esteem, stage-fright, and even physical injuries due to overly strong bodily control. Violinists were especially associated with eating disorders and anxiety for not sufficiently confirming heterosexuality through their physical appearance and behaviour."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                173,
+                906,
+                360
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "All the aforementioned ideals were communicated to the informants of this research by their teachers, but also reaffirmed by their peers. This contradicts the idea that the Finnish music education system is an emblem of social equality. On the other hand, it also suggests how strongly the classical music scene in Finland is entrenched with whiteness. Initially these ideals shaped the experiences of the informants as teenagers and young women in their professional music studies. The impact of these ideals should therefore not be underestimated. However, at the time of the interviews the majority of the research participants expressed strong criticism towards oppressive ideals and were concerned about the young classical musicians of today that face similar forms of inequality. Many participants also sought to advance gender equality through their own work as performers. These musicians’ strong opposition of the prevailing norms reveals their precarious and unstable nature. However, race, or white normativity, went completely unnoticed by the informants of this study despite whiteness being the overarching background of the discussed social imaginaries. Therefore, to understand, deconstruct, and repair gender inequality in the classical music field in Finland, focus should also be placed on the racial constructions behind oppressive gendered norms."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                361,
+                908,
+                616
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Notes"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                91,
+                643,
+                154,
+                658
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "1. In order not to jeopardize the participants anonymity, the pseudonyms are not associated with specific dates."
+                    }
+                ]
+            },
+            "bbox": [
+                117,
+                670,
+                902,
+                685
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 1. Interview in person by author in Helsinki. 29.11.2019."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                686,
+                645,
+                698
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 2. Interview in person by author in Helsinki. 13.12.2019."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                700,
+                643,
+                713
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 3. Interview in person by author in Helsinki. 6.3.2020."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                713,
+                628,
+                727
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 4. Interview in person by author in Helsinki. 7.3.2020."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                727,
+                628,
+                740
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 5. Interview in person by author in Helsinki. 8.3.2020."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                742,
+                628,
+                754
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 6. Interview in videocall by author. 1.4.2020."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                757,
+                559,
+                770
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 7. Interview in videocall by author. 2.4.2020."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                770,
+                559,
+                784
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 8. Interview in videocall by author. 3.4.2020."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                784,
+                559,
+                797
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 9. Interview in videocall by author. 7.4.2020."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                799,
+                559,
+                811
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 10. Interview in videocall by author. 9.4.2020."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                813,
+                567,
+                827
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 11. Interview in videocall by author. 14.4.2020."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                827,
+                576,
+                841
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 12. Interview in videocall by author. 15.4.2020."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                841,
+                576,
+                854
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 13. Interview in videocall by author. 15.4.2020."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                856,
+                576,
+                868
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Interviewee 14. Interview in writing. 21.5.2020."
+                    }
+                ]
+            },
+            "bbox": [
+                158,
+                870,
+                492,
+                883
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "2. All of the interviews are stored both in audio format and in text format in the University of Helsinki’s storage cloud as well as in the researcher’s own computer. According to the wishes of the participants, some of the interview material will be destroyed after the completion of the research project, while some of the interview material will be preserved in a chosen archive."
+                    }
+                ]
+            },
+            "bbox": [
+                117,
+                884,
+                904,
+                941
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "NORA—NORDIC JOURNAL OF FEMINIST AND GENDER RESEARCH"
+                    }
+                ]
+            },
+            "bbox": [
+                397,
+                35,
+                833,
+                48
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                845,
+                32,
+                870,
+                49
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "13"
+                    }
+                ]
+            },
+            "bbox": [
+                884,
+                35,
+                902,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "3. One of the interviews was communicated by writing at the participant’s own wish. The interview subject consisted of sensitive topics that were easier for the participant to express in written form."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "4. Suoni (n.d.) is a Finnish research association that practices societally activist music research. The invitation to participate in this research was published on the website https://www.suoni.fi/etusivu/2020/2/20/osallistututkimukseen-sukupuolittuneesta-vallankytst-klassisen-musiikin-kulttuurissa."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "5. For a more detailed discussion on positionality in this research, see Kivinen and Ramstedt (forthcoming)."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "6. The research association Suoni ry (n.d.) practices “societal and action-oriented music research” and seeks “to advance musical practices and music research as a site for societal discussion.”"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                117,
+                72,
+                904,
+                186
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Disclosure statement"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                91,
+                212,
+                298,
+                227
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "No potential conflict of interest was reported by the author(s)."
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                239,
+                533,
+                254
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Funding"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                91,
+                280,
+                176,
+                299
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "This work was supported by Suomen Kulttuurirahasto [00200911,00210167,00221165]"
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                309,
+                699,
+                324
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Notes on contributor"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                91,
+                351,
+                298,
+                367
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Anna Ramstedt (M.M. & M.A.) is a pianist, music educator and doctoral student in Musicology. She is currently pursuing her PhD in University of Helsinki. She studies gendered and sexual, and emotional abuse, as well as the construction of inequality within the classical music scene in Finland."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                378,
+                904,
+                423
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "ORCID"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                91,
+                450,
+                158,
+                465
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Anna Ramstedt http://orcid.org/0000-0002-2356-4023"
+                    }
+                ]
+            },
+            "bbox": [
+                91,
+                477,
+                501,
+                492
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "References"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                93,
+                515,
+                202,
+                529
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "reference_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Aarnio, P. (2017, June 2). “Music education from Finland: Experiences, exploration and excitement.” Finnish Music Quarterly. https://fmq.fi/articles/music-education-from-finland-experiences-exploration-and-excitement. Last visited 3.8.2021."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Ahmed, S. (2007). A phenomenology of whiteness. Feminist Theory, 8(2), 149–168."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "André, N., Bryan, K. M., & Saylor, E. (eds.). (2012). Blackness in Opera. Urbana: University of Illinois Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "André, N. (2018). Blackness in Opera: History, power, engagement. Urbana: University of Illinois Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Bain, A. (2005). Constructing an artistic identity. Work, Employment and Society, 19(1), 25–46."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Battersby, C. (1989). Gender and genius: Towards a Feminist Aesthetics. London: The Women’s Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "BBC. 2020. Black Classical Music: A Forgotten History. Accessed 11 June, 2022. https://www.bbc.co.uk/programmes/ m000n18w"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Bonds, M. E. (2014). Absolute music: The history of an idea. New York: Oxford University Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Bourdieu, P. (1993). The field of cultural production: Essays on art and literature. Cambridge: Polity Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Bowers, J., & Tick, J. (eds.). (1987). Women making music: The Western Art Tradition, 1150–1950. Urbana: University of Illinois Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Bull, A., & Scharff, C. (2017). ‘McDonald’s music’ versus ‘serious music’: How production and consumption practices help to reproduce class inequality in the classical music profession. Cultural Sociology, 11(3), 283–301."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Bull, A. (2018). Uncertain capital: Class, gender, and the ‘Imagined futures’of young classical musicians. In C. Dromey & J. Haferkorn (Eds.), The classical music industry. London: Routledge."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Bull, A. (2019). Class, control, and classical music. New York: Oxford University Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Bull, A. (2020). “Respectabilité” et musique classique: Classe, genre et race au croisement des inégalités dans la formation musicale [“Respectability” and classical music: Examining the intersections of class, gender and race to understand inequalities in musical training] in M. Buscatto, M. Cordier and J. Laillier (Eds.), Sous le talent: La classe, la genre, la race. Agone 65. https://agone.org/livres/agone65"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Churcher, M., & Gatens, M. (2019). Reframing honour in heterosexual imaginaries. Angelaki – Journal of the Theoretical Humanities, 24(4), 151–164."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Cirio, N. P. (2015). Black skin, white music: Afroporteño musicians and composers in Europe in the second half of the Nineteenth Century. Black Music Research Journal, 35(1), 23–40."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Citron, M. J. ([1993] 2000). Gender and the musical canon. Cambridge: Cambridge University Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Citron, M. J. (2004). Feminist waves and classical music: Pedagogy, performance, research. Women and Music: A Journal of Gender and Culture, 8(1), 47–60."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Corbin Dwyer, S., & Buckle, J. L. (2009). The space between: On being an insider-outsider in qualitative research. International Journal of Qualitative Methods, 8(1), 54–63."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Corbin Dywer, S., & Buckle, J. L. (2018). Reflections/Commentary on a Past Article: “The Space Between: On Being an Insider-Outsider in Qualitative Research”. International Journal of Qualitative Methods, 17, 1–2."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Dahlhaus, C. ([1989] 1990). The idea of absolute music. Translate from German to English bu Roger Lustig."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Davidauskis, A. (2015). ‘How beautiful women eat’: Feminine hunger in American popular culture. Feminist Formations, 27(1), 167–189."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "De Lerma, D. R. (1990). Black composers in Europe: A work list. Black Music Research Journal, 10(2), 275–334."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Dyer, R. ([1997], 2002). White. New York: Routledge."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Eagleton, T. (1988). The ideology of the aesthetics. Poetics Today, 9(2), 327."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Eagleton, T. (2015). Culture and the death of god (pp. 2015). London: Yale University Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Ellis, K. (1997). Female pianists and their male critics in Nineteenth-Century Paris. Journal of the American Musicological Society, 50(2–3), 353–385."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "European Institute for Gender Equality. (2020). Gender equality index. European Institute for Gender Equality. Accessed 22 June, 2022. https://eige.europa.eu/gender-equality-index/compare-countries,"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Ewell, P. A. (2020). Music theory and white racial frame. Music Theory Online, 26(2), Accessed 22 June, 2022. https:// mtosmt.org/issues/mto.20.26.2/mto.20.26.2.ewell.html"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Finnish Government. (2021). Finland will be a more equal and equitable country where everyone is valuable and where trust in others and society augments. https://valtioneuvosto.fi/en/marin/government-programme/fairequal-and-inclusive-Finland"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Floyd, S. A. (ed.). (1999). International dictionary of black composers. Chicago: Fitzroy Dearborn Publishers."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Gatens, M. ([1996], 2003). Imaginary bodies: Ethics, power and corporeality. New York: Routledge."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Gatens, M. (2004). Can human rights accommodate women’s rights? Towards an embodied account of social norms, social meanings, and cultural change. Contemporary Political Theory, 3(3), 275–299."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Goehr, L. (1992). The imaginary Museum of musical works: An essay in the philosophy of music. New York: Oxford University Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Green, L. (1997). Music, gender, education. New York: Cambridge University Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Griffiths, A. (2019). Playing the white man’s tune: Inclusion in elite classical music education. British Journal of Music Education, 37(1), 55–70."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Hellawell, D. (2006). Inside–out: Analysis of the insider–outsider concept as a heuristic device to develop reflexivity in students doing qualitative research. Teaching in Higher Education, 11(4), 483–494."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Herbert, P. (2000). Developments in classical music made by black composers in the Twentieth Century. Contemporary Music Review, 19(4), 173–188."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Huneman, P., & Wolfe, C. T. (2017). Man machines and embodiment – from cartesian Physiology to Claude Bernard’s ‘Living Machine’ in embodiment: A history. (J. E. H. Smith, Edited by). New York: Oxford University Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Hung, E. (2009). Listening to Chineseness on the Western Concert stage: The case of lang lang: Music and the Asian Diaspora. Asian Music, 40(1), 131–148."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Hvenegård-Lassen, K., Staunæs, D., & Lund, R. (2020). Intersectionality, yes but how? Approaches and conceptualizations in Nordic Feminist research and activism. NORA - Nordic Journal of Feminist and Gender Research, 28(3), pp. 173–182."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Jean-Francois, I. A. (2020). Julius Eastman: The sonority of blackness otherwise. Current Musicology, 106, Spring. doi:10.52214/cm.v106i.6772."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Johnson, J. M., & Rowlands, T. (2012). The SAGE handbook of interview research: The complexity of the craft. (J. F. Gurbrium, J. A. Holstein, A. B. Marvasti, & K. D. McKinney, Edited by). California: SAGE Publications."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Jokinen, A. (2000). Panssaroitu maskuliinisuus: Mies, väkivalta ja kulttuuri. Tampere: Tampere University Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Julia, E. K. (2008). Listening for whiteness: Hearing racial politics in undergraduate school music. Philosophy of Music Education Review, 16(2), 145–155."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Keskinen, S., Tuori, S., Irni, S., & Diana, M. (eds.). (2009). Complying with Colonialism: Gender, race and ethnicity in the Nordic Region. Furnham: Ashgate."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Keskinen, S. (2021). Kolonialismin ja rasismin historiaa Suomesta käsin. [Colonialism and history of racism from the Finnish perspective]. In S. Keskinen, M. Seikkula and F. Mkwesha (Eds.), Rasismi, valta ja vastarinta: Rodullistaminen, valkoisuus ja koloniaalisuus Suomessa (pp. 69–84). Tallinna: Gaudeamus."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Keskinen, S., Seikkula, M. & F. Mkwesha (2021). Rasismi, valta ja vastarinta: Rodullistaminen, valkoisuus ja koloniaalisuus Suomessa. In (Ed.), [Racism, power and resistance: Racialization, whiteness and colonialism in Finland]. Tallinna: Gaudeamus."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Kivinen, M., & Ramstedt, A. (forthcoming). Feeling un/comfortable: Positionality and embodied experience in music research. In K. Ramstedt, S. Välimäki, S. Mononen, & K. Ahlsved (Eds.), The activist turn in music research. Bristol: Intellect Books."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Koivisto, N. (2019). Electric Lights, Champagne, and a Wiener Damenkapelle: Ladies’ Salon Orchestras and Transnational Variety Show Network in Finland, 1877–1916.” PhD diss., University of Helsinki, Helsinki, Finland: Acta Musicologica Fennica. 34."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Kolbe, K. (2021). Playing the system: ‘Race’-making and elitism in diversity projects in Germany’s classical music sector. Poetics, 87, 1–12."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Koskinen, T. (ed.). (2006). Kirjoituksia neroudesta – Myytit kultit, persoonat. Tampere: Suomalaisen Kirjallisuuden Seura."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Kowalcyk, B. (2019). Professional Aspirations in exile: The modest careers of migrant Japanese musicians in Europe. Researchers Sociologiques Et Anthropologique, 50(50–2), 101–122."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Kubik, S. (2017, December 17). Music education in Finland: The recipe for excellence. France Musique. Accessed 3 June, 2021. https://www.francemusique.fr/en/music-education-finland-recipe-excellence-15699"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Kvist, W. (2020, September 16). “HBL granskar: 93,92 procent av konserterna” [shortened title] Hufvudstadsbladet. https://www.hbl.fi/artikel/hbl-granskar-939-procent-av-konserterna-dirigeras-av-man-med-nuvarande-takt kommer-kvinnorna-ika/"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Ledford, J. A. (2020). Joseph Boulogne: The chevalier de Saint-Georges and the problem with Black Mozart. Journal of Black Studies, 51(1), 60–82."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Leppänen, T. (2015). The West and the Rest of classical music: Asian musicians in the Finnish media coverage of the 1995 Jean Sibelius violin competition. European Journal of Cultural Studies, 18(1), 19–34."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Lim, L. (2012). The female body and reviews of women pianists in the 1950s London. Women: A Cultural Review, 23(2), 163–181."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Lofstdóttir, K. & Jensen, L. (2012). Nordic exceptionalism and the Nordic ‘Others. In K. Lofstdóttir & L. Jensen (Eds.), Whiteness and Postcolonialism in the Nordic Region: Exceptionalism, migrant others and national identities (pp. 1– 12). New York: Routledge."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "McClary, S. ([1991] 2002). Feminine endings: Music, gender, and sexuality. USA: University of Minnesota."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Merriam, S. B. Johnson-Bailey, J., Lee, M.-Y., Kee, Y., Ntseane, G., & Muhamad, M. (2001). Power and positionality: Negotiating insider/outsider status within and across cultures. International Journal of Lifelong Education, 20(5), 405–416."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Ministry of Social Affairs and Health, Finland (n.d.). Finland is a gender equality pioneer. Ministry of Social Affairs and Health. Accessed 3 June, 2021. https://stm.fi/en/Finland-is-a-gender-equality-pioneer"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Moisala, P. (2006). Musiikki säveltäjänerouden kontekstissa – Kaija Saariahon musiikin kokemisen herättämiä pohdintoja [Music in the context of composer genius myth – Discussing the listening experience of Kaija Saariaho’s music]. In T. Koskinen (Ed.), Kirjoituksia neroudesta – myytit kultit, persoonat [Writings on geniusness: Myths, cultures, persons] Helsinki: SKS"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Mollet, D. (2020, September 23). “Finland’s music education has lessons for others.” China Daily. http://www. chinadaily.com.cn/a/202009/23/WS5f6ab8e4a31024ad0ba7b3ea.html. Last visited 3.6.2021."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Nead, L. (1988). Myths of sexuality: representations of Women in Victorian Britain. Oxford: Basil Blackwell."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Neuls-Bates, C. (1982). Women in music: An anthology of source readings from the middle-ages to the present. New York: Harper and Row."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Page, T., Bull, A., & Chapman, E. (2019). Making power visible: “slow activism” to address staff sexual misconduct in higher education. Violence Against Women, 25(11), 1309–1330."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Parker, R. & Pollock, G. (1981). Old mistresses: Women, art and ideology. London: Routledge."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Pendle, K. (Ed.). ([1991], 2001). Women and Music: A History. USA: Indiana University Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Ramstedt, A. (2020, August 11). Dags att damma av inspelningarna av historiens glömda pianister. Hufvudstadsbladet. https://www.hbl.fi/artikel/dags-att-damma-av-inspelningarna-av-historiens-glomda-pianister/"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Ramstedt, A. (2021). ‘Den stora och goda musik de små fruntimren åstadkommer’ – Cellons historia är full av fördomar och förenklande uttalanden. Hufvudstadsbladet, 21 July. https://www.hbl.fi/artikel/den-stora-och-godamusik-de-sma-fruntimren-astadkommer-cellons-historia-ar-full-av-fordomar-och/"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Ramstedt, A. (forthcoming). Kenestä on maestroiksi? – Pohdintaa esiintyjien kaanonista ja historian unohtamista muusikoista” [“Who can be a maestro? – Thoughts about canons and forgotten musicains”]. In A. Vehviläinen, P. Järviö, S. Rantanen, & N. Koivisto-Kaasik (Eds.), Naiset, Musiikki, Tutkimus – Ennen ja Nyt. Helsinki: DocMus Research Publications and Tutkimusyhdistys Suoni ry."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Rastas, A. (2012). Reading history through finnish exceptionalism. In K. Lofstdóttir & L. Jensen (Eds.), Whiteness and Postcolonialism in the Nordic Region: Exceptionalism, migrant others and national identities (pp. 89–104). New York: Routledge."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Suoni, ry. (n.d.). What is Suoni? Accessed June 22, 2022. https://www.suoni.fi/english"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Savvides, N., Al-Youssef, J., Colin, M., & Garrido, C. (2014). Journeys to inner/outer space: Reflections on the methodological challenges of negotiating insider/outsider status in international educational research. Research in Comparative and International Education, 9(4), 412–425."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Scharff, C. (2018a). Gender, subjectivity, and cultural work: The classical music profession. New York: Routledge."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Scharff, C. (2018b). Inequalities in the classical music industry: The role of subjectivity in construction of the ‘Ideal classical musician. In C. Dromey & J. Haferkorn (Eds.), The classical music industry. London: Routledge."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Seikkula, M. (2019). (U)nmaking ‘extreme’ and ‘ordinary’ whiteness: Activists’ narratives on antiracist mobilisation in Finland. The Sociological Review, 67(5), 1002–1017."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Sirén, V. (2019, September 9). “Suomen klassisen musiikin festivaaleilla” [In the Finnish classical music festivals]. Helsingin Sanomat. https://www.hs.fi/paivanlehti/09092019/art-2000006232076.html. Last visited 27.5.2021."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Skeggs, B. (1997). Formations of class and gender: Becoming respectable. London: Sage."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Smith, W. E. (2016). Le Mozart Noir: Le Chevalier de Saint-Georges. Bloomington: AuthorHouse."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Society of Finnish Music Institutions (2019). SML:n Syyspäivät Seinäjoella: Jäsenkyselyn tuloksia. [Statistics]. Accessed 22 June, 2022. http://www.musicedu.fi/wp-content/uploads/2020/08/Tilastotietoa-2019.pdf"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Stokes, M. (2005). White Heterosexuality: A romance of the straight Man’s burden. In C. Ingraham (Ed.), Thinking straight: The power, promise, and paradox of Heterosexuality (pp.131–150). New York: Routledge."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Strings, S. (2019). Fearing the black body: The racial origins of fat Phobia. New York: New York University Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Strings, S. (2020). Women (Re)making whiteness: The sexual exclusion of the fat ‘Black’ Irish. Ethnic and Racial Studies, 43(4), 672–689."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Sullivan, N. (2012). The somatechnics of perception and the matter of the non/human: A critical response to new materialism. European Journal of Women’s Studies, 19(3), 299–313."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Tan, S. E. (2013). New Chinese Masculinities on the Piano: Lang Lang and Li Yundi. In R. Harris, R. Pease, & S. E. Tan (Eds.), Gender in Chinese Music. Rochester: University of Rochester Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Thurman, K. (2012). Black Venus, white Bayreuth: Race, sexuality, and the depoliticization of Wagner in postwar West Germany. German Studies Review, 35(33), 607–626."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Thurman, K. (2019). Performing lieder, hearing race: Debating blackness, whiteness, and German identity in interwar central Europe. Journal of the American Musicological Society, 72(3), 825–865."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Thurman, K. (2021). Singing like Germans: Black musicians in the land of bach, Beethoven, and brahms. Cornell: Cornell University Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Tiainen, M. (2005). Säveltäjän sijainnit – Taiteilija, musiikki ja historiallinen kesto Paavo Heinosen ja Einojuhani Rautavaaran teksteissä. Jyväskylän yliopisto. Taiteiden ja kulttuurin tutkimuksen laitos/Nykykulttuurin tutkimuslaitos. Nykykulttuurin tutkimuskeskuksen julkaisuja 82."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Tiainen, M., Leppänen, T., Kontturi, K.-K., & Mehrabi, T. (2020). Making Middles matter: Intersecting intersectionality with new materialism. NORA - Nordic Journal of Feminist and Gender Research, 28(3), 211–223."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Tompkins, K. W. (2016). On the limits and promise of new materialist philosophy. Journal of the Cultural Studies Assocaition, 5(1)."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Torvinen, J. (2019, October 19). Klassisen musiikin pitää kohdata sortohistoriansa. Helsingin Sanomat [Classical music needs to face its oppressive history]. https://www.hs.fi/mielipide/art-2000006278022.html"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Välimäki, S., & Koivisto-Kaasik, N. (2019, February 8). “A series of articles celebrates historical Finnish women who wrote music.” Finnish Music Quarterly. https://fmq.fi/articles/a-celebration-of-women-who-wrote-music"
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "van Amsterdam, N. (2013). Big fat inequalities, thin privilege: An intersectional perspective on ‘body size.’ European Journal of Women’s Studies, 20(2), 155–169."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Yang, M. (2007). East meets west in the concert hall: Asians and classical music in the century of imperialism, post-colonialism, and multiculturalism. Asian Music, 38(1), 1–30."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Yang, M. (2014). Planet Beethoven: Classical music at the turn of the millennium. Middletown, Connecticut: Wesleyan University Press."
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "Yoshihara. M. (2oo7). Musicians from a different shore: Asians and Asian Americans in classical music. USA: Temple University Press."
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                542,
+                906,
+                943
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "14"
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                37,
+                115,
+                47
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "e"
+                    }
+                ]
+            },
+            "bbox": [
+                125,
+                32,
+                150,
+                49
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "A. RAMSTEDT"
+                    }
+                ]
+            },
+            "bbox": [
+                160,
+                35,
+                253,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "list",
+            "content": {
+                "list_type": "reference_list",
+                "list_items": []
+            },
+            "bbox": [
+                91,
+                72,
+                904,
+                925
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "NORA—NORDIC JOURNAL OF FEMINIST AND GENDER RESEARCH"
+                    }
+                ]
+            },
+            "bbox": [
+                397,
+                35,
+                833,
+                48
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                845,
+                32,
+                870,
+                49
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "15"
+                    }
+                ]
+            },
+            "bbox": [
+                884,
+                35,
+                902,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "list",
+            "content": {
+                "list_type": "reference_list",
+                "list_items": []
+            },
+            "bbox": [
+                91,
+                72,
+                906,
+                943
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "16"
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                37,
+                113,
+                47
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "e"
+                    }
+                ]
+            },
+            "bbox": [
+                125,
+                32,
+                150,
+                49
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "A. RAMSTEDT"
+                    }
+                ]
+            },
+            "bbox": [
+                160,
+                35,
+                253,
+                47
+            ]
+        }
+    ],
+    [
+        {
+            "type": "list",
+            "content": {
+                "list_type": "reference_list",
+                "list_items": []
+            },
+            "bbox": [
+                91,
+                72,
+                904,
+                672
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "NORA—NORDIC JOURNAL OF FEMINIST AND GENDER RESEARCH"
+                    }
+                ]
+            },
+            "bbox": [
+                397,
+                35,
+                833,
+                48
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                845,
+                32,
+                870,
+                49
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "17"
+                    }
+                ]
+            },
+            "bbox": [
+                884,
+                35,
+                902,
+                47
+            ]
+        }
+    ]
+]

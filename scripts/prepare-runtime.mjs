@@ -5,6 +5,9 @@ const root = process.cwd();
 const runtimeRoot = path.join(root, "backend", "runtime");
 const runtimeBin = path.join(runtimeRoot, "bin");
 const runtimePython = path.join(runtimeRoot, "python");
+const runtimeFonts = path.join(runtimeRoot, "fonts");
+const runtimeTypst = path.join(runtimeRoot, "typst");
+const runtimeTypstPackages = path.join(runtimeTypst, "packages");
 
 function ensureDir(target) {
   fs.mkdirSync(target, { recursive: true });
@@ -38,8 +41,40 @@ function maybeCopy(source, destination, label) {
 
 ensureDir(runtimeBin);
 ensureDir(runtimePython);
+ensureDir(runtimeFonts);
+ensureDir(runtimeTypstPackages);
 
 const copied = [];
+
+if (
+  maybeCopy(
+    process.env.PDF2ZH_BUNDLE_TYPST,
+    path.join(runtimeBin, process.platform === "win32" ? "typst.exe" : "typst"),
+    "Typst binary",
+  )
+) {
+  copied.push("typst");
+}
+
+if (
+  maybeCopy(
+    process.env.PDF2ZH_BUNDLE_FONTS_DIR,
+    runtimeFonts,
+    "Bundled fonts directory",
+  )
+) {
+  copied.push("fonts");
+}
+
+if (
+  maybeCopy(
+    process.env.PDF2ZH_BUNDLE_TYPST_PACKAGES_DIR,
+    runtimeTypstPackages,
+    "Bundled Typst packages directory",
+  )
+) {
+  copied.push("typst-packages");
+}
 
 if (
   maybeCopy(
@@ -63,7 +98,7 @@ if (
 
 if (copied.length === 0) {
   console.log(
-    "No runtime assets copied. Set PDF2ZH_BUNDLE_PYTHON_HOME / PDF2ZH_BUNDLE_PYTHON_BIN.",
+    "No runtime assets copied. Set PDF2ZH_BUNDLE_TYPST / PDF2ZH_BUNDLE_FONTS_DIR / PDF2ZH_BUNDLE_TYPST_PACKAGES_DIR / PDF2ZH_BUNDLE_PYTHON_HOME / PDF2ZH_BUNDLE_PYTHON_BIN.",
   );
 } else {
   console.log(`Prepared runtime assets: ${copied.join(", ")}`);

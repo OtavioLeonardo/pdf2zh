@@ -50,6 +50,9 @@ GLOSSARY_STOP_TERMS = {
     "study",
     "studies",
 }
+TYPST_TEMPLATE_ROOT = ROOT_DIR / "runtime" / "typst" / "templates"
+TYPST_DEFAULT_TEMPLATE = "pdf2zh-paper"
+TYPST_WILDCARD_WARN_LIMIT = 20
 
 runtime_site_packages = os.environ.get("PDF2ZH_RUNTIME_SITE_PACKAGES", "").strip()
 if runtime_site_packages and Path(runtime_site_packages).exists():
@@ -107,6 +110,47 @@ def read_service_test_payload() -> dict:
 def ensure_dir(path: Path) -> Path:
     path.mkdir(parents=True, exist_ok=True)
     return path
+
+
+def resolve_runtime_binary(env_key: str, fallback_name: str, *, require_bundled: bool = False) -> Optional[str]:
+    explicit = os.environ.get(env_key, "").strip()
+    if explicit and Path(explicit).exists():
+        return explicit
+
+    runtime_root = os.environ.get("PDF2ZH_RUNTIME_ROOT", "").strip()
+    if runtime_root:
+        for candidate in (
+            Path(runtime_root) / "bin" / fallback_name,
+            Path(runtime_root) / "bin" / f"{fallback_name}.exe",
+        ):
+            if candidate.exists():
+                return str(candidate)
+
+    if require_bundled:
+        return None
+
+    return shutil.which(fallback_name)
+
+
+def resolve_typst_binary(require_bundled: bool = False) -> Optional[str]:
+    return resolve_runtime_binary("PDF2ZH_TYPST", "typst", require_bundled=require_bundled)
+
+
+def resolve_typst_template_root() -> Path:
+    env_root = os.environ.get("PDF2ZH_TYPST_TEMPLATE_ROOT", "").strip()
+    if env_root:
+        return Path(env_root)
+    return TYPST_TEMPLATE_ROOT
+
+
+def resolve_typst_package_path() -> Optional[str]:
+    package_path = os.environ.get("TYPST_PACKAGE_PATH", "").strip()
+    return package_path or None
+
+
+def resolve_typst_font_paths() -> Optional[str]:
+    font_paths = os.environ.get("TYPST_FONT_PATHS", "").strip()
+    return font_paths or None
 
 
 def set_mineru_debug_log(path: Path) -> None:
@@ -1360,6 +1404,343 @@ def title_and_abstract(markdown: str) -> Tuple[str, str]:
     return title, abstract
 
 
+def typst_escape_text(value: str) -> str:
+    escaped = value
+    for source, target in (
+        ("\\", "\\\\"),
+        ("#", "\\#"),
+        ("@", "\\@"),
+        ("[", "\\["),
+        ("]", "\\]"),
+        ("*", "\\*"),
+        ("_", "\\_"),
+        ("`", "\\`"),
+        ("$", "\\$"),
+    ):
+        escaped = escaped.replace(source, target)
+    return escaped
+
+
+def typst_escape_string(value: str) -> str:
+    return value.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def slugify_identifier(value: str) -> str:
+    slug = re.sub(r"[^a-zA-Z0-9]+", "-", value).strip("-").lower()
+    return slug or "item"
+
+
+def normalize_typst_math_inline(expr: str) -> str:
+    compact = expr.strip().replace("\\", "")
+    compact = re.sub(
+        r"(?<!\\)\^\s*\{\s*([^{}]+?)\s*\}",
+        lambda match: "^(" + re.sub(r"\s+", "", match.group(1)) + ")",
+        compact,
+    )
+    compact = re.sub(r"\s+", " ", compact).strip()
+    return compact
+
+
+def render_inline_math_as_text(expr: str) -> str:
+    text = expr.strip()
+    text = text.replace("\\", "")
+    text = re.sub(r"\b(?:mathrm|text|operatorname|mathbf|mathit|mathbb|mathrm)\b", "", text)
+    text = re.sub(r"\^\s*\(\s*([^)]+?)\s*\)", r"(\1)", text)
+    text = re.sub(r"\^\s*\{\s*([^{}]+?)\s*\}", r"(\1)", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def render_typst_markup_text(text: str, warnings: List[str]) -> str:
+    if not text:
+        return ""
+
+    placeholder_map: Dict[str, str] = {}
+    index = 0
+
+    def stash(fragment: str) -> str:
+        nonlocal index
+        token = f"@@PDF2ZH_TYPST_{index}@@"
+        placeholder_map[token] = fragment
+        index += 1
+        return token
+
+    rendered = text
+    rendered = re.sub(
+        r"!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"([^\"]*)\")?\)",
+        lambda match: stash(typst_escape_text(match.group(3) or match.group(1) or "image")),
+        rendered,
+    )
+    rendered = re.sub(
+        r"(?<!\\)\$(?!\$)(.+?)(?<!\\)\$",
+        lambda match: stash(typst_escape_text(render_inline_math_as_text(match.group(1)))),
+        rendered,
+    )
+    rendered = re.sub(r"`([^`]+)`", lambda match: stash(typst_escape_text(match.group(1))), rendered)
+    rendered = re.sub(r"\*\*([^*]+)\*\*", lambda match: match.group(1), rendered)
+    rendered = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", lambda match: match.group(1), rendered)
+    rendered = re.sub(r"\[\^([^\]]+)\]", lambda match: stash(typst_escape_text(f"[{match.group(1)}]")), rendered)
+
+    rendered = typst_escape_text(rendered)
+    for token, fragment in placeholder_map.items():
+        rendered = rendered.replace(typst_escape_text(token), fragment)
+    return rendered
+
+
+def render_typst_image(path_value: str, alt: str, warnings: List[str], caption: Optional[str] = None) -> str:
+    image_path = typst_escape_string(path_value)
+    body = f'image("{image_path}", width: 100%)'
+    if caption and caption.strip():
+        caption_text = render_typst_markup_text(caption.strip(), warnings)
+        return f"#figure({body}, caption: [{caption_text}])"
+    if alt.strip():
+        alt_text = render_typst_markup_text(alt.strip(), warnings)
+        return f"#figure({body}, caption: [{alt_text}])"
+    return f"#{body}"
+
+
+def is_markdown_table(block: str) -> bool:
+    lines = [line for line in block.splitlines() if line.strip()]
+    if len(lines) < 2:
+        return False
+    if "|" not in lines[0] or "|" not in lines[1]:
+        return False
+    return bool(re.match(r"^\s*\|?[\s:-|]+\|?\s*$", lines[1]))
+
+
+def parse_markdown_table(block: str) -> Tuple[List[str], List[List[str]]]:
+    lines = [line.strip() for line in block.splitlines() if line.strip()]
+    header_line = lines[0].strip("|")
+    header = [cell.strip() for cell in header_line.split("|")]
+    rows: List[List[str]] = []
+    for line in lines[2:]:
+        rows.append([cell.strip() for cell in line.strip("|").split("|")])
+    return header, rows
+
+
+def render_typst_table(block: str, warnings: List[str]) -> str:
+    header, rows = parse_markdown_table(block)
+    col_count = max(len(header), max((len(row) for row in rows), default=0))
+    if col_count == 0:
+        warnings.append("Encountered an empty markdown table while generating Typst.")
+        return f"#block(fill: luma(245), inset: 10pt)[#raw(\"{typst_escape_string(block)}\")]"
+
+    def render_row(cells: List[str]) -> str:
+        padded = cells + [""] * (col_count - len(cells))
+        return ", ".join(f"[{render_typst_markup_text(cell, warnings)}]" for cell in padded[:col_count])
+
+    header_line = render_row(header)
+    row_lines = ",\n  ".join(render_row(row) for row in rows)
+    body = f"columns: {col_count},\n  {header_line}"
+    if row_lines:
+        body = f"{body},\n  {row_lines}"
+    return f"#table(\n  {body}\n)"
+
+
+def render_typst_code_block(block: str) -> str:
+    match = re.match(r"```([^\n]*)\n([\s\S]*?)\n?```$", block.strip())
+    language = ""
+    code = block
+    if match:
+        language = match.group(1).strip()
+        code = match.group(2)
+    label = f', lang: "{typst_escape_string(language)}"' if language else ""
+    return f'#raw(block: true{label}, "{typst_escape_string(code)}")'
+
+
+def render_typst_footnote_definition(block: str, warnings: List[str]) -> str:
+    first_line, *rest = block.splitlines()
+    match = re.match(r"^\[\^([^\]]+)]:\s*(.*)$", first_line.strip())
+    if not match:
+        return f"#block(fill: luma(245), inset: 10pt)[#raw(\"{typst_escape_string(block)}\")]"
+    label = slugify_identifier(match.group(1))
+    content_lines = [match.group(2).strip()] + [line.strip() for line in rest]
+    content = render_typst_markup_text(" ".join(line for line in content_lines if line), warnings)
+    return f"[{label}] {content}"
+
+
+def render_typst_reference_block(block: str) -> str:
+    lines = [line.strip() for line in block.splitlines() if line.strip()]
+    if not lines:
+        return ""
+    rendered = []
+    for index, line in enumerate(lines):
+        if index == 0 and re.match(r"^#{1,6}\s+", line):
+            heading = re.sub(r"^#{1,6}\s+", "", line).strip()
+            rendered.append(f"= {render_typst_markup_text(heading, [])}")
+        else:
+            rendered.append(render_typst_markup_text(line, []))
+    return "#pagebreak()\n\n" + "\n\n".join(rendered)
+
+
+def render_typst_list(block: str, warnings: List[str]) -> str:
+    lines = [line.rstrip() for line in block.splitlines() if line.strip()]
+    ordered = bool(re.match(r"^\s*\d+\.\s+", lines[0]))
+    rendered_items = []
+    for index, line in enumerate(lines, start=1):
+        item = re.sub(r"^\s*(?:[-*+]|\d+\.)\s+", "", line).strip()
+        marker = f"{index}." if ordered else "•"
+        rendered_items.append(f"{marker} {render_typst_markup_text(item, warnings)}")
+    return "\n\n".join(rendered_items)
+
+
+def render_typst_block_quote(block: str, warnings: List[str]) -> str:
+    lines = [re.sub(r"^\s*>\s?", "", line) for line in block.splitlines()]
+    content = "\n".join(lines).strip()
+    return f"#quote(block: true)[{render_typst_markup_text(content, warnings)}]"
+
+
+def render_typst_heading(block: str, warnings: List[str]) -> str:
+    first_line = block.splitlines()[0]
+    match = re.match(r"^(#{1,6})\s+(.*)$", first_line.strip())
+    if not match:
+        return f"[{render_typst_inline(block, warnings)}]"
+    level = len(match.group(1))
+    title = render_typst_markup_text(match.group(2).strip(), warnings)
+    return f"{'=' * level} {title}"
+
+
+def render_typst_paragraph(block: str, warnings: List[str]) -> str:
+    return render_typst_markup_text(block.strip(), warnings)
+
+
+def render_typst_math_block(block: str) -> str:
+    inner = block.strip()[2:-2].strip() if block.strip().startswith("$$") and block.strip().endswith("$$") else block.strip()
+    normalized = normalize_typst_math_inline(inner)
+    if re.search(r"[\\{}]|(?:^|[^A-Za-z])(alpha|beta|gamma|delta|epsilon|theta|lambda|mu|sigma|phi|psi|omega|text|mathrm|operatorname|tag)(?:[^A-Za-z]|$)", normalized):
+        safe_text = typst_escape_string(render_inline_math_as_text(inner))
+        return f'#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("{safe_text}")]'
+    return f"${normalized}$"
+
+
+def render_typst_fallback_block(block: str, warnings: List[str]) -> str:
+    if len(warnings) < TYPST_WILDCARD_WARN_LIMIT:
+        warnings.append(f"Unsupported markdown block was downgraded to raw text: {block.splitlines()[0][:80]}")
+    return f'#block(fill: luma(245), inset: 10pt)[#raw("{typst_escape_string(block)}")]'
+
+
+def split_markdown_blocks(markdown: str) -> List[str]:
+    normalized = markdown.replace("\r\n", "\n").strip()
+    if not normalized:
+        return []
+    return [block.strip() for block in re.split(r"\n\s*\n", normalized) if block.strip()]
+
+
+def markdown_to_typst(markdown: str, *, title: str, abstract: str) -> Tuple[str, List[str]]:
+    warnings: List[str] = []
+    body_fragments: List[str] = []
+    blocks = split_markdown_blocks(markdown)
+
+    for block in blocks:
+        if re.match(r"^#{1,6}\s+", block):
+            body_fragments.append(render_typst_heading(block, warnings))
+        elif block.strip() == "---":
+            body_fragments.append("#line(length: 100%)")
+        elif re.match(r"^!\[[^\]]*]\([^)]+\)$", block.strip()):
+            image_match = re.match(r"^!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"([^\"]*)\")?\)$", block.strip())
+            if image_match:
+                body_fragments.append(
+                    render_typst_image(image_match.group(2), image_match.group(1), warnings, caption=image_match.group(3))
+                )
+            else:
+                body_fragments.append(render_typst_fallback_block(block, warnings))
+        elif block.startswith("```"):
+            body_fragments.append(render_typst_code_block(block))
+        elif block.startswith("$$") and block.endswith("$$"):
+            body_fragments.append(render_typst_math_block(block))
+        elif block.startswith("[[[PDF2ZH_BLOCK_MATH_") and block.endswith("]]]"):
+            body_fragments.append(render_typst_math_block(block))
+        elif block.startswith("[[[PDF2ZH_CODE_") and block.endswith("]]]"):
+            body_fragments.append(render_typst_code_block(block))
+        elif block.startswith("[[[PDF2ZH_IMAGE_") and block.endswith("]]]"):
+            body_fragments.append(render_typst_fallback_block(block, warnings))
+        elif block.startswith("[[[PDF2ZH_REFERENCES_") and block.endswith("]]]"):
+            body_fragments.append(render_typst_reference_block(block))
+        elif block.startswith(">"):
+            body_fragments.append(render_typst_block_quote(block, warnings))
+        elif re.match(r"^\s*(?:[-*+]|\d+\.)\s+", block):
+            body_fragments.append(render_typst_list(block, warnings))
+        elif is_markdown_table(block):
+            body_fragments.append(render_typst_table(block, warnings))
+        elif re.match(r"^\[\^[^\]]+]:", block):
+            body_fragments.append(render_typst_footnote_definition(block, warnings))
+        else:
+            body_fragments.append(render_typst_paragraph(block, warnings))
+
+    template_root = resolve_typst_template_root()
+    template_path = template_root / TYPST_DEFAULT_TEMPLATE / "main.typ"
+    if not template_path.exists():
+        raise RuntimeError(f"Typst template is missing: {template_path}")
+
+    template = template_path.read_text(encoding="utf-8")
+    body = "\n\n".join(fragment for fragment in body_fragments if fragment.strip())
+    title_block = ""
+    if title.strip():
+        title_block = f'#pdf2zh-title([{render_typst_markup_text(title.strip() or "Untitled Paper", warnings)}])\n\n'
+    abstract_block = ""
+    if abstract.strip():
+        abstract_block = f'#pdf2zh-abstract([{render_typst_markup_text(abstract.strip(), warnings)}])\n\n'
+    document = f"{title_block}{abstract_block}{body}\n"
+    return template.replace("{{PDF2ZH_DOCUMENT}}", document), warnings
+
+
+def compile_typst(typst_path: Path, output_pdf: Path) -> Tuple[Optional[str], Optional[str]]:
+    typst_bin = resolve_typst_binary(require_bundled=REQUIRE_BUNDLED_RUNTIME)
+    if not typst_bin:
+        if REQUIRE_BUNDLED_RUNTIME:
+            return "Bundled Typst runtime is missing from this release package.", None
+        return "typst is not installed or not available in PATH.", None
+
+    font_paths = resolve_typst_font_paths()
+    if REQUIRE_BUNDLED_RUNTIME and not font_paths:
+        return "Bundled Typst fonts are missing from this release package.", typst_bin
+
+    command = [
+        typst_bin,
+        "compile",
+        str(typst_path),
+        str(output_pdf),
+    ]
+
+    env = dict(os.environ)
+    if font_paths:
+        env["TYPST_FONT_PATHS"] = font_paths
+    package_path = resolve_typst_package_path()
+    if package_path:
+        env["TYPST_PACKAGE_PATH"] = package_path
+
+    try:
+        result = subprocess.run(
+            command,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            env=env,
+        )
+    except subprocess.CalledProcessError as error:
+        details = error.stderr.strip() or error.stdout.strip() or "Typst failed to render PDF."
+        return details, typst_bin
+
+    if result.stderr.strip():
+        append_mineru_log(f"Typst compile stderr: {result.stderr.strip()}")
+    return None, typst_bin
+
+
+def render_typst_pdf(
+    markdown_path: Path,
+    typst_path: Path,
+    output_pdf: Path,
+    *,
+    title: str,
+    abstract: str,
+) -> Tuple[Optional[str], List[str], Optional[str]]:
+    typst_source, warnings = markdown_to_typst(markdown_path.read_text(encoding="utf-8"), title=title, abstract=abstract)
+    typst_path.write_text(typst_source, encoding="utf-8")
+    compile_error, typst_runtime = compile_typst(typst_path, output_pdf)
+    return compile_error, warnings, typst_runtime
+
+
 def glossary_context_from_segments(segments: List[str]) -> str:
     sample = "\n\n".join(segments[:GLOSSARY_CONTEXT_SEGMENTS])
     sample = re.sub(r"\[\[\[PDF2ZH_[A-Z0-9_]+\]\]\]", " ", sample)
@@ -2095,8 +2476,73 @@ def write_report(report_path: Path, report: dict) -> None:
     report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def rerender_existing_pdf(payload: dict) -> None:
+    task_id = str(payload.get("taskId") or f"task-{int(time.time())}")
+    output_dir = ensure_dir(Path(payload["outputDir"]).expanduser())
+    translated_md_path = output_dir / "translated.md"
+    translated_typ_path = output_dir / "translated.typ"
+    translated_pdf_path = output_dir / "translated.pdf"
+    report_path = output_dir / "translation_report.json"
+
+    if not translated_md_path.exists():
+        fail(f"Translated markdown does not exist: {translated_md_path}")
+
+    markdown = translated_md_path.read_text(encoding="utf-8")
+    title, abstract = title_and_abstract(markdown)
+    emit("status", "rendering_pdf", 90, "正在生成 Typst 中间稿。", taskId=task_id, outputDir=str(output_dir))
+    emit("status", "rendering_pdf", 94, "正在调用 Typst 编译 PDF。", taskId=task_id, outputDir=str(output_dir))
+    start = time.time()
+    pdf_error, typst_warnings, typst_runtime = render_typst_pdf(
+        translated_md_path,
+        translated_typ_path,
+        translated_pdf_path,
+        title=title,
+        abstract=abstract,
+    )
+    duration = round(time.time() - start, 2)
+
+    report = {
+        "task_id": task_id,
+        "mode": "rerender_pdf",
+        "output_dir": str(output_dir),
+        "translated_md": str(translated_md_path),
+        "translated_typ": str(translated_typ_path),
+        "translated_pdf": str(translated_pdf_path),
+        "started_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "stages": {"rendering_pdf": duration},
+        "typst_generated": translated_typ_path.exists(),
+        "pdf_generated": pdf_error is None and translated_pdf_path.exists(),
+        "typst_template": TYPST_DEFAULT_TEMPLATE,
+        "typst_warnings": typst_warnings,
+        "typst_runtime": typst_runtime,
+    }
+    if pdf_error:
+        report["pdf_error"] = pdf_error
+
+    write_report(report_path, report)
+
+    if pdf_error:
+        fail(pdf_error, report)
+
+    emit(
+        "result",
+        "completed",
+        100,
+        "Typst 与 PDF 已重新生成完成。",
+        taskId=task_id,
+        outputDir=str(output_dir),
+        translatedMd=str(translated_md_path),
+        translatedTyp=str(translated_typ_path),
+        translatedPdf=str(translated_pdf_path),
+        reportPath=str(report_path),
+    )
+
+
 def main() -> None:
     payload = read_payload()
+    if payload.get("mode") == "rerender_pdf":
+        rerender_existing_pdf(payload)
+        return
 
     task_id = payload.get("taskId", f"task-{int(time.time())}")
     enable_translation = bool(payload.get("enableTranslation", True))
@@ -2108,6 +2554,8 @@ def main() -> None:
     work_dir = ensure_dir(output_dir / ".work")
     raw_output_path = output_dir / "raw.md"
     translated_md_path = output_dir / "translated.md"
+    translated_typ_path = output_dir / "translated.typ"
+    translated_pdf_path = output_dir / "translated.pdf"
     report_path = output_dir / "translation_report.json"
     mineru_log_path = output_dir / "mineru_debug.log"
     glossary_output_path = output_dir / "glossary.tsv"
@@ -2125,6 +2573,11 @@ def main() -> None:
         "retries": 0,
         "failed_segments": [],
         "mineru_log_path": str(mineru_log_path),
+        "typst_generated": False,
+        "pdf_generated": False,
+        "typst_template": TYPST_DEFAULT_TEMPLATE,
+        "typst_warnings": [],
+        "typst_runtime": None,
     }
 
     if not input_pdf.exists():
@@ -2166,6 +2619,8 @@ def main() -> None:
             outputDir=str(output_dir),
             rawMd=str(raw_output_path),
             translatedMd=None,
+            translatedTyp=None,
+            translatedPdf=None,
             reportPath=str(report_path),
             retriedSegments=0,
         )
@@ -2278,7 +2733,28 @@ def main() -> None:
     write_glossary_tsv(glossary_output_path, glossary)
     report["stages"]["rebuilding"] = round(time.time() - start, 2)
 
+    emit("status", "rendering_pdf", 90, "正在生成 Typst 中间稿。", taskId=task_id)
+    emit("status", "rendering_pdf", 94, "正在调用 Typst 编译 PDF。", taskId=task_id)
+    start = time.time()
+    pdf_error, typst_warnings, typst_runtime = render_typst_pdf(
+        translated_md_path,
+        translated_typ_path,
+        translated_pdf_path,
+        title=title,
+        abstract=abstract,
+    )
+    report["stages"]["rendering_pdf"] = round(time.time() - start, 2)
+    report["typst_generated"] = translated_typ_path.exists()
+    report["pdf_generated"] = pdf_error is None and translated_pdf_path.exists()
+    report["typst_warnings"] = typst_warnings
+    report["typst_runtime"] = typst_runtime
+    if pdf_error:
+        report["pdf_error"] = pdf_error
+
     write_report(report_path, report)
+
+    if pdf_error:
+        fail(pdf_error, report)
 
     emit(
         "result",
@@ -2289,6 +2765,8 @@ def main() -> None:
         outputDir=str(output_dir),
         rawMd=str(raw_output_path),
         translatedMd=str(translated_md_path),
+        translatedTyp=str(translated_typ_path) if translated_typ_path.exists() else None,
+        translatedPdf=str(translated_pdf_path) if translated_pdf_path.exists() else None,
         reportPath=str(report_path),
         retriedSegments=report["retries"],
     )

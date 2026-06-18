@@ -142,7 +142,9 @@ export function MainWindow() {
         color: "appleBlue",
         title: enableTranslation ? "翻译完成" : "提取完成",
         message: enableTranslation
-          ? "Markdown、术语表和报告已经导出。"
+          ? task.translatedPdf
+            ? "Markdown、Typst 和 PDF 都已经导出。"
+            : "Markdown 和 Typst 已导出，PDF 未生成。"
           : "MinerU 文本提取已完成，raw.md 已导出。",
         icon: <IconCheck size={16} />,
       });
