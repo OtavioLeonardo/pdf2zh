@@ -786,11 +786,18 @@ def render_mineru_structured_block(item: dict) -> str:
         parts: List[str] = []
         if caption:
             parts.append(caption)
+        complex_html_table = bool(
+            isinstance(body, str)
+            and body.strip()
+            and re.search(r"(?i)\b(?:rowspan|colspan)\s*=", body)
+        )
         rendered_table = convert_html_table_to_markdown(body) if isinstance(body, str) and body.strip() else None
         latex_table = None
-        if not rendered_table and isinstance(body, str) and body.strip():
+        if not rendered_table and not complex_html_table and isinstance(body, str) and body.strip():
             latex_table = convert_html_table_to_latex(body)
-        if rendered_table:
+        if complex_html_table and image_path:
+            parts.append(markdown_image_from_path(image_path, caption or "table"))
+        elif rendered_table:
             parts.append(rendered_table)
         elif latex_table:
             parts.append(latex_table)
@@ -1451,6 +1458,178 @@ def render_inline_math_as_text(expr: str) -> str:
     return text
 
 
+def collapse_spaced_letters(text: str) -> str:
+    parts = text.split()
+    if not parts:
+        return text
+
+    collapsed: List[str] = []
+    buffer: List[str] = []
+
+    def flush_buffer() -> None:
+        nonlocal buffer
+        if not buffer:
+            return
+        if len(buffer) >= 2 and all(len(item) == 1 and item.isalpha() for item in buffer):
+            collapsed.append("".join(buffer))
+        else:
+            collapsed.extend(buffer)
+        buffer = []
+
+    for part in parts:
+        if len(part) == 1 and part.isalpha():
+            buffer.append(part)
+        else:
+            flush_buffer()
+            collapsed.append(part)
+
+    flush_buffer()
+    return " ".join(collapsed)
+
+
+def normalize_math_subscript(value: str) -> str:
+    cleaned = collapse_spaced_letters(value.strip())
+    cleaned = re.sub(r"\s+", "", cleaned)
+    if not cleaned:
+        return ""
+    if cleaned.isalpha() and len(cleaned) > 1:
+        return f'"{cleaned}"'
+    return cleaned
+
+
+def normalize_math_tokens(text: str) -> str:
+    normalized = text
+    replacements = (
+        (r"w o r d c o u n t", '"word count"'),
+        (r"m a i n d e s c\.", '"main desc."'),
+        (r"m a i n d e s c", '"main desc"'),
+        (r"m a i n d e s c r i p t i o n", '"main description"'),
+        (r"f e m a l e t e a c h e r", '"female teacher"'),
+        (r"f e m a l e s t u d e n t", '"female student"'),
+        (r"m o t h e r m u s i c i a n", '"mother musician"'),
+        (r"f a t h e r m u s i c i a n", '"father musician"'),
+        (r"b i r t h y e a r", '"birth year"'),
+        (r"f e m a l e", '"female"'),
+        (r"w o r k s", '"works"'),
+        (r"n e a r", '"near"'),
+        (r"a f t e r", '"after"'),
+    )
+    for pattern, replacement in replacements:
+        normalized = re.sub(pattern, replacement, normalized)
+
+    previous = None
+    while normalized != previous:
+        previous = normalized
+        normalized = re.sub(r"\b([A-Za-z])\s+([A-Za-z]{2,})\b", lambda m: m.group(1) + m.group(2), normalized)
+        normalized = re.sub(r"\b([A-Za-z]{2,})\s+([A-Za-z])\b", lambda m: m.group(1) + m.group(2), normalized)
+        normalized = re.sub(r"\btimesln\b", "times ln", normalized)
+        normalized = re.sub(r"\btimes(?=ln\b)", "times ", normalized)
+        normalized = re.sub(r"\b([A-Za-z])\s+\(([A-Za-z0-9\"].*?)\)", lambda m: m.group(1) + "(" + m.group(2) + ")", normalized)
+        normalized = re.sub(r"ln\s+ln\b", "ln", normalized)
+        normalized = re.sub(r"\"word count\"\s*\(\s*\"?main desc\.?\"?\s*\)", '"word count (main desc.)"', normalized)
+        normalized = re.sub(r"\"word count\"\s*\(\s*maindesc\.?\s*\)", '"word count (main desc.)"', normalized)
+
+    return collapse_spaced_letters(normalized)
+
+
+def convert_latex_math_to_typst(expr: str) -> Optional[str]:
+    text = expr.strip()
+    if not text:
+        return None
+
+    text = text.replace("\\\n", " ")
+    text = text.replace("\\", "\\")
+    text = re.sub(r"\s+", " ", text).strip()
+    text = normalize_math_tokens(text)
+
+    command_map = {
+        r"\\beta": "beta",
+        r"\\gamma": "gamma",
+        r"\\delta": "delta",
+        r"\\epsilon": "epsilon",
+        r"\\times": "times",
+        r"\\approx": "approx",
+        r"\\prime": "prime",
+        r"\\ln": "ln",
+    }
+    for source, target in command_map.items():
+        text = re.sub(source, target, text)
+
+    if re.fullmatch(r"\^\s*\{\s*(?:\*\s*){1,3}\}\s*p\s*<\s*[\d.\s]+(?:\s*;\s*\^\s*\{\s*(?:\*\s*){1,3}\}\s*p\s*<\s*[\d.\s]+)*", text):
+        def render_sig(match: re.Match[str]) -> str:
+            stars = match.group(1).replace(" ", "")
+            threshold = re.sub(r"\s+", "", match.group(2))
+            return f'"{stars}" p < {threshold}'
+
+        return re.sub(r"\^\s*\{\s*((?:\*\s*){1,3})\}\s*p\s*<\s*([\d.\s]+)", render_sig, text)
+
+    text = re.sub(
+        r'"([^"]+)"\s+([A-Za-z]+)\s*_\s*\{\s*([A-Za-z0-9 ]+)\s*\}',
+        lambda m: f'("{m.group(1)} {m.group(2)}")_({normalize_math_subscript(m.group(3))})',
+        text,
+    )
+    text = re.sub(
+        r"\(\s*\"female\"\s*_\s*\{\s*([A-Za-z0-9]+)\s*\}\s*\)",
+        lambda m: f'("female")_({m.group(1)})',
+        text,
+    )
+    text = re.sub(
+        r"\(\s*\"mother musician\"\s*_\s*\{\s*([A-Za-z0-9]+)\s*\}\s*\)",
+        lambda m: f'("mother musician")_({m.group(1)})',
+        text,
+    )
+    text = re.sub(
+        r"\(\s*\"father musician\"\s*_\s*\{\s*([A-Za-z0-9]+)\s*\}\s*\)",
+        lambda m: f'("father musician")_({m.group(1)})',
+        text,
+    )
+    text = re.sub(r"\(\s*\"mother musician\"\s*\)", '("mother musician")', text)
+    text = re.sub(r"\(\s*\"father musician\"\s*\)", '("father musician")', text)
+    text = re.sub(r"\"main description\"\s*_\s*\{\s*([A-Za-z0-9 ]+)\s*\}", lambda m: f'("main description")_({normalize_math_subscript(m.group(1))})', text)
+    text = re.sub(r"\"works\"\s*_\s*\{\s*([A-Za-z0-9 ]+)\s*\}", lambda m: f'("works")_({normalize_math_subscript(m.group(1))})', text)
+    text = re.sub(r"\"birth year\"\s*_\s*\{\s*([A-Za-z0-9 ]+)\s*\}", lambda m: f'("birth year")_({normalize_math_subscript(m.group(1))})', text)
+    text = re.sub(r"\"female student\"\s*_\s*\{\s*([A-Za-z0-9 ]+)\s*\}", lambda m: f'("female student")_({normalize_math_subscript(m.group(1))})', text)
+    text = re.sub(r"\"female teacher\"\s*_\s*\{\s*([A-Za-z0-9 ]+)\s*\}", lambda m: f'("female teacher")_({normalize_math_subscript(m.group(1))})', text)
+    text = re.sub(r"\"female\"\s+student\s*_\s*\{\s*([A-Za-z0-9 ]+)\s*\}", lambda m: f'("female student")_({normalize_math_subscript(m.group(1))})', text)
+    text = re.sub(r"\"female\"\s+teacher\s*_\s*\{\s*([A-Za-z0-9 ]+)\s*\}", lambda m: f'("female teacher")_({normalize_math_subscript(m.group(1))})', text)
+    text = re.sub(
+        r"([A-Za-z][A-Za-z ]*[A-Za-z])\s*_\s*\{\s*([A-Za-z0-9 ]+)\s*\}",
+        lambda m: f'("{m.group(1).strip()}")_({normalize_math_subscript(m.group(2))})'
+        if " " in m.group(1).strip()
+        else m.group(0),
+        text,
+    )
+
+    text = re.sub(r"\\(?:mathrm|text|operatorname)\s*\{\s*([^{}]+?)\s*\}", lambda m: f'"{collapse_spaced_letters(m.group(1).strip())}"', text)
+    text = re.sub(r"\\tag\s*\{\s*([^{}]+?)\s*\}", lambda m: f'"({collapse_spaced_letters(m.group(1).strip())})"', text)
+    text = re.sub(r"(?<!\\)\^\s*\{\s*([^{}]+?)\s*\}", lambda m: "^(" + collapse_spaced_letters(m.group(1).strip()) + ")", text)
+    text = re.sub(r"(?<!\\)_\s*\{\s*([^{}]+?)\s*\}", lambda m: "_(" + normalize_math_subscript(m.group(1)) + ")", text)
+    text = re.sub(r"(?<!\\)_\s*([A-Za-z0-9]+)", lambda m: "_" + collapse_spaced_letters(m.group(1)), text)
+    text = re.sub(r"(?<!\\)\^\s*([A-Za-z0-9]+)", lambda m: "^" + collapse_spaced_letters(m.group(1)), text)
+    text = re.sub(r"\b([A-Z])\s*_\(([A-Za-z0-9]+)\)", lambda m: f'"{m.group(1)}"_({normalize_math_subscript(m.group(2))})', text)
+    text = re.sub(
+        r"\b([a-z][a-z]+)\s*_\(([A-Za-z0-9]+)\)",
+        lambda m: m.group(0)
+        if m.group(1) in {"alpha", "beta", "gamma", "delta", "epsilon", "theta", "lambda", "mu", "sigma", "phi", "psi", "omega", "ln", "times", "approx"}
+        else f'"{m.group(1)}"_({normalize_math_subscript(m.group(2))})',
+        text,
+    )
+    text = re.sub(
+        r"\(\s*([a-z][a-z]+)\s*_\(([A-Za-z0-9]+)\)\s*\)",
+        lambda m: f'("{m.group(1)}")_({normalize_math_subscript(m.group(2))})',
+        text,
+    )
+    text = collapse_spaced_letters(text)
+    text = text.replace("{", "(").replace("}", ")")
+    text = re.sub(r"\s+", " ", text).strip()
+
+    if "\\" in text:
+        return None
+    if not text:
+        return None
+    return text
+
+
 def render_typst_markup_text(text: str, warnings: List[str]) -> str:
     if not text:
         return ""
@@ -1473,7 +1652,11 @@ def render_typst_markup_text(text: str, warnings: List[str]) -> str:
     )
     rendered = re.sub(
         r"(?<!\\)\$(?!\$)(.+?)(?<!\\)\$",
-        lambda match: stash(typst_escape_text(render_inline_math_as_text(match.group(1)))),
+        lambda match: stash(
+            f"${convert_latex_math_to_typst(match.group(1))}$"
+            if convert_latex_math_to_typst(match.group(1))
+            else typst_escape_text(render_inline_math_as_text(match.group(1)))
+        ),
         rendered,
     )
     rendered = re.sub(r"`([^`]+)`", lambda match: stash(typst_escape_text(match.group(1))), rendered)
@@ -1484,6 +1667,16 @@ def render_typst_markup_text(text: str, warnings: List[str]) -> str:
     rendered = typst_escape_text(rendered)
     for token, fragment in placeholder_map.items():
         rendered = rendered.replace(typst_escape_text(token), fragment)
+    rendered = re.sub(
+        r"\$([A-Za-z][A-Za-z ]*[A-Za-z])\s*_\((\"?[A-Za-z0-9]+\"?)\)\$",
+        lambda m: '$"' + m.group(1).strip() + '"_(' + m.group(2) + ')$',
+        rendered,
+    )
+    rendered = re.sub(
+        r"\$([A-Za-z][A-Za-z ]*[A-Za-z])\s*_\(([^)]+)\)\$",
+        lambda m: '$"' + m.group(1).strip() + '"_(' + m.group(2) + ')$',
+        rendered,
+    )
     return rendered
 
 
@@ -1606,6 +1799,9 @@ def render_typst_paragraph(block: str, warnings: List[str]) -> str:
 
 def render_typst_math_block(block: str) -> str:
     inner = block.strip()[2:-2].strip() if block.strip().startswith("$$") and block.strip().endswith("$$") else block.strip()
+    converted = convert_latex_math_to_typst(inner)
+    if converted:
+        return f"${converted}$"
     normalized = normalize_typst_math_inline(inner)
     if re.search(r"[\\{}]|(?:^|[^A-Za-z])(alpha|beta|gamma|delta|epsilon|theta|lambda|mu|sigma|phi|psi|omega|text|mathrm|operatorname|tag)(?:[^A-Za-z]|$)", normalized):
         safe_text = typst_escape_string(render_inline_math_as_text(inner))

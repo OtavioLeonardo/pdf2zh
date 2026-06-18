@@ -1,13 +1,13 @@
 {
-  "task_id": "typst-karol-test",
+  "task_id": "typst-karol-math-test-12",
   "mode": "rerender_pdf",
   "output_dir": "/Users/otavio/Workspace/pdf2zh/.tmp-e2e/karol",
   "translated_md": "/Users/otavio/Workspace/pdf2zh/.tmp-e2e/karol/translated.md",
   "translated_typ": "/Users/otavio/Workspace/pdf2zh/.tmp-e2e/karol/translated.typ",
   "translated_pdf": "/Users/otavio/Workspace/pdf2zh/.tmp-e2e/karol/translated.pdf",
-  "started_at": "2026-06-18 14:25:46",
+  "started_at": "2026-06-18 16:10:39",
   "stages": {
-    "rendering_pdf": 0.42
+    "rendering_pdf": 0.61
   },
   "typst_generated": true,
   "pdf_generated": true,

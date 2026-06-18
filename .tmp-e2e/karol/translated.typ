@@ -325,11 +325,11 @@ Franz Liszt & 24,370 & Ruth Crawford & 1,058 \\\\ \\hline
 
 因此，我们的方法包括使用格罗夫作曲家样本，通过普通最小二乘法估计以下方程：
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("ln ( {word count}) _ {i} = beta_ {0} + beta_ {1} (f e m a l e _ {i}) + gamma_ {i} + delta_ {t} + epsilon_ {i} tag {1}")]
+$ln ("word count") _(i) = beta_(0) + beta_(1) ("female")_(i) + gamma_(i) + delta_(t) + epsilon_(i) "(1)"$
 
-在该回归中，因变量ln(词数)i是作曲家i的格罗夫词条主要描述部分词数的自然对数；femalei是一个二元指标，如果作曲家i为女性则等于1，否则为0；γi和delta \_ { t }是出生国和半个世纪出生时间固定效应；epsilon \_ { i }是误差项。该回归中关注的系数是beta \_ { 1 }，即调整了时间周期和出生国后，男性和女性作曲家显赫度性别差距的估计值。除了在格罗夫所有作曲家样本上估计方程(1)外，我们还根据联合国M^49标准对区域进行分类，使用基于区域的子样本进行回归。这使我们能够观察来自世界不同地区（如欧洲与北美）作曲家性别差距幅度是否存在差异。
+在该回归中，因变量ln(词数)i是作曲家i的格罗夫词条主要描述部分词数的自然对数；femalei是一个二元指标，如果作曲家i为女性则等于1，否则为0；γi和$"delta"_(t)$是出生国和半个世纪出生时间固定效应；$"epsilon"_(i)$是误差项。该回归中关注的系数是$"beta"_(1)$，即调整了时间周期和出生国后，男性和女性作曲家显赫度性别差距的估计值。除了在格罗夫所有作曲家样本上估计方程(1)外，我们还根据联合国M^49标准对区域进行分类，使用基于区域的子样本进行回归。这使我们能够观察来自世界不同地区（如欧洲与北美）作曲家性别差距幅度是否存在差异。
 
-表3展示了方程(1)的系数估计值。第(1)列使用所有作曲家样本。全样本中beta \_ { 1 }的估计值表明，在固定时间和出生国不变的情况下，女性作曲家的主要描述比男性作曲家的主要描述短( e (( - 0 . 2 9 6 )) - 1 ) times 1 0 0 approx 2 5 . 6%。回顾一下，格罗夫样本中原始（未经调整的）性别差距为47%。因此，虽然显赫度差距的幅度仍然很大，但当我们考虑到女性作曲家在各个时代和国家的代表性不同时，差距显著缩小（几乎减少一半）。
+表3展示了方程(1)的系数估计值。第(1)列使用所有作曲家样本。全样本中$"beta"_(1)$的估计值表明，在固定时间和出生国不变的情况下，女性作曲家的主要描述比男性作曲家的主要描述短$( e ^(( - 0 . 2 9 6 )) - 1 ) times 1 0 0 approx 2 5 . 6$%。回顾一下，格罗夫样本中原始（未经调整的）性别差距为47%。因此，虽然显赫度差距的幅度仍然很大，但当我们考虑到女性作曲家在各个时代和国家的代表性不同时，差距显著缩小（几乎减少一半）。
 
 第(2)-(7)列展示了使用不同出生地区作曲家子样本对方程(1)的系数估计。除非洲外，所有地区都存在统计上显著的性别差距。然而，差距幅度因地区而异。显赫度性别差距在欧洲和拉丁美洲作曲家中最大（均超过29%），北美和亚洲作曲家中较小（均为16.6%），在大洋洲作曲家中略小（15.8%）。
 
@@ -356,7 +356,7 @@ Franz Liszt & 24,370 & Ruth Crawford & 1,058 \\\\ \\hline
 }
 \\end{table}
 
-注：标准误在国家层面聚类。N. America指北美洲（美国、加拿大和百慕大），L. America指拉丁美洲和加勒比地区。显著性水平：(\* \* \*) p < 0 . 0 1 ; (\* \*) p < 0 . 0 5 ; (\*) p < 0 . 1 。
+注：标准误在国家层面聚类。N. America指北美洲（美国、加拿大和百慕大），L. America指拉丁美洲和加勒比地区。显著性水平：$"***" p < 0.01; "**" p < 0.05; "*" p < 0.1$ 。
 
 表4：按地区划分的产出性别差距
 
@@ -377,7 +377,7 @@ Franz Liszt & 24,370 & Ruth Crawford & 1,058 \\\\ \\hline
 }
 \\end{table}
 
-注：标准误在国家层面聚类。N. America指北美洲（美国、加拿大和百慕大），L. America指拉丁美洲和加勒比地区。显著性水平：(\* \* \*) p < 0 . 0 1 ; (\* \*) p < 0 . 0 5 ; (\*) p < 0 . 1 。
+注：标准误在国家层面聚类。N. America指北美洲（美国、加拿大和百慕大），L. America指拉丁美洲和加勒比地区。显著性水平：$"***" p < 0.01; "**" p < 0.05; "*" p < 0.1$ 。
 
 作曲家的显赫度还可能取决于其已知的其他职业。因此，有必要将注意力限制在格罗夫中报告具有相同其他（非作曲）职业的作曲家，重新估计性别差距。我们关注作曲家最常报告的五种其他职业——指挥、钢琴家、管风琴家、小提琴家、歌唱家——并针对报告具有这些其他职业的作曲学子样本分别估计方程(1)。
 
@@ -403,7 +403,7 @@ Franz Liszt & 24,370 & Ruth Crawford & 1,058 \\\\ \\hline
 }
 \\end{table}
 
-注：标准误在国家层面聚类。显著性水平：(\* \* \*) p < 0 . 0 1 ; (\* \*) p < 0 . 0 5 ; (\*) p < 0 . 1 。
+注：标准误在国家层面聚类。显著性水平：$"***" p < 0.01; "**" p < 0.05; "*" p < 0.1$ 。
 
 == 6 解释性别差距
 
@@ -415,7 +415,7 @@ Franz Liszt & 24,370 & Ruth Crawford & 1,058 \\\\ \\hline
 
 为了解决这个选择问题，我们通过从使用Pfitzinger（2017）作曲家样本估计的以下选择方程中提取倾向得分，创建一个由可比较的男性和女性作曲家组成的匹配样本：
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("P (f e m a l e _ {i} = 1 | X) = beta_ {0} + beta_ {1} m a i n d e s c r i p t i o n _ {i} + beta_ {2} w o r k s _ {i} + beta_ {3} b i r t h y e a r _ {i} + epsilon_ {i} (2)")]
+$P("female" _(i) = 1 | X) = beta_(0) + beta_(1) ("main desc ription")_(i) + beta_(2) ("works")_(i) + beta_(3) ("birth year")_(i) + epsilon_(i) (2)$
 
 在该方程中，main descriptioni 是作曲家 i 在格罗夫条目中主要描述部分的词数，worksi 是作曲家 i 作品部分的词数。然后，我们提取男性和女性作曲家的倾向得分，并根据他们在格罗夫中主要描述和作品部分的各自长度以及出生年份进行匹配。得到的样本包括888位作曲家（444位男性和444位女性）。
 
@@ -444,17 +444,17 @@ Franz Liszt & 24,370 & Ruth Crawford & 1,058 \\\\ \\hline
 }
 \\end{table}
 
-注释：标准误在国家层面聚类。显著性水平：(\* \* \*) p < 0 . 0 1 ; (\* \*) p < 0 . 0 5 ; (\*) p < 0 . 1。
+注释：标准误在国家层面聚类。显著性水平：$"***" p < 0.01; "**" p < 0.05; "*" p < 0.1$。
 
 我们接下来转向音乐家父母对作曲家显赫度的影响。为此，我们估计以下回归方程：
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("l n (w o r d c o u n t) _ {i} = beta_ {0} + beta_ {1} (f e m a l e _ {i}) + beta_ {2} (m o t h e r m u s i c i a n) +")]
+$l n("word count") _(i) = beta_(0) + beta_(1) ("female")_(i) + beta_(2) ("mother musician") +$
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("beta_ {3} (f a t h e r m u s i c i a n _ {i}) + beta_ {4} (f e m a l e _ {i}) times (m o t h e r m u s i c i a n _ {i}) + tag {3}")]
+$beta_(3) ("father musician")_(i) + beta_(4) ("female")_(i) times ("mother musician")_(i) + "(3)"$
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("beta_ {5} (f e m a l e _ {i}) times (f a t h e r m u s i c i a n _ {i}) + gamma_ {i} + delta_ {t} + epsilon_ {i}")]
+$beta_(5) ("female")_(i) times ("father musician")_(i) + gamma_(i) + delta_(t) + epsilon_(i)$
 
-该方程中的结果变量是作曲家i (prime) s主要描述词数的自然对数；f e m a l e \_ { i }是一个二元指示变量，如果作曲家i为女性则取值为1；mother musiciani和f ather musiciani是二元指示变量，如果作曲家i有音乐家母亲或音乐家父亲则取值为1，其余变量的定义如前。如果音乐家父母对作曲家未来的显赫度有益，那么beta \_ { 2 }或beta \_ { 3 }应为正且统计显著。交互项( beta \_ { 4 }和beta \_ { 5 } )的系数告诉我们是否存在性别差异。例如，beta \_ { 5 } > 0表明音乐家母亲对作曲家女儿特别有益。另一方面，beta \_ { 4 } < 0表明音乐家父亲对其作曲家女儿的益处小于对其作曲家儿子的益处。
+该方程中的结果变量是作曲家$i ^(prime) s$主要描述词数的自然对数；$"female" _(i)$是一个二元指示变量，如果作曲家i为女性则取值为1；mother musiciani和f ather musiciani是二元指示变量，如果作曲家i有音乐家母亲或音乐家父亲则取值为1，其余变量的定义如前。如果音乐家父母对作曲家未来的显赫度有益，那么$"beta"_(2)$或$"beta"_(3)$应为正且统计显著。交互项$( beta _(4)$和$beta _(5) )$的系数告诉我们是否存在性别差异。例如，$beta _(5) > 0$表明音乐家母亲对作曲家女儿特别有益。另一方面，$beta _(4) < 0$表明音乐家父亲对其作曲家女儿的益处小于对其作曲家儿子的益处。
 
 方程3的系数估计值如表7所示。在所有回归中，因变量都是我们衡量作曲家显赫度的指标。在第(1)和(2)列中，我们估计了父母中任意一方（母亲或父亲）为音乐家的效应。第(3)和(4)列仅控制音乐家母亲；第(5)和(6)列仅控制音乐家父亲；第(7)和(8)列则分别控制音乐家母亲和音乐家父亲。奇数编号的列不包括与性别的交互项，而偶数编号的列包括它们。
 
@@ -484,7 +484,7 @@ Franz Liszt & 24,370 & Ruth Crawford & 1,058 \\\\ \\hline
 }
 \\end{table}
 
-注释：标准误在国家层面聚类。所有回归均包含半世纪和出生国的固定效应。显著性水平：(\* \* \*) p < 0 . 0 1 ; (\* \*) p < 0 . 0 5 ; (\*) p < 0 . 1。
+注释：标准误在国家层面聚类。所有回归均包含半世纪和出生国的固定效应。显著性水平：$"***" p < 0.01; "**" p < 0.05; "*" p < 0.1$。
 
 == 6.2 教师的作用
 
@@ -496,11 +496,11 @@ Franz Liszt & 24,370 & Ruth Crawford & 1,058 \\\\ \\hline
 
 #block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("begin{array}{l} l n (w o r d c o u n t) _ {i} = beta_ {0} + beta_ {1} (f e m a l e _ {i}) + beta_ {2} (n u m b e r t e a c h e r s _ {i}) + beta_ {3} (a v g t e a c h e r p r o m i n e n c e _ {i}) + beta_ {4} (f e m a l e _ {i}) times (n u m b e r t e a c h e r s _ {i}) + beta_ {5} left( {female} _ {i}right) times left( {avg teacher prominence} _ {i}right) + gamma_ {i} + delta_ {t} + epsilon_ {i} tag {4} end{array}")]
 
-在这个方程中，因变量 ln(word count)i 是作曲家 i 传记条目词数的自然对数；f e m a l e \_ { i } 是一个指标，如果作曲家 i 为女性则等于 1；number teacher s \_ { i } 是教授作曲家 i 的教师数量计数；avg teacher prominencei 是作曲家 i 的教师平均词数的对数，该值使用i (prime) s 教师的传记条目词数计算；其余变量定义如前。如果拥有更多或更好的教师能提高作曲家的显赫度，那么 beta \_ { 2 } 和 beta \_ { 3 } 应为正且统计显著。beta \_ { 4 } 和 beta \_ { 5 } 上的系数告诉我们，教师数量{ o r } 质量是否因学生作曲家的性别而有不同影响。例如，如果拥有更多或更好的教师对女性作曲学生的影响与男性不同，那么这些交互项的系数应不为零。我们再次使用 Pfitzinger（2017）的作曲家样本。此外，我们分别在有和没有交互项的情况下估计模型，并使用教师质量和数量的不同配置。
+在这个方程中，因变量 ln(word count)i 是作曲家 i 传记条目词数的自然对数；$"female" _(i)$ 是一个指标，如果作曲家 i 为女性则等于 1；number teacher $s _(i)$ 是教授作曲家 i 的教师数量计数；avg teacher prominencei 是作曲家 i 的教师平均词数的对数，该值使用$i ^(prime) s$ 教师的传记条目词数计算；其余变量定义如前。如果拥有更多或更好的教师能提高作曲家的显赫度，那么 $"beta"_(2)$ 和 $"beta"_(3)$ 应为正且统计显著。$"beta"_(4)$ 和 $"beta"_(5)$ 上的系数告诉我们，教师数量$"or"$ 质量是否因学生作曲家的性别而有不同影响。例如，如果拥有更多或更好的教师对女性作曲学生的影响与男性不同，那么这些交互项的系数应不为零。我们再次使用 Pfitzinger（2017）的作曲家样本。此外，我们分别在有和没有交互项的情况下估计模型，并使用教师质量和数量的不同配置。
 
 方程（4）的系数估计值显示在表 8 的前六列中。在所有回归中，因变量都是我们对作曲家显赫度的衡量指标。第（1）和（2）列控制了教师数量；第（3）和（4）列控制了平均教师质量；第（5）和（6）列同时控制了二者。奇数编号列中不包含交互项，偶数编号列中包含交互项。
 
-在所有设定中，教师数量和平均教师质量（即 β2 和 beta \_ { 3 } ) 的系数均为正，且在常规水平上统计显著。此外，隐含的影响在经济意义上也是显著的。每增加一位教师，作曲家的显赫度提高约 10%；平均教师质量翻倍，则作曲家的显赫度提高 68%。23由于可能存在正向选择，即最好的学生跟随最好的教师学习，这可能是对教师影响的高估。然而有趣的是，在所有设定中，交互项均为负且统计显著。对于女性作曲家来说，增加一位教师所带来的收益减少了一半，而平均教师显赫度提高所带来的好处则被完全抵消。
+在所有设定中，教师数量和平均教师质量（即 β2 和 $beta _(3) )$ 的系数均为正，且在常规水平上统计显著。此外，隐含的影响在经济意义上也是显著的。每增加一位教师，作曲家的显赫度提高约 10%；平均教师质量翻倍，则作曲家的显赫度提高 68%。23由于可能存在正向选择，即最好的学生跟随最好的教师学习，这可能是对教师影响的高估。然而有趣的是，在所有设定中，交互项均为负且统计显著。对于女性作曲家来说，增加一位教师所带来的收益减少了一半，而平均教师显赫度提高所带来的好处则被完全抵消。
 
 如果我们将这一发现视为表面现象，为什么女性作曲家从拥有更多和更好的教师中获益较少？虽然我们的数据无法让我们明确回答这个问题，但我们推测，这可以归因于这样一个事实：至少在历史上，作曲教师不愿意在女学生身上进行认真的投入，因为即使是很有前途的女学生也不太可能提升教师的声誉。24因此，女性作曲学生可能拥有超出最优数量的教师，而最杰出的作曲教师——他们能够接触到最好的男性和女性学生——可能不愿意过多关注他们的女学生。因此，教师数量和质量的提高可能扩大了作曲学生之间的性别差距。25
 
@@ -531,17 +531,17 @@ Franz Liszt & 24,370 & Ruth Crawford & 1,058 \\\\ \\hline
 }
 \\end{table}
 
-注：标准误在国家层面聚类。共同性控制变量包括学生与教师的年龄差距、同国籍指标以及共同出生国指标。显著性水平：(\* \* \*) p < 0 . 0 1 ; (\* \*) p < 0 . 0 5 ; (\*) p < 0 . 1 。]
+注：标准误在国家层面聚类。共同性控制变量包括学生与教师的年龄差距、同国籍指标以及共同出生国指标。显著性水平：$"***" p < 0.01; "**" p < 0.05; "*" p < 0.1$ 。]
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("l n (w o r d c o u n t) _ {i} = beta_ {0} + beta_ {1} f e m a l e s t u d e n t _ {i} +")]
+$l n("word count") _(i) = beta_(0) + beta_(1) ("female student")_(i) +$
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("beta_ {2} { female teacher } _ {j} + tag {5}")]
+$beta_(2) "female teacher" _(j) + "(5)"$
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("beta_ {3} f e m a l e s t u d e n t _ {i} times f e m a l e t e a c h e r _ {j} +")]
+$beta_(3) ("female student")_(i) times ("female teacher")_(j) +$
 
 #block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("alpha_ {i} + delta_ {t} + epsilon_ {i}")]
 
-因变量word counti是学生i (prime) s在格罗夫中传记条目的词数；female studenti是一个二元变量，若学生i为女性则等于1；female teacherj是一个二元变量，若教师j为女性则等于1；其余变量定义如前。交互项beta \_ { 3 }的系数捕捉了女性教师在缩小性别差距方面的相对有效性。如果beta \_ { 3 } = 0 ，则男性和女性作曲教师在缩小作曲学生性别差距方面的有效性相同；如果beta \_ { 3 } > 0 ，则女性教师更有效；如果beta \_ { 3 } < 0 ，则男性教师更有效。
+因变量word counti是学生$i ^(prime) s$在格罗夫中传记条目的词数；female studenti是一个二元变量，若学生i为女性则等于1；female teacherj是一个二元变量，若教师$j$为女性则等于1；其余变量定义如前。交互项$"beta"_(3)$的系数捕捉了女性教师在缩小性别差距方面的相对有效性。如果$beta _(3) = 0$ ，则男性和女性作曲教师在缩小作曲学生性别差距方面的有效性相同；如果$beta _(3) > 0$ ，则女性教师更有效；如果$beta _(3) < 0$ ，则男性教师更有效。
 
 表8的第（7）和（8）列展示了估计方程5的系数估计值。因变量是学生i在格罗夫中主要描述词数的对数。第（8）列还纳入了共同性控制变量，这些变量控制了教师和学生可能共有的其他因素（例如国籍、年龄）。交互项的系数为正，但估计不精确。因此，男性和女性作曲教师在缩小作曲家显赫度的性别差距方面似乎没有明显优劣之分。
 
@@ -555,15 +555,15 @@ Franz Liszt & 24,370 & Ruth Crawford & 1,058 \\\\ \\hline
 
 我们的基本实证框架可由以下方程概括：
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("Y _ {s g k} = beta_ {0} + beta_ {1} (n e a r _ {s g k}) + beta_ {2} (a f t e r _ {s g k})")]
+$Y _("sgk") = beta_(0) + beta_(1) ("near" _("sgk")) + beta_(2) ("after" _("sgk"))$
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("beta_ {3} (n e a r _ {s g k}) times (a f t e r _ {s g k}) + tag {6}")]
+$beta_(3) ("near" _("sgk")) times ("after" _("sgk")) + "(6)"$
 
 #block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("alpha_ {c} + delta_ {t} + theta_ {s g k} + epsilon_ {s g k}")]
 
-在该方程中，s表示音乐学院，g表示组（“近”或“远”于音乐学院s），k表示队列（音乐学院s成立前或后出生）。因变量Y \_ { s g k }是给定音乐学院-组-队列中作曲家的平均结果；n e a r \_ { s g k }是一个指示变量，当音乐学院-组-队列在音乐学院s附近（即距离阈值内）出生时等于1；f t e r \_ { s g k }是一个指示变量，当音乐学院-组-队列在音乐学院s成立后出生时等于1；alpha \_ { c }是音乐学院所在国家的固定效应；delta \_ { t }是音乐学院成立所在半世纪的固定效应；theta \_ { s g k }是音乐学院s的固定效应；epsilon \_ { s g k }是误差项。
+在该方程中，s表示音乐学院，g表示组（“近”或“远”于音乐学院s），k表示队列（音乐学院s成立前或后出生）。因变量$Y _("sgk")$是给定音乐学院-组-队列中作曲家的平均结果；$"near" _("sgk")$是一个指示变量，当音乐学院-组-队列在音乐学院s附近（即距离阈值内）出生时等于1；$"fter"_("sgk")$是一个指示变量，当音乐学院-组-队列在音乐学院s成立后出生时等于1；alpha \_ { c }是音乐学院所在国家的固定效应；$"delta"_(t)$是音乐学院成立所在半世纪的固定效应；theta \_ { s g k }是音乐学院s的固定效应；$"epsilon"_("sgk")$是误差项。
 
-交互项系数beta \_ { 3 }可解释为音乐学院对附近出生作曲家的平均结果的双重差分估计。
+交互项系数$"beta"_(3)$可解释为音乐学院对附近出生作曲家的平均结果的双重差分估计。
 
 我们在实施这一框架时面临若干挑战，其中大多数没有显而易见的解决方案。首先，我们需要确定“近”的距离阈值和“远”的外限。对于“近”，我们简单地尝试了不同阈值（20公里、50公里、100公里和200公里）。鉴于我们的大多数作曲家在欧洲出生和居住，且特定时期内欧洲作曲家的音乐风格往往相似，我们选择500公里作为“远”的外限。然而，使用如此宽泛的外限阈值的缺点是，被归为“远”类别的作曲家可能本身就接触过其他音乐学院，这会污染我们的估计。其次，我们需要确定分析的时间框架（相对于音乐学院成立的时间）。由于音乐风格随时间演变，我们将注意力限制在40年期间。第三，处理（即“之后”）何时开始是一个悬而未决的问题。为简单和便于说明，我们以音乐学院成立日期作为处理时间点，将成立后20年内出生的作曲家归入“之后”队列，将成立前20年内出生的作曲家归入“之前”队列。考虑到音乐学院需要几年时间确立自身并建立声誉，这似乎是合理的；作曲家通常在十几岁末或二十岁出头时就读音乐学院，这意味着音乐学院成立前20年出生的作曲家不太可能受其影响。另一方面，如果音乐学院的影响更为直接，那么我们不应将成立前几年内出生的作曲家排除在处理组之外（例如，如果音乐学院成立于1870年，那么1860年出生的人完全有可能就读）。因此，我们还尝试将成立前\[-30, -10\]区间内出生的作曲家归类为“之前”，将\[-10, +10\]区间内出生的作曲家归类为“之后”。最后，在每个组-队列中，我们需要选择如何聚合数据。最简单的方法是跨整个组-队列进行聚合（这与方程6中概述的设定一致）。这为我们每个音乐学院提供四个观测值（两组，“近”和“远”，乘以两个队列，“之前”和“之后”）。然而，由于我们知道作曲家的出生年份，我们还可以按组-队列-年进行聚合，这为每个音乐学院提供了最多80个观测值（两组，“近”和“远”，乘以两个队列，“之前”和“之后”，每个队列有20个年度观测值）^26。一个中间方法是按每个组-队列的10年间隔进行聚合，这为每个音乐学院生成8个观测值（两组乘以两个队列，每个队列有两个10年间隔区间）。
 
@@ -596,7 +596,7 @@ Franz Liszt & 24,370 & Ruth Crawford & 1,058 \\\\ \\hline
 }
 \\end{table}
 
-注："平均显赫度"为平均词数的自然对数。"女/男显赫度"为女性平均词数自然对数与男性平均词数自然对数之比。"女/男比例"为女性作曲家所占比例。标准误在国家层面聚类。显著性水平：(\* \* \*) p < 0 . 0 1 ; (\* \*) p < 0 . 0 5 ; (\*) p < 0 . 1 .
+注："平均显赫度"为平均词数的自然对数。"女/男显赫度"为女性平均词数自然对数与男性平均词数自然对数之比。"女/男比例"为女性作曲家所占比例。标准误在国家层面聚类。显著性水平：$"***" p < 0.01; "**" p < 0.05; "*" p < 0.1.$
 
 == 7 性别差距的下游后果
 
@@ -625,19 +625,19 @@ ln(T 词数) & 4.733(0.793) & 4.624(0.762) & 0.053(0.011) & 0.053\*(0.011) \\\\ 
 }
 \\end{table}
 
-注：标准误在国家层面聚类。显著性水平：(\* \* \*) p < 0 . 0 1 ; (\* \*) p < 0 . 0 5 ; (\*) p < 0 . 1 。]
+注：标准误在国家层面聚类。显著性水平：$"***" p < 0.01; "**" p < 0.05; "*" p < 0.1$ 。]
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("Y _ {j} = beta_ {0} + beta_ {1} f e m a l e t e a c h e r _ {j} +")]
+$"Y"_(j) = beta_(0) + beta_(1) ("female teacher")_(j) +$
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("beta_ {2} ln ( { word count (main desc.) }) _ {j} + tag {7}")]
+$beta_(2) ln ("word count (main desc.)") _(j) + "(7)"$
 
-#block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("beta_ {3} f e m a l e t e a c h e r _ {j} times l n (w o r d c o u n t (m a i n d e s c.)) _ {j} +")]
+$beta_(3) ("female teacher")_(j) times ln("word count (main desc.)") _(j) +$
 
 #block(fill: luma(248), inset: 10pt, radius: 4pt)[#raw("alpha_ {j} + delta_ {t} + epsilon_ {j}")]
 
-在此方程中，j 表示教师。因变量 Y \_ { j } 要么是教师 j , 的学生数量，要么是其学生的平均显赫度，其中学生的平均显赫度通过学生在格罗夫中主要描述的平均词数来衡量；female teacherj 是一个指示变量，如果教师 j 为女性则等于1；ln(word count (main desc.))j 是教师 j 的显赫度；alpha \_ { j } 和 delta \_ { t } 是教师 j (prime) 的出生国和半世纪的指示变量；epsilon \_ { j } 是误差项。
+在此方程中，$j$ 表示教师。因变量 $"Y"_(j)$ 要么是教师 $j ,$ 的学生数量，要么是其学生的平均显赫度，其中学生的平均显赫度通过学生在格罗夫中主要描述的平均词数来衡量；female teacherj 是一个指示变量，如果教师 $j$ 为女性则等于1；ln(word count (main desc.))j 是教师 j 的显赫度；alpha \_ { j } 和 $"delta"_(t)$ 是教师 $j ^(prime)$ 的出生国和半世纪的指示变量；$"epsilon"_(j)$ 是误差项。
 
-回归结果见表10。在第(1)和(2)列中，因变量是教师 j 教授的学生数量，而在第(3)和(4)列中，因变量是教师 j (prime) . 的学生的平均显赫度。我们注意到，第(3)和(4)列的结果应谨慎解读；理想情况下，我们希望衡量 j (prime) s 学生平均有多大的前途，而不是他们后来变得多显赫（这是他们成为 j 的学生后 j 努力的结果）。不幸的是，学生的前途是不可观测的。从表面价值看，这些系数表明，在控制教师所处时代和国家的情况下，女性教师似乎吸引了更少的学生，但该系数的估计不精确。因此，数据过于嘈杂，无法在数量维度上得出明确推论。然而，我们的发现确实表明，更显赫的教师吸引了更多的学生，而且女性教师在学生数量上可能遭受的任何惩罚部分被女性教师质量所减弱（尽管该系数同样在统计上不显著）。在学生平均质量方面，女性指示变量的系数为正，但在统计上与零无差异。这可能意味着女性教师在吸引有前途的学生方面并未处于劣势，但如前所述，因变量是学生平均显赫度的度量，而非学生平均前途的度量。因此，也许更正确的解读是，女性作曲教师为其学生增加的价值至少与男性同行相当，前提是假设她们的学生平均而言并不比男性作曲教师的学生更有前途（这似乎是一个合理的假设）。这进而表明，作为作曲教师，女性至少与男性同样有效，尽管她们可能面临显著的不利条件。28
+回归结果见表10。在第(1)和(2)列中，因变量是教师 j 教授的学生数量，而在第(3)和(4)列中，因变量是教师 $j ^(prime) .$ 的学生的平均显赫度。我们注意到，第(3)和(4)列的结果应谨慎解读；理想情况下，我们希望衡量 $j ^(prime) s$ 学生平均有多大的前途，而不是他们后来变得多显赫（这是他们成为 j 的学生后 j 努力的结果）。不幸的是，学生的前途是不可观测的。从表面价值看，这些系数表明，在控制教师所处时代和国家的情况下，女性教师似乎吸引了更少的学生，但该系数的估计不精确。因此，数据过于嘈杂，无法在数量维度上得出明确推论。然而，我们的发现确实表明，更显赫的教师吸引了更多的学生，而且女性教师在学生数量上可能遭受的任何惩罚部分被女性教师质量所减弱（尽管该系数同样在统计上不显著）。在学生平均质量方面，女性指示变量的系数为正，但在统计上与零无差异。这可能意味着女性教师在吸引有前途的学生方面并未处于劣势，但如前所述，因变量是学生平均显赫度的度量，而非学生平均前途的度量。因此，也许更正确的解读是，女性作曲教师为其学生增加的价值至少与男性同行相当，前提是假设她们的学生平均而言并不比男性作曲教师的学生更有前途（这似乎是一个合理的假设）。这进而表明，作为作曲教师，女性至少与男性同样有效，尽管她们可能面临显著的不利条件。28
 
 最后，我们转向女性作曲家如何适应她们所面临的障碍。我们的研究聚焦于使用笔名的可能性，以及在使用了笔名的条件下，使用异性笔名的可能性。我们估计线性概率回归，其中因变量要么是一个指示变量（如果格罗夫报告作曲家使用过笔名则等于1），要么是一个指示变量（如果笔名为异性则等于1），关键右手边变量是一个指示变量（如果作曲家在女性则等于1）。
 
@@ -1035,7 +1035,7 @@ Adjusted R2 & 0.900 & -0.074 & 0.916 & 0.800 & 0.268 & 0.840 \\\\ \\hline
 }
 \\end{table}
 
-Notes: Standard errors are clustered at the country level. Significance levels: (\* \* \*) p < 0 . 0 1 ; (\* \*) p < 0 . 0 5 ; (\*) p < 0 . 1 .
+Notes: Standard errors are clustered at the country level. Significance levels: $"***" p < 0.01; "**" p < 0.05; "*" p < 0.1$ .
 
 == Footnotes
 
@@ -1083,7 +1083,7 @@ thousands, the women barely by scores: so that here again, on the doctrine of av
 
 22As mentioned earlier, the works section of Grove entries lists all known works for important composers, and summarizes works for less important ones. Accordingly, the word count of this section is an imperfect proxy for a composer’s total production since it likely underestimates the output of lesser composers.
 
-23The average teacher in the Pfitzinger sample has a word count of 1707.1, which is 7.44 log points. Multiplying this by 0.07, the coefficient on the log of mean teacher prominence, gives us 0.52. ( e ^ { ( - 0 . 5 2 ) (-) } - 1 ) times 1 0 0 approx 6 8 . 24Given prevailing gender norms, a female composer might, upon marriage, be compelled to stop composing. Gustav Mahler, for instance, discouraged his wife, Alma (1879-1964), n´ee Schindler, from composing during the early years of their marriage (Monson, 1983). Additionally, the market for music by female composers was itself discounted. In a discussion of the critical response to Ethel Smyth’s (1858-1944) music, Gates 1997, p. 68 writes that ”Smyth’s music was seldom evaluated as a work of a composer among composers but as that of
+23The average teacher in the Pfitzinger sample has a word count of 1707.1, which is 7.44 log points. Multiplying this by 0.07, the coefficient on the log of mean teacher prominence, gives us 0.52. $( e ^ ( ( - 0 . 5 2 ) ^(-) ) - 1 ) times 1 0 0 approx 6 8 .$ 24Given prevailing gender norms, a female composer might, upon marriage, be compelled to stop composing. Gustav Mahler, for instance, discouraged his wife, Alma (1879-1964), n´ee Schindler, from composing during the early years of their marriage (Monson, 1983). Additionally, the market for music by female composers was itself discounted. In a discussion of the critical response to Ethel Smyth’s (1858-1944) music, Gates 1997, p. 68 writes that ”Smyth’s music was seldom evaluated as a work of a composer among composers but as that of
 
 a ’woman composer.’ This worked to keep her on the margins of the profession.
 
